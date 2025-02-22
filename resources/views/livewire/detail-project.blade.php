@@ -107,10 +107,68 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="project-size" role="tabpanel" aria-labelledby="project-size-tab">
-                        xxx
+                        <form class="wizard-content mt-2">
+                            <div class="wizard-pane">
+                                <div class="form-group row align-items-center">
+                                    <label class="col-md-4 text-md-right text-left">Project Size</label>
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn-outline-primary">
+                                                <input type="radio" name="project_size" value="organic" autocomplete="off"> Organic
+                                            </label>
+                                            <label class="btn btn-outline-primary">
+                                                <input type="radio" name="project_size" value="semi-detached" autocomplete="off"> Semi-Detached
+                                            </label>
+                                            <label class="btn btn-outline-primary">
+                                                <input type="radio" name="project_size" value="embedded" autocomplete="off"> Embedded
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-4 text-md-right text-left"></div>
+                                    <div class="col-lg-4 col-md-6">
+                                        <div id="project-size-description" class="mt-2">
+                                            <p><strong>Organic:</strong> Small teams with good experience working on less rigid requirements.</p>
+                                            <p><strong>Semi-Detached:</strong> Medium teams with mixed experience working on more complex requirements.</p>
+                                            <p><strong>Embedded:</strong> Large teams working on projects with strict requirements and constraints.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-lg-4 col-md-6 text-right">
+                                        <button type="submit" class="btn btn-icon icon-right btn-primary">Save Project Size <i class="fas fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <div class="tab-pane fade" id="gsd-parameters" role="tabpanel" aria-labelledby="gsd-parameters-tab">
-                        yyy
+                        <form class="wizard-content mt-2">
+                            <div class="wizard-pane">
+                                <div class="form-group row align-items-center">
+                                    <label class="col-md-4 text-md-right text-left">GSD Parameter</label>
+                                    <div class="col-lg-4 col-md-6">
+                                        <select name="gsd_parameter" class="form-control" onchange="showGsdOptions(this.value)">
+                                            <option value="">Select Parameter</option>
+                                            <option value="parameter1">Parameter 1</option>
+                                            <option value="parameter2">Parameter 2</option>
+                                            <option value="parameter3">Parameter 3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="gsd-options-container" class="mt-4">
+                                    <!-- Options for the selected parameter will be displayed here -->
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-lg-4 col-md-6 text-right">
+                                        <button type="submit" class="btn btn-icon icon-right btn-primary">Save GSD Parameters <i class="fas fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
                         zzz
@@ -192,6 +250,60 @@
     function removeStoryPoint(button) {
         const listItem = button.closest('li');
         listItem.remove();
+    }
+
+    function showGsdOptions(parameter) {
+        const container = document.getElementById('gsd-options-container');
+        let optionsHtml = '';
+
+        if (parameter === 'parameter1') {
+            optionsHtml = `
+                <div class="form-group row align-items-center">
+                    <label class="col-md-4 text-md-right text-left">Option 1</label>
+                    <div class="col-lg-4 col-md-6">
+                        <input type="text" name="option1" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group row align-items-center">
+                    <label class="col-md-4 text-md-right text-left">Option 2</label>
+                    <div class="col-lg-4 col-md-6">
+                        <input type="text" name="option2" class="form-control">
+                    </div>
+                </div>
+            `;
+        } else if (parameter === 'parameter2') {
+            optionsHtml = `
+                <div class="form-group row align-items-center">
+                    <label class="col-md-4 text-md-right text-left">Option A</label>
+                    <div class="col-lg-4 col-md-6">
+                        <input type="text" name="optionA" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group row align-items-center">
+                    <label class="col-md-4 text-md-right text-left">Option B</label>
+                    <div class="col-lg-4 col-md-6">
+                        <input type="text" name="optionB" class="form-control">
+                    </div>
+                </div>
+            `;
+        } else if (parameter === 'parameter3') {
+            optionsHtml = `
+                <div class="form-group row align-items-center">
+                    <label class="col-md-4 text-md-right text-left">Option X</label>
+                    <div class="col-lg-4 col-md-6">
+                        <input type="text" name="optionX" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group row align-items-center">
+                    <label class="col-md-4 text-md-right text-left">Option Y</label>
+                    <div class="col-lg-4 col-md-6">
+                        <input type="text" name="optionY" class="form-control">
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = optionsHtml;
     }
 </script>
 @endpush
