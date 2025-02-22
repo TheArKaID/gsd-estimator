@@ -13,7 +13,7 @@ class Dashboard extends Component
     public function render()
     {
         return view('livewire.dashboard', [
-            'projects' => Project::all(),
+            'projects' => Project::orderBy('id', 'desc')->get()
         ]);
     }
 
@@ -31,5 +31,7 @@ class Dashboard extends Component
 
         $this->newProjectName = '';
         $this->newProjectDescription = '';
+
+        $this->dispatch('projectAdded');
     }
 }

@@ -112,3 +112,19 @@
         }
     </style>
 @endpush
+
+@script
+    <script>
+        document.addEventListener('livewire:navigated', function () {
+            $wire.on('projectAdded', function () {
+                $('#addProject').modal('hide');
+
+                iziToast.success({
+                    title: 'Success',
+                    message: 'Project added successfully',
+                    position: 'topRight'
+                });
+            });
+        }, { once: true });
+    </script>
+@endscript
