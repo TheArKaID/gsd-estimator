@@ -87,7 +87,7 @@
                         <div class="mt-4">
                             <h5>Added Story Points</h5>
                             <ul class="list-group" id="story-point-list">
-                                @foreach ($project->storyPoints as $sp)
+                                @forelse ($project->storyPoints as $sp)
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>
                                             <strong>Story Point Name:</strong> {{ $sp->name }}<br>
@@ -96,7 +96,9 @@
                                         </span>
                                         <button class="btn btn-danger btn-sm" onclick="removeStoryPoint(this)">Remove</button>
                                     </li>
-                                @endforeach
+                                @empty
+                                    <li class="list-group-item">No story points added yet.</li>
+                                @endforelse
                             </ul>
                         </div>
                     </div>
