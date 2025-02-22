@@ -1,4 +1,4 @@
-<div class="navbar-bg"></div>
+<div class="navbar-bg" style="background-color: #ef6767;"></div>
 <nav class="navbar navbar-expand-lg main-navbar">
     <a href="index.html" class="navbar-brand sidebar-gone-hide">Stisla</a>
     <div class="navbar-nav">
