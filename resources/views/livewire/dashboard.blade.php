@@ -8,22 +8,21 @@
             </div>
         </div>
         <div class="section-body">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Example Card</h4>
-                </div>
-                <div class="card-body">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                </div>
-                <div class="card-footer bg-whitesmoke">
-                    This is card footer
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card card-body text-center hover-effect" style="padding: 50px;">
+                        <i class="fas fa-plus-square" style="color: #74C0FC; font-size: 75px;"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+    <style>
+        .hover-effect:hover {
+            background-color: #e0e0e0;
+            transition: background-color 0.3s ease-in-out;
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+    </style>
 </div>
