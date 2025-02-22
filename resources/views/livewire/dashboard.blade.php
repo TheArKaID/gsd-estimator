@@ -10,13 +10,13 @@
         <div class="section-body">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="card card-body text-center hover-effect" style="padding: 50px;" data-toggle="modal" data-target="#addProject">
+                    <div class="card card-body text-center hover-effect d-flex align-items-center justify-content-center" style="padding: 50px; height: 250px;" data-toggle="modal" data-target="#addProject">
                         <i class="fas fa-plus-square" style="color: #74C0FC; font-size: 75px;"></i>
                     </div>
                 </div>
                 @foreach ($projects as $project)
                     <div class="col-md-3">
-                        <div class="card card-body text-center hover-effect" style="padding: 50px;">
+                        <div class="card card-body text-center hover-effect d-flex flex-column align-items-center justify-content-center" style="padding: 50px; height: 250px;">
                             <h5>{{ $project->name }}</h5>
                             <p>{{ $project->description }}</p>
                         </div>
