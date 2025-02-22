@@ -4,7 +4,7 @@
         <div class="section-header">
             <h1>Dashboard</h1>
             <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item"><a href="#">Dashboard > </a></div>
+                <div class="breadcrumb-item">Dashboard</div>
             </div>
         </div>
         <div class="section-body">
@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 @foreach ($projects as $project)
-                    <div class="col-md-3">
+                    <div class="col-md-3" onclick="Livewire.navigate('/project/{{ $project->id }}')">
                         <div class="card card-body text-center hover-effect d-flex flex-column align-items-center justify-content-center" style="padding: 50px; height: 250px;">
                             <h5>{{ $project->name }}</h5>
                             <p>{{ $project->description }}</p>
