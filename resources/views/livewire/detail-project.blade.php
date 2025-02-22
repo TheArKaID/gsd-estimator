@@ -52,28 +52,34 @@
                     <div class="tab-pane fade show active" id="story-point" role="tabpanel" aria-labelledby="story-point-tab">
                         <form class="wizard-content mt-2">
                             <div class="wizard-pane">
-                                <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">Story Point Name</label>
-                                    <div class="col-lg-4 col-md-6">
-                                        <input type="text" name="story_point_name" class="form-control">
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="story_point_name">Story Point Name</label>
+                                                    <input id="story_point_name" type="text" name="story_point_name" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="points">Points</label>
+                                                    <input type="number" name="points" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="description">Description</label>
+                                                    <textarea id="description" name="description" class="form-control" style="height: 120px"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">Description</label>
-                                    <div class="col-lg-4 col-md-6">
-                                        <textarea name="description" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">Points</label>
-                                    <div class="col-lg-4 col-md-6">
-                                        <input type="number" name="points" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <div class="col-md-4"></div>
-                                    <div class="col-lg-4 col-md-6 text-right">
-                                        <button type="submit" class="btn btn-icon icon-right btn-primary">Add Story Point <i class="fas fa-plus"></i></button>
+                                    <div class="col-md-12 text-right">
+                                        {{-- Save Button --}}
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-primary" onclick="addStoryPoint()">Add Story Point</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
