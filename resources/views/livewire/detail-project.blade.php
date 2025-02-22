@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="section-body">
-            <div class="card card-body">
+            <div class="card card-body" wire:loading.class='opacity-50'>
                 <div class="row mt-4">
                     <div class="col-12 col-lg-8 offset-lg-2">
                         <div class="wizard-steps">
@@ -17,7 +17,7 @@
                                     <i class="fas fa-tasks"></i>
                                 </div>
                                 <div class="wizard-step-label">
-                                    Story Points
+                                    User Story Points
                                 </div>
                             </div>
                             <div class="wizard-step" id="project-size-tab" onclick="showTab('project-size')">
@@ -94,7 +94,7 @@
                                             <strong>Description:</strong> {{ $sp->description }}<br>
                                             <strong>Points:</strong> {{ $sp->value }}<br>
                                         </span>
-                                        <button class="btn btn-danger btn-sm" onclick="removeStoryPoint(this)">Remove</button>
+                                        <button class="btn btn-danger btn-sm" wire:click='deleteStoryPoint("{{ $sp->id }}")'>Remove</button>
                                     </li>
                                 @empty
                                     <li class="list-group-item">No story points added yet.</li>
@@ -184,6 +184,9 @@
             cursor: pointer;
             transform: scale(1.05);
         }
+        .opacity-50 {
+            opacity: 0.5;
+        }
     </style>
 @endpush
 
@@ -267,3 +270,25 @@
     }
 </script>
 @endpush
+
+@script
+<script>
+    window.addEventListener('livewire:navigated', function() {
+        $wire.on('story-point-added', function () {
+            iziToast.success({
+                title: 'Success',
+                message: 'Story point added successfully.',
+                position: 'topRight'
+            });
+        });
+
+        $wire.on('story-point-deleted', function () {
+            iziToast.success({
+                title: 'Success',
+                message: 'Story point deleted successfully.',
+                position: 'topRight'
+            });
+        });
+    }, { once: true });
+</script>
+@endscript

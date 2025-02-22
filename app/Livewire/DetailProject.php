@@ -37,5 +37,14 @@ class DetailProject extends Component
         $this->spName = '';
         $this->spDescription = '';
         $this->spValue = '';
+
+        $this->dispatch('story-point-added');
+    }
+
+    public function deleteStoryPoint($id)
+    {
+        $this->project->storyPoints()->find($id)->delete();
+
+        $this->dispatch('story-point-deleted', $id);
     }
 }
