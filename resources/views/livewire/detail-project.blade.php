@@ -70,17 +70,6 @@
                                         <input type="number" name="points" class="form-control">
                                     </div>
                                 </div>
-                                <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">Type</label>
-                                    <div class="col-lg-4 col-md-6">
-                                        <select name="type" class="form-control">
-                                            <option value="epic">Epic</option>
-                                            <option value="story">Story</option>
-                                            <option value="task">Task</option>
-                                            <option value="other">Other</option>
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="form-group row">
                                     <div class="col-md-4"></div>
                                     <div class="col-lg-4 col-md-6 text-right">
