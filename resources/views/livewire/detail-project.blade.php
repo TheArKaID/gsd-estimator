@@ -58,19 +58,19 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="story_point_name">Story Point Name</label>
-                                                    <input id="story_point_name" type="text" name="story_point_name" class="form-control">
+                                                    <input id="story_point_name" type="text" wire:model='spName' class="form-control" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="points">Points</label>
-                                                    <input type="number" name="points" class="form-control">
+                                                    <input type="number" wire:model='spValue' class="form-control" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="description">Description</label>
-                                                    <textarea id="description" name="description" class="form-control" style="height: 120px"></textarea>
+                                                    <textarea id="description" wire:model='spDescription' class="form-control" style="height: 120px"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -78,7 +78,7 @@
                                     <div class="col-md-12 text-right">
                                         {{-- Save Button --}}
                                         <div class="form-group">
-                                            <button type="button" class="btn btn-primary" onclick="addStoryPoint()">Add Story Point</button>
+                                            <button type="button" class="btn btn-primary" wire:click='saveStoryPoint'>Add Story Point</button>
                                         </div>
                                     </div>
                                 </div>
@@ -87,17 +87,16 @@
                         <div class="mt-4">
                             <h5>Added Story Points</h5>
                             <ul class="list-group" id="story-point-list">
-                                <!-- Example of a story point item -->
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>
-                                        <strong>Story Point Name:</strong> Example Story Point<br>
-                                        <strong>Description:</strong> Example Description<br>
-                                        <strong>Points:</strong> 5<br>
-                                        <strong>Type:</strong> Story
-                                    </span>
-                                    <button class="btn btn-danger btn-sm" onclick="removeStoryPoint(this)">Remove</button>
-                                </li>
-                                <!-- End of example -->
+                                @foreach ($project->storyPoints as $sp)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <strong>Story Point Name:</strong> {{ $sp->name }}<br>
+                                            <strong>Description:</strong> {{ $sp->description }}<br>
+                                            <strong>Points:</strong> {{ $sp->value }}<br>
+                                        </span>
+                                        <button class="btn btn-danger btn-sm" onclick="removeStoryPoint(this)">Remove</button>
+                                    </li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>
@@ -204,42 +203,6 @@
 
         // Add active class to the selected wizard step
         document.getElementById(tabId + '-tab').classList.add('wizard-step-active');
-    }
-
-    function addStoryPoint() {
-        const container = document.getElementById('story-point-container');
-        const newStoryPoint = `
-            <div class="form-group row align-items-center">
-                <label class="col-md-4 text-md-right text-left">Story Point Name</label>
-                <div class="col-lg-4 col-md-6">
-                    <input type="text" name="story_point_name[]" class="form-control">
-                </div>
-            </div>
-            <div class="form-group row align-items-center">
-                <label class="col-md-4 text-md-right text-left">Description</label>
-                <div class="col-lg-4 col-md-6">
-                    <textarea name="description[]" class="form-control"></textarea>
-                </div>
-            </div>
-            <div class="form-group row align-items-center">
-                <label class="col-md-4 text-md-right text-left">Points</label>
-                <div class="col-lg-4 col-md-6">
-                    <input type="number" name="points[]" class="form-control">
-                </div>
-            </div>
-            <div class="form-group row align-items-center">
-                <label class="col-md-4 text-md-right text-left">Type</label>
-                <div class="col-lg-4 col-md-6">
-                    <select name="type[]" class="form-control">
-                        <option value="epic">Epic</option>
-                        <option value="story">Story</option>
-                        <option value="task">Task</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-            </div>
-        `;
-        container.insertAdjacentHTML('beforeend', newStoryPoint);
     }
 
     function removeStoryPoint(button) {
