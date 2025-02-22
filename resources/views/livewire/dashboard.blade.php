@@ -14,6 +14,14 @@
                         <i class="fas fa-plus-square" style="color: #74C0FC; font-size: 75px;"></i>
                     </div>
                 </div>
+                @foreach ($projects as $project)
+                    <div class="col-md-3">
+                        <div class="card card-body text-center hover-effect" style="padding: 50px;">
+                            <h5>{{ $project->name }}</h5>
+                            <p>{{ $project->description }}</p>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
