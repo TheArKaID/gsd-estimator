@@ -32,7 +32,8 @@ import "jquery.nicescroll";
 // import "fullcalendar";
 // import "datatables";
 // import "sweetalert";
-// import "izitoast";
+import iziToast from 'izitoast';
+window.iziToast = iziToast;
 // import "gmaps";
 
 // import "flag-icon-css";
