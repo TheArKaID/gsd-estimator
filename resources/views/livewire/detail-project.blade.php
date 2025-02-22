@@ -50,7 +50,61 @@
 
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="story-point" role="tabpanel" aria-labelledby="story-point-tab">
-                        www
+                        <form class="wizard-content mt-2">
+                            <div class="wizard-pane">
+                                <div class="form-group row align-items-center">
+                                    <label class="col-md-4 text-md-right text-left">Story Point Name</label>
+                                    <div class="col-lg-4 col-md-6">
+                                        <input type="text" name="story_point_name" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group row align-items-center">
+                                    <label class="col-md-4 text-md-right text-left">Description</label>
+                                    <div class="col-lg-4 col-md-6">
+                                        <textarea name="description" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row align-items-center">
+                                    <label class="col-md-4 text-md-right text-left">Points</label>
+                                    <div class="col-lg-4 col-md-6">
+                                        <input type="number" name="points" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group row align-items-center">
+                                    <label class="col-md-4 text-md-right text-left">Type</label>
+                                    <div class="col-lg-4 col-md-6">
+                                        <select name="type" class="form-control">
+                                            <option value="epic">Epic</option>
+                                            <option value="story">Story</option>
+                                            <option value="task">Task</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-lg-4 col-md-6 text-right">
+                                        <button type="submit" class="btn btn-icon icon-right btn-primary">Add Story Point <i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="mt-4">
+                            <h5>Added Story Points</h5>
+                            <ul class="list-group" id="story-point-list">
+                                <!-- Example of a story point item -->
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <strong>Story Point Name:</strong> Example Story Point<br>
+                                        <strong>Description:</strong> Example Description<br>
+                                        <strong>Points:</strong> 5<br>
+                                        <strong>Type:</strong> Story
+                                    </span>
+                                    <button class="btn btn-danger btn-sm" onclick="removeStoryPoint(this)">Remove</button>
+                                </li>
+                                <!-- End of example -->
+                            </ul>
+                        </div>
                     </div>
                     <div class="tab-pane fade" id="project-size" role="tabpanel" aria-labelledby="project-size-tab">
                         xxx
@@ -97,6 +151,47 @@
 
         // Add active class to the selected wizard step
         document.getElementById(tabId + '-tab').classList.add('wizard-step-active');
+    }
+
+    function addStoryPoint() {
+        const container = document.getElementById('story-point-container');
+        const newStoryPoint = `
+            <div class="form-group row align-items-center">
+                <label class="col-md-4 text-md-right text-left">Story Point Name</label>
+                <div class="col-lg-4 col-md-6">
+                    <input type="text" name="story_point_name[]" class="form-control">
+                </div>
+            </div>
+            <div class="form-group row align-items-center">
+                <label class="col-md-4 text-md-right text-left">Description</label>
+                <div class="col-lg-4 col-md-6">
+                    <textarea name="description[]" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="form-group row align-items-center">
+                <label class="col-md-4 text-md-right text-left">Points</label>
+                <div class="col-lg-4 col-md-6">
+                    <input type="number" name="points[]" class="form-control">
+                </div>
+            </div>
+            <div class="form-group row align-items-center">
+                <label class="col-md-4 text-md-right text-left">Type</label>
+                <div class="col-lg-4 col-md-6">
+                    <select name="type[]" class="form-control">
+                        <option value="epic">Epic</option>
+                        <option value="story">Story</option>
+                        <option value="task">Task</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', newStoryPoint);
+    }
+
+    function removeStoryPoint(button) {
+        const listItem = button.closest('li');
+        listItem.remove();
     }
 </script>
 @endpush
