@@ -16,7 +16,7 @@
         <div class="main-wrapper container">
             @include('components.header')
 
-            @yield('main')
+            {{ $slot }}
 
             @include('components.footer')
         </div>
