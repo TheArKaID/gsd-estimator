@@ -14,6 +14,7 @@ class DetailProject extends Component
     function mount($id)
     {
         $this->project = Project::with(['storyPoints'])->find($id);
+        $this->projectType = $this->project->project_type;
     }
 
     public function render()

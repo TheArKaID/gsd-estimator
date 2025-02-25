@@ -12,7 +12,7 @@
                 <div class="row mt-4">
                     <div class="col-12 col-lg-8 offset-lg-2">
                         <div class="wizard-steps">
-                            <div class="wizard-step wizard-step-active" id="story-point-tab" onclick="showTab('story-point')">
+                            <div class="wizard-step wizard-step-active" id="story-point-tab" onclick="showTab('story-point')" wire:ignore.self>
                                 <div class="wizard-step-icon">
                                     <i class="fas fa-tasks"></i>
                                 </div>
@@ -20,7 +20,7 @@
                                     User Story Points
                                 </div>
                             </div>
-                            <div class="wizard-step" id="project-type-tab" onclick="showTab('project-type')">
+                            <div class="wizard-step" id="project-type-tab" onclick="showTab('project-type')" wire:ignore.self>
                                 <div class="wizard-step-icon">
                                     <i class="fas fa-box-open"></i>
                                 </div>
@@ -28,7 +28,7 @@
                                     Project Type
                                 </div>
                             </div>
-                            <div class="wizard-step" id="gsd-parameters-tab" onclick="showTab('gsd-parameters')">
+                            <div class="wizard-step" id="gsd-parameters-tab" onclick="showTab('gsd-parameters')" wire:ignore.self>
                                 <div class="wizard-step-icon">
                                     <i class="fas fa-list-alt"></i>
                                 </div>
@@ -36,7 +36,7 @@
                                     GSD Parameters
                                 </div>
                             </div>
-                            <div class="wizard-step" id="summary-tab" onclick="showTab('summary')">
+                            <div class="wizard-step" id="summary-tab" onclick="showTab('summary')" wire:ignore.self>
                                 <div class="wizard-step-icon">
                                     <i class="fas fa-poll-h"></i>
                                 </div>
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="tab-content">
-                    <div class="tab-pane fade show active" id="story-point" role="tabpanel" aria-labelledby="story-point-tab">
+                    <div class="tab-pane fade show active" id="story-point" role="tabpanel" aria-labelledby="story-point-tab" wire:ignore.self>
                         <form class="wizard-content mt-2">
                             <div class="wizard-pane">
                                 <div class="row justify-content-center">
@@ -142,21 +142,21 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="project-type" role="tabpanel" aria-labelledby="project-type-tab">
+                    <div class="tab-pane fade" id="project-type" role="tabpanel" aria-labelledby="project-type-tab" wire:ignore.self>
                         <form class="wizard-content mt-2">
                             <div class="wizard-pane">
                                 <div class="form-group row align-items-center">
                                     <label class="col-md-4 text-md-right text-left">Project Type</label>
                                     <div class="col-lg-4 col-md-6">
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                            <label class="btn btn-outline-primary">
-                                                <input type="radio" name="project_type" value="organic" autocomplete="off"> Organic
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="organic" :class="{ 'focus active': $wire.projectType === 'organic' }" autocomplete="off"> Organic
                                             </label>
-                                            <label class="btn btn-outline-primary">
-                                                <input type="radio" name="project_type" value="semi-detached" autocomplete="off"> Semi-Detached
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="semi-detached" :class="{ 'focus active': $wire.projectType === 'semi-detached' }" autocomplete="off"> Semi-Detached
                                             </label>
-                                            <label class="btn btn-outline-primary">
-                                                <input type="radio" name="project_type" value="embedded" autocomplete="off"> Embedded
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="embedded" :class="{ 'focus active': $wire.projectType === 'embedded' }" autocomplete="off"> Embedded
                                             </label>
                                         </div>
                                     </div>
@@ -171,16 +171,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <div class="col-md-4"></div>
-                                    <div class="col-lg-4 col-md-6 text-right">
-                                        <button type="submit" class="btn btn-icon icon-right btn-primary">Save Project Type <i class="fas fa-save"></i></button>
-                                    </div>
-                                </div>
                             </div>
                         </form>
                     </div>
-                    <div class="tab-pane fade" id="gsd-parameters" role="tabpanel" aria-labelledby="gsd-parameters-tab">
+                    <div class="tab-pane fade" id="gsd-parameters" role="tabpanel" aria-labelledby="gsd-parameters-tab" wire:ignore.self>
                         <form class="wizard-content mt-2">
                             <div class="wizard-pane">
                                 <div class="form-group row align-items-center">
@@ -206,7 +200,7 @@
                             </div>
                         </form>
                     </div>
-                    <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                    <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab" wire:ignore.self>
                         zzz
                     </div>
                 </div>
@@ -312,6 +306,10 @@
 
         container.innerHTML = optionsHtml;
     }
+
+    document.addEventListener('livewire:load', function () {
+        @this.set('activeTab', 'story-point');
+    });
 </script>
 @endpush
 
