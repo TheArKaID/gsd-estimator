@@ -8,7 +8,7 @@ use Livewire\Component;
 class DetailProject extends Component
 {
     public Project $project;
-    public $spName, $spDescription, $spValue;
+    public $spName, $spDescription, $spValue, $customSpValue;
 
     function mount($id)
     {
@@ -25,18 +25,21 @@ class DetailProject extends Component
         $this->validate([
             'spName' => 'required',
             'spDescription' => 'nullable',
-            'spValue' => 'required|numeric'
+            'spValue' => 'required'
         ]);
+
+        $value = $this->spValue === 'custom' ? $this->customSpValue : $this->spValue;
 
         $this->project->storyPoints()->create([
             'name' => $this->spName,
             'description' => $this->spDescription,
-            'value' => $this->spValue
+            'value' => $value
         ]);
 
         $this->spName = '';
         $this->spDescription = '';
         $this->spValue = '';
+        $this->customSpValue = '';
 
         $this->dispatch('story-point-added');
     }
