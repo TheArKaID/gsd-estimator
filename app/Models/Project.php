@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $session_id
  * @property string $name
  * @property string $description
+ * @property string $project_type
  * @property string $created_at
  * @property string $updated_at
  * @property StoryPoint[] $storyPoints
@@ -36,7 +37,7 @@ class Project extends Model
     /**
      * @var array
      */
-    protected $fillable = ['session_id', 'name', 'description', 'created_at', 'updated_at'];
+    protected $fillable = ['session_id', 'name', 'description', 'project_type', 'created_at', 'updated_at'];
 
     /**
      * Get all of the storyPoints for the Project
