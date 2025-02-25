@@ -20,12 +20,12 @@
                                     User Story Points
                                 </div>
                             </div>
-                            <div class="wizard-step" id="project-size-tab" onclick="showTab('project-size')">
+                            <div class="wizard-step" id="project-type-tab" onclick="showTab('project-type')">
                                 <div class="wizard-step-icon">
                                     <i class="fas fa-box-open"></i>
                                 </div>
                                 <div class="wizard-step-label">
-                                    Project Size
+                                    Project Type
                                 </div>
                             </div>
                             <div class="wizard-step" id="gsd-parameters-tab" onclick="showTab('gsd-parameters')">
@@ -142,21 +142,21 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="project-size" role="tabpanel" aria-labelledby="project-size-tab">
+                    <div class="tab-pane fade" id="project-type" role="tabpanel" aria-labelledby="project-type-tab">
                         <form class="wizard-content mt-2">
                             <div class="wizard-pane">
                                 <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">Project Size</label>
+                                    <label class="col-md-4 text-md-right text-left">Project Type</label>
                                     <div class="col-lg-4 col-md-6">
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                             <label class="btn btn-outline-primary">
-                                                <input type="radio" name="project_size" value="organic" autocomplete="off"> Organic
+                                                <input type="radio" name="project_type" value="organic" autocomplete="off"> Organic
                                             </label>
                                             <label class="btn btn-outline-primary">
-                                                <input type="radio" name="project_size" value="semi-detached" autocomplete="off"> Semi-Detached
+                                                <input type="radio" name="project_type" value="semi-detached" autocomplete="off"> Semi-Detached
                                             </label>
                                             <label class="btn btn-outline-primary">
-                                                <input type="radio" name="project_size" value="embedded" autocomplete="off"> Embedded
+                                                <input type="radio" name="project_type" value="embedded" autocomplete="off"> Embedded
                                             </label>
                                         </div>
                                     </div>
@@ -164,7 +164,7 @@
                                 <div class="form-group row align-items-center">
                                     <div class="col-md-4 text-md-right text-left"></div>
                                     <div class="col-lg-4 col-md-6">
-                                        <div id="project-size-description" class="mt-2">
+                                        <div id="project-type-description" class="mt-2">
                                             <p><strong>Organic:</strong> Small teams with good experience working on less rigid requirements.</p>
                                             <p><strong>Semi-Detached:</strong> Medium teams with mixed experience working on more complex requirements.</p>
                                             <p><strong>Embedded:</strong> Large teams working on projects with strict requirements and constraints.</p>
@@ -174,7 +174,7 @@
                                 <div class="form-group row">
                                     <div class="col-md-4"></div>
                                     <div class="col-lg-4 col-md-6 text-right">
-                                        <button type="submit" class="btn btn-icon icon-right btn-primary">Save Project Size <i class="fas fa-save"></i></button>
+                                        <button type="submit" class="btn btn-icon icon-right btn-primary">Save Project Type <i class="fas fa-save"></i></button>
                                     </div>
                                 </div>
                             </div>

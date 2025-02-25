@@ -9,6 +9,7 @@ class DetailProject extends Component
 {
     public Project $project;
     public $spName, $spDescription, $spValue, $customSpValue;
+    public $projectType;
 
     function mount($id)
     {
@@ -49,5 +50,18 @@ class DetailProject extends Component
         $this->project->storyPoints()->find($id)->delete();
 
         $this->dispatch('story-point-deleted', $id);
+    }
+
+    function saveProjectType()
+    {
+        $this->validate([
+            'projectType' => 'required'
+        ]);
+
+        $this->project->update([
+            'project_type' => $this->projectType
+        ]);
+
+        $this->dispatch('project-type-saved');
     }
 }
