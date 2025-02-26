@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @property string $id
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $created_at
  * @property string $updated_at
  * @property StoryPoint[] $storyPoints
+ * @property GSDFactor[] $gsdFactors
  */
 class Project extends Model
 {
@@ -47,5 +49,15 @@ class Project extends Model
     public function storyPoints(): HasMany
     {
         return $this->hasMany(StoryPoint::class);
+    }
+
+    /**
+     * Get all of the gsdFactors for the Project
+     *
+     * @return HasManyThrough
+     */
+    public function gsdFactors(): HasManyThrough
+    {
+        return $this->hasManyThrough(GSDFactor::class, ProjectGSDFactor::class, 'project_id', 'id', 'id', 'gsd_factor_id');
     }
 }
