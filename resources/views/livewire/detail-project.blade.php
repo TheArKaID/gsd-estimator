@@ -180,12 +180,24 @@
                                 <div class="form-group row align-items-center">
                                     <label class="col-md-4 text-md-right text-left">GSD Parameter</label>
                                     <div class="col-lg-4 col-md-6">
-                                        <select name="gsd_parameter" class="form-control" onchange="showGsdOptions(this.value)">
-                                            <option value="">Select Parameter</option>
-                                            <option value="parameter1">Parameter 1</option>
-                                            <option value="parameter2">Parameter 2</option>
-                                            <option value="parameter3">Parameter 3</option>
-                                        </select>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="parameter1" id="parameter1">
+                                            <label class="form-check-label" for="parameter1">
+                                                Parameter 1
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="parameter2" id="parameter2">
+                                            <label class="form-check-label" for="parameter2">
+                                                Parameter 2
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="parameter3" id="parameter3">
+                                            <label class="form-check-label" for="parameter3">
+                                                Parameter 3
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="gsd-options-container" class="mt-4">
