@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('project_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('global_factor_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('global_factor_criteria_id')->nullable()->default(null)->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

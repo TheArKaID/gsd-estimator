@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('global_factors', function (Blueprint $table) {
+        Schema::create('global_factor_criterias', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->foreignId('global_factor_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable()->default(null);
+            $table->float('value');
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('global_factors');
+        Schema::dropIfExists('global_factor_criterias');
     }
 };

@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string $created_at
  * @property string $updated_at
  * @property StoryPoint[] $storyPoints
- * @property GSDFactor[] $gsdFactors
+ * @property GlobalFactor[] $globalFactors
  */
 class Project extends Model
 {
@@ -52,12 +52,12 @@ class Project extends Model
     }
 
     /**
-     * Get all of the gsdFactors for the Project
+     * Get all of the globalFactors for the Project
      *
      * @return HasManyThrough
      */
-    public function gsdFactors(): HasManyThrough
+    public function globalFactors(): HasManyThrough
     {
-        return $this->hasManyThrough(GSDFactor::class, ProjectGSDFactor::class, 'project_id', 'id', 'id', 'gsd_factor_id');
+        return $this->hasManyThrough(GlobalFactor::class, ProjectGlobalFactor::class, 'project_id', 'id', 'id', 'global_factor_id');
     }
 }

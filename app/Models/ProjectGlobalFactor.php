@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $gsd_factor_id
  * @property string $created_at
  * @property string $updated_at
+ * @property Project $project
+ * @property GlobalFactor $globalFactor
  */
 class ProjectGlobalFactor extends Model
 {

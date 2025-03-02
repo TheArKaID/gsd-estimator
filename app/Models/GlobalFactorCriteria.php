@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string $id
+ * @property string $global_factor_id
  * @property string $name
  * @property string $description
+ * @property float $value
  * @property string $created_at
  * @property string $updated_at
- * @property GlobalFactorCriteria[] $criterias
+ * @property GlobalFactor $globalFactor
  */
-class GlobalFactor extends Model
+class GlobalFactorCriteria extends Model
 {
     use HasUuids;
 
@@ -34,13 +36,13 @@ class GlobalFactor extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name', 'description', 'created_at', 'updated_at'];
+    protected $fillable = ['name', 'description', 'value', 'created_at', 'updated_at'];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function criterias()
+    public function globalFactor()
     {
-        return $this->hasMany(GlobalFactorCriteria::class);
+        return $this->belongsTo(GlobalFactor::class);
     }
 }
