@@ -175,33 +175,71 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="gsd-parameters" role="tabpanel" aria-labelledby="gsd-parameters-tab" wire:ignore.self>
-                        <form class="wizard-content mt-2">
+                        <form class="wizard-content mt-2" wire:submit.prevent="saveGsdParameters">
                             <div class="wizard-pane">
                                 <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">GSD Parameter</label>
+                                    <label class="col-md-4 text-md-right text-left">GSD Parameters</label>
                                     <div class="col-lg-4 col-md-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="parameter1" id="parameter1">
-                                            <label class="form-check-label" for="parameter1">
-                                                Parameter 1
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="parameter2" id="parameter2">
-                                            <label class="form-check-label" for="parameter2">
-                                                Parameter 2
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="parameter3" id="parameter3">
-                                            <label class="form-check-label" for="parameter3">
-                                                Parameter 3
-                                            </label>
+                                        <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+                                            @foreach ($globalFactors as $g)
+                                                <label class="btn btn-outline-primary m-1 {{ in_array($g->id, $projectGlobalFactors) ? 'active' : '' }}">
+                                                    <input type="checkbox" value="{{ $g->id }}" wire:click='saveGsdParameters' wire:model="projectGlobalFactors"> {{ $g->name }}
+                                                </label>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
                                 <div id="gsd-options-container" class="mt-4">
-                                    <!-- Options for the selected parameter will be displayed here -->
+                                    @foreach ($projectGlobalFactors as $parameter)
+                                        <div class="accordion" id="accordion-{{ $parameter }}">
+                                            <div class="card">
+                                                <div class="card-header" id="heading-{{ $parameter }}">
+                                                    <h2 class="mb-0">
+                                                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-{{ $parameter }}" aria-expanded="true" aria-controls="collapse-{{ $parameter }}">
+                                                            {{ ucfirst($projectGlobalFactorModels->where('id', $parameter)->first()->name) }}
+                                                        </button>
+                                                    </h2>
+                                                </div>
+                                                <div id="collapse-{{ $parameter }}" class="collapse" aria-labelledby="heading-{{ $parameter }}" data-parent="#accordion-{{ $parameter }}">
+                                                    <div class="card-body">
+                                                        <table class="table table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Select</th>
+                                                                    <th>Name</th>
+                                                                    <th>Description</th>
+                                                                    <th>Value</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($projectGlobalFactorModels->where('id', $parameter)->first()->criterias as $criteria)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="btn-group-toggle" data-toggle="buttons">
+                                                                                <label class="btn btn-outline-primary {{ $this->project->projectGlobalFactors->where('global_factor_id', $parameter)->where('project_id', $project->id)->first()?->global_factor_criteria_id == $criteria->id ? 'active' : '' }}">
+                                                                                    <input 
+                                                                                        type="radio" 
+                                                                                        name="criteria_{{ $parameter }}" 
+                                                                                        value="{{ $criteria->id }}" 
+                                                                                        wire:click="selectCriteria('{{ $parameter }}', '{{ $criteria->id }}')"
+                                                                                        {{ $this->project->projectGlobalFactors->where('global_factor_id', $parameter)->where('project_id', $project->id)->first()?->global_factor_criteria_id == $criteria->id ? 'checked' : '' }}
+                                                                                        style="position: absolute; opacity: 0;"
+                                                                                    > Select
+                                                                                </label>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>{{ $criteria->name }}</td>
+                                                                        <td>{{ $criteria->description }}</td>
+                                                                        <td>{{ $criteria->value }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-md-4"></div>
@@ -237,6 +275,10 @@
             background-color: #007bff;
             color: white;
         }
+        .btn-outline-primary.active {
+            background-color: #007bff;
+            color: white;
+        }
     </style>
 @endpush
 
@@ -265,63 +307,16 @@
         listItem.remove();
     }
 
-    function showGsdOptions(parameter) {
-        const container = document.getElementById('gsd-options-container');
-        let optionsHtml = '';
-
-        if (parameter === 'parameter1') {
-            optionsHtml = `
-                <div class="form-group row align-items-center">
-                    <label class="col-md-4 text-md-right text-left">Option 1</label>
-                    <div class="col-lg-4 col-md-6">
-                        <input type="text" name="option1" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row align-items-center">
-                    <label class="col-md-4 text-md-right text-left">Option 2</label>
-                    <div class="col-lg-4 col-md-6">
-                        <input type="text" name="option2" class="form-control">
-                    </div>
-                </div>
-            `;
-        } else if (parameter === 'parameter2') {
-            optionsHtml = `
-                <div class="form-group row align-items-center">
-                    <label class="col-md-4 text-md-right text-left">Option A</label>
-                    <div class="col-lg-4 col-md-6">
-                        <input type="text" name="optionA" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row align-items-center">
-                    <label class="col-md-4 text-md-right text-left">Option B</label>
-                    <div class="col-lg-4 col-md-6">
-                        <input type="text" name="optionB" class="form-control">
-                    </div>
-                </div>
-            `;
-        } else if (parameter === 'parameter3') {
-            optionsHtml = `
-                <div class="form-group row align-items-center">
-                    <label class="col-md-4 text-md-right text-left">Option X</label>
-                    <div class="col-lg-4 col-md-6">
-                        <input type="text" name="optionX" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row align-items-center">
-                    <label class="col-md-4 text-md-right text-left">Option Y</label>
-                    <div class="col-lg-4 col-md-6">
-                        <input type="text" name="optionY" class="form-control">
-                    </div>
-                </div>
-            `;
-        }
-
-        container.innerHTML = optionsHtml;
-    }
-
     document.addEventListener('livewire:load', function () {
         @this.set('activeTab', 'story-point');
     });
+
+    // document.addEventListener('livewire:update', function () {
+    //     // Reapply active class to GSD Parameters after Livewire update
+    //     @this.projectGlobalFactors.forEach(function(factor) {
+    //         document.querySelector(`input[value="${factor}"]`).closest('label').classList.add('active');
+    //     });
+    // });
 </script>
 @endpush
 
