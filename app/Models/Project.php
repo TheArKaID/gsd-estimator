@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string $updated_at
  * @property StoryPoint[] $storyPoints
  * @property GlobalFactor[] $globalFactors
+ * @property ProjectGlobalFactor[] $projectGlobalFactors
  */
 class Project extends Model
 {
@@ -59,5 +60,15 @@ class Project extends Model
     public function globalFactors(): HasManyThrough
     {
         return $this->hasManyThrough(GlobalFactor::class, ProjectGlobalFactor::class, 'project_id', 'id', 'id', 'global_factor_id');
+    }
+
+    /**
+     * Get all of the projectGlobalFactors for the Project
+     *
+     * @return HasMany
+     */
+    public function projectGlobalFactors(): HasMany
+    {
+        return $this->hasMany(ProjectGlobalFactor::class);
     }
 }
