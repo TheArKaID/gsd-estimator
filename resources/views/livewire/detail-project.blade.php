@@ -194,13 +194,13 @@
                                         <div class="accordion" id="accordion-{{ $parameter }}">
                                             <div class="card">
                                                 <div class="card-header" id="heading-{{ $parameter }}">
-                                                    <h2 class="mb-0">
-                                                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-{{ $parameter }}" aria-expanded="true" aria-controls="collapse-{{ $parameter }}">
+                                                    <div class="accordion-header collapsed" role="button" data-toggle="collapse" data-target="#collapse-{{ $parameter }}" aria-expanded="false" aria-controls="collapse-{{ $parameter }}" wire:ignore.self>
+                                                        <h4 style="color: inherit;">
                                                             {{ ucfirst($projectGlobalFactorModels->where('id', $parameter)->first()->name) }}
-                                                        </button>
-                                                    </h2>
+                                                        </h4>
+                                                    </div>
                                                 </div>
-                                                <div id="collapse-{{ $parameter }}" class="collapse" aria-labelledby="heading-{{ $parameter }}" data-parent="#accordion-{{ $parameter }}" wire:ignore.self>
+                                                <div id="collapse-{{ $parameter }}" class="collapse-body collapse" aria-labelledby="heading-{{ $parameter }}" data-parent="#accordion-{{ $parameter }}" wire:ignore.self>
                                                     <div class="card-body">
                                                         <div class="table-responsive">
                                                             <table class="table table-bordered table-md">
