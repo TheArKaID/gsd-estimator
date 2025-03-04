@@ -177,9 +177,8 @@
                     <div class="tab-pane fade" id="gsd-parameters" role="tabpanel" aria-labelledby="gsd-parameters-tab" wire:ignore.self>
                         <form class="wizard-content mt-2" wire:submit.prevent="saveGsdParameters">
                             <div class="wizard-pane">
-                                <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">GSD Parameters</label>
-                                    <div class="col-lg-4 col-md-6">
+                                <div class="form-group row align-items-center justify-content-center">
+                                    <div class="col-8">
                                         <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
                                             @foreach ($globalFactors as $g)
                                                 <label class="btn btn-outline-primary m-1 {{ in_array($g->id, $projectGlobalFactors) ? 'active' : '' }}">
@@ -196,7 +195,7 @@
                                                 <div class="card-header" id="heading-{{ $parameter }}">
                                                     <div class="accordion-header collapsed" role="button" data-toggle="collapse" data-target="#collapse-{{ $parameter }}" aria-expanded="false" aria-controls="collapse-{{ $parameter }}" wire:ignore.self>
                                                         <h4 style="color: inherit;">
-                                                            {{ ucfirst($projectGlobalFactorModels->where('id', $parameter)->first()->name) }}
+                                                            {{ ucfirst($projectGlobalFactorModels->where('id', $parameter)->first()?->name) }}
                                                         </h4>
                                                     </div>
                                                 </div>
@@ -210,7 +209,7 @@
                                                                     <th>Value</th>
                                                                     <th width="10%">#</th>
                                                                 </tr>
-                                                                @foreach ($projectGlobalFactorModels->where('id', $parameter)->first()->criterias as $criteria)
+                                                                @foreach ($projectGlobalFactorModels->where('id', $parameter)->first()?->criterias as $criteria)
                                                                     <tr>
                                                                         <td>{{ $criteria->name }}</td>
                                                                         <td>{{ $criteria->description }}</td>
