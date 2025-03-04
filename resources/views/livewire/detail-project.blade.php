@@ -200,41 +200,44 @@
                                                         </button>
                                                     </h2>
                                                 </div>
-                                                <div id="collapse-{{ $parameter }}" class="collapse" aria-labelledby="heading-{{ $parameter }}" data-parent="#accordion-{{ $parameter }}">
+                                                <div id="collapse-{{ $parameter }}" class="collapse" aria-labelledby="heading-{{ $parameter }}" data-parent="#accordion-{{ $parameter }}" wire:ignore.self>
                                                     <div class="card-body">
-                                                        <table class="table table-bordered">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Select</th>
-                                                                    <th>Name</th>
-                                                                    <th>Description</th>
-                                                                    <th>Value</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($projectGlobalFactorModels->where('id', $parameter)->first()->criterias as $criteria)
+                                                        {{-- div.responsiv --}}
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered table-md">
+                                                                <thead>
                                                                     <tr>
-                                                                        <td>
-                                                                            <div class="btn-group-toggle" data-toggle="buttons">
-                                                                                <label class="btn btn-outline-primary {{ $this->project->projectGlobalFactors->where('global_factor_id', $parameter)->where('project_id', $project->id)->first()?->global_factor_criteria_id == $criteria->id ? 'active' : '' }}">
-                                                                                    <input 
-                                                                                        type="radio" 
-                                                                                        name="criteria_{{ $parameter }}" 
-                                                                                        value="{{ $criteria->id }}" 
-                                                                                        wire:click="selectCriteria('{{ $parameter }}', '{{ $criteria->id }}')"
-                                                                                        {{ $this->project->projectGlobalFactors->where('global_factor_id', $parameter)->where('project_id', $project->id)->first()?->global_factor_criteria_id == $criteria->id ? 'checked' : '' }}
-                                                                                        style="position: absolute; opacity: 0;"
-                                                                                    > Select
-                                                                                </label>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>{{ $criteria->name }}</td>
-                                                                        <td>{{ $criteria->description }}</td>
-                                                                        <td>{{ $criteria->value }}</td>
+                                                                        <th>Name</th>
+                                                                        <th>Description</th>
+                                                                        <th>Value</th>
+                                                                        <th width="10%">#</th>
                                                                     </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($projectGlobalFactorModels->where('id', $parameter)->first()->criterias as $criteria)
+                                                                        <tr>
+                                                                            <td>{{ $criteria->name }}</td>
+                                                                            <td>{{ $criteria->description }}</td>
+                                                                            <td>{{ $criteria->value }}</td>
+                                                                            <td>
+                                                                                <div class="btn-group-toggle" data-toggle="buttons">
+                                                                                    <label class="btn btn-outline-primary {{ $this->project->projectGlobalFactors->where('global_factor_id', $parameter)->where('project_id', $project->id)->first()?->global_factor_criteria_id == $criteria->id ? 'active' : '' }}">
+                                                                                        <input 
+                                                                                            type="radio" 
+                                                                                            name="criteria_{{ $parameter }}" 
+                                                                                            value="{{ $criteria->id }}" 
+                                                                                            wire:click="selectCriteria('{{ $parameter }}', '{{ $criteria->id }}')"
+                                                                                            {{ $this->project->projectGlobalFactors->where('global_factor_id', $parameter)->where('project_id', $project->id)->first()?->global_factor_criteria_id == $criteria->id ? 'checked' : '' }}
+                                                                                            style="position: absolute; opacity: 0;"
+                                                                                        > Select
+                                                                                    </label>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
