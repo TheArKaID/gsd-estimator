@@ -204,16 +204,13 @@
                                                         <div class="table-responsive">
                                                             <table class="table table-bordered table-md">
                                                                 <tr>
+                                                                    <th width="10%">#</th>
                                                                     <th>Name</th>
                                                                     <th>Description</th>
                                                                     <th>Value</th>
-                                                                    <th width="10%">#</th>
                                                                 </tr>
                                                                 @foreach ($projectGlobalFactorModels->where('id', $parameter)->first()?->criterias as $criteria)
                                                                     <tr>
-                                                                        <td>{{ $criteria->name }}</td>
-                                                                        <td>{{ $criteria->description }}</td>
-                                                                        <td>{{ $criteria->value }}</td>
                                                                         <td>
                                                                             <div class="btn-group-toggle" data-toggle="buttons">
                                                                                 <label class="btn btn-outline-primary {{ $this->project->projectGlobalFactors->where('global_factor_id', $parameter)->where('project_id', $project->id)->first()?->global_factor_criteria_id == $criteria->id ? 'active' : '' }}">
@@ -228,6 +225,9 @@
                                                                                 </label>
                                                                             </div>
                                                                         </td>
+                                                                        <td>{{ $criteria->name }}</td>
+                                                                        <td>{{ $criteria->description }}</td>
+                                                                        <td>{{ $criteria->value }}</td>
                                                                     </tr>
                                                                 @endforeach
                                                             </table>
