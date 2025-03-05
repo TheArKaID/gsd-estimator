@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      # Add this no-cache option to force rebuild
+      no_cache: true
+      args:
+        BUILDKIT_INLINE_CACHE: 0
+    ports:
+      - "8881:8000"
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: gsd
+      DB_USERNAME: gsd
+      DB_PASSWORD: Bukanadmin123
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    volumes:
+      # Mount local directory directly to container
+      - .:/app
+      # Keep persistent storage for uploaded files
+      - app-data:/app/storage/app
+      
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: Adminjuga
+      MYSQL_DATABASE: gsd
+      MYSQL_USER: gsd
+      MYSQL_PASSWORD: Bukanadmin123
+    networks:
+      - app-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3336:3306"
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  app-data:

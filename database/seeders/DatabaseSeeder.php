@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,5 +21,24 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $this->seedFromSqlFile(database_path('seeders/seeder.sql'));
+    }
+
+    /**
+     * Seed database from an SQL file.
+     *
+     * @param string $file Path to the SQL file
+     * @return void
+     */
+    protected function seedFromSqlFile(string $file): void
+    {
+        if (File::exists($file)) {
+            $sql = File::get($file);
+            DB::unprepared($sql);
+            $this->command->info('SQL file imported successfully: ' . $file);
+        } else {
+            $this->command->error('SQL file not found: ' . $file);
+        }
     }
 }
