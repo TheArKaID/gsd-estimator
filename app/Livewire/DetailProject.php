@@ -17,6 +17,10 @@ class DetailProject extends Component
     public $projectGlobalFactorModels = [];
     public $criteriaProjectGlobalFactors = [];
 
+    public $smUSP = 0;
+    public $smEmployee = 0;
+    public $smVelocity = 0;
+
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
@@ -27,6 +31,10 @@ class DetailProject extends Component
 
         // Load GSD parameters
         $this->globalFactors = GlobalFactor::all();
+        
+        // Load existing software metrics if available
+        $this->smEmployee = $this->project->team_size ?? 0;
+        $this->smVelocity = $this->project->velocity ?? 0;
     }
 
     public function render()
@@ -125,5 +133,20 @@ class DetailProject extends Component
         );
 
         $this->criteriaProjectGlobalFactors[$factorId] = $criteriaId;
+    }
+
+    public function saveSoftwareMetrics()
+    {
+        $this->validate([
+            'smEmployee' => 'required|numeric|min:1',
+            'smVelocity' => 'required|numeric|min:1',
+        ]);
+
+        $this->project->update([
+            'team_size' => $this->smEmployee,
+            'velocity' => $this->smVelocity
+        ]);
+
+        $this->dispatch('software-metrics-saved');
     }
 }

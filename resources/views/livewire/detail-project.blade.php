@@ -36,6 +36,14 @@
                                     User Story Points
                                 </div>
                             </div>
+                            <div class="wizard-step" id="software-metrics-tab" onclick="showTab('software-metrics')" wire:ignore.self>
+                                <div class="wizard-step-icon">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div class="wizard-step-label">
+                                    Software Metrics
+                                </div>
+                            </div>
                             <div class="wizard-step" id="summary-tab" onclick="showTab('summary')" wire:ignore.self>
                                 <div class="wizard-step-icon">
                                     <i class="fas fa-poll-h"></i>
@@ -242,6 +250,45 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="tab-pane fade" id="software-metrics" role="tabpanel" aria-labelledby="software-metrics-tab" wire:ignore.self>
+                        <form class="wizard-content mt-2" wire:submit.prevent="saveSoftwareMetrics">
+                            <div class="wizard-pane">
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4>Team Information</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="form-group row mb-4">
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Size</label>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <input type="number" class="form-control" wire:model="smEmployee" min="1">
+                                                        @error('smEmployee') <span class="text-danger">{{ $message }}</span> @enderror
+                                                        <small class="form-text text-muted">Enter the number of team members working on this project</small>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-4">
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Velocity</label>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <input type="number" class="form-control" wire:model="smVelocity" min="1">
+                                                        @error('smVelocity') <span class="text-danger">{{ $message }}</span> @enderror
+                                                        <small class="form-text text-muted">Enter the average story points completed per sprint/iteration</small>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-4">
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3"></label>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <button type="submit" class="btn btn-primary">Save Team Information</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                     <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab" wire:ignore.self>
                         zzz
                     </div>
@@ -327,6 +374,14 @@
             iziToast.success({
                 title: 'Success',
                 message: 'Story point deleted successfully.',
+                position: 'topRight'
+            });
+        });
+
+        $wire.on('software-metrics-saved', function () {
+            iziToast.success({
+                title: 'Success',
+                message: 'Team information saved successfully.',
                 position: 'topRight'
             });
         });
