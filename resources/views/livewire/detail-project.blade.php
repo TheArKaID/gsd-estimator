@@ -28,14 +28,6 @@
                                     Project Type
                                 </div>
                             </div>
-                            <div class="wizard-step" id="story-point-tab" onclick="showTab('story-point')" wire:ignore.self>
-                                <div class="wizard-step-icon">
-                                    <i class="fas fa-tasks"></i>
-                                </div>
-                                <div class="wizard-step-label">
-                                    User Story Points
-                                </div>
-                            </div>
                             <div class="wizard-step" id="software-metrics-tab" onclick="showTab('software-metrics')" wire:ignore.self>
                                 <div class="wizard-step-icon">
                                     <i class="fas fa-tasks"></i>
@@ -157,12 +149,52 @@
                             </div>
                         </form>
                     </div>
-                    <div class="tab-pane fade" id="story-point" role="tabpanel" aria-labelledby="story-point-tab" wire:ignore.self>
+                    <div class="tab-pane fade" id="software-metrics" role="tabpanel" aria-labelledby="software-metrics-tab" wire:ignore.self>
+                        <form class="wizard-content mt-2" wire:submit.prevent="saveSoftwareMetrics">
+                            <div class="wizard-pane">
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4>Team Information</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="form-group row mb-4">
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Size</label>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <input type="number" class="form-control" wire:model="smEmployee" min="1">
+                                                        @error('smEmployee') <span class="text-danger">{{ $message }}</span> @enderror
+                                                        <small class="form-text text-muted">Enter the number of team members working on this project</small>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-4">
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Velocity</label>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <input type="number" class="form-control" wire:model="smVelocity" min="1">
+                                                        @error('smVelocity') <span class="text-danger">{{ $message }}</span> @enderror
+                                                        <small class="form-text text-muted">Enter the average story points completed per sprint/iteration</small>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-4">
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3"></label>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <button type="submit" class="btn btn-primary">Save Team Information</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                         <form class="wizard-content mt-2">
                             <div class="wizard-pane">
                                 <div class="row justify-content-center">
                                     <div class="col-md-8">
                                         <div class="row">
+                                            <div class="card-header">
+                                                <h4>Story Point</h4>
+                                            </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="story_point_name">Story Point Name</label>
@@ -229,60 +261,23 @@
                                             <button type="button" class="btn btn-primary" wire:click='saveStoryPoint'>Add Story Point</button>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="mt-4">
-                            <h5>Added Story Points</h5>
-                            <ul class="list-group" id="story-point-list">
-                                @forelse ($project->storyPoints as $sp)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <strong>Story Point Name:</strong> {{ $sp->name }}<br>
-                                            <strong>Description:</strong> {{ $sp->description }}<br>
-                                            <strong>Points:</strong> {{ $sp->value }}<br>
-                                        </span>
-                                        <button class="btn btn-danger btn-sm" wire:click='deleteStoryPoint("{{ $sp->id }}")'>Remove</button>
-                                    </li>
-                                @empty
-                                    <li class="list-group-item">No story points added yet.</li>
-                                @endforelse
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="software-metrics" role="tabpanel" aria-labelledby="software-metrics-tab" wire:ignore.self>
-                        <form class="wizard-content mt-2" wire:submit.prevent="saveSoftwareMetrics">
-                            <div class="wizard-pane">
-                                <div class="row justify-content-center">
                                     <div class="col-md-8">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Team Information</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="form-group row mb-4">
-                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Size</label>
-                                                    <div class="col-sm-12 col-md-7">
-                                                        <input type="number" class="form-control" wire:model="smEmployee" min="1">
-                                                        @error('smEmployee') <span class="text-danger">{{ $message }}</span> @enderror
-                                                        <small class="form-text text-muted">Enter the number of team members working on this project</small>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row mb-4">
-                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Velocity</label>
-                                                    <div class="col-sm-12 col-md-7">
-                                                        <input type="number" class="form-control" wire:model="smVelocity" min="1">
-                                                        @error('smVelocity') <span class="text-danger">{{ $message }}</span> @enderror
-                                                        <small class="form-text text-muted">Enter the average story points completed per sprint/iteration</small>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row mb-4">
-                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3"></label>
-                                                    <div class="col-sm-12 col-md-7">
-                                                        <button type="submit" class="btn btn-primary">Save Team Information</button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="mt-4">
+                                            <h5>Added Story Points</h5>
+                                            <ul class="list-group" id="story-point-list">
+                                                @forelse ($project->storyPoints as $sp)
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <span>
+                                                            <strong>Story Point Name:</strong> {{ $sp->name }}<br>
+                                                            <strong>Description:</strong> {{ $sp->description }}<br>
+                                                            <strong>Points:</strong> {{ $sp->value }}<br>
+                                                        </span>
+                                                        <button class="btn btn-danger btn-sm" wire:click='deleteStoryPoint("{{ $sp->id }}")'>Remove</button>
+                                                    </li>
+                                                @empty
+                                                    <li class="list-group-item">No story points added yet.</li>
+                                                @endforelse
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
