@@ -12,12 +12,12 @@
                 <div class="row mt-4">
                     <div class="col-12 col-lg-8 offset-lg-2">
                         <div class="wizard-steps">
-                            <div class="wizard-step wizard-step-active" id="story-point-tab" onclick="showTab('story-point')" wire:ignore.self>
+                            <div class="wizard-step wizard-step-active" id="gsd-parameters-tab" onclick="showTab('gsd-parameters')" wire:ignore.self>
                                 <div class="wizard-step-icon">
-                                    <i class="fas fa-tasks"></i>
+                                    <i class="fas fa-list-alt"></i>
                                 </div>
                                 <div class="wizard-step-label">
-                                    User Story Points
+                                    GSD Parameters
                                 </div>
                             </div>
                             <div class="wizard-step" id="project-type-tab" onclick="showTab('project-type')" wire:ignore.self>
@@ -28,12 +28,12 @@
                                     Project Type
                                 </div>
                             </div>
-                            <div class="wizard-step" id="gsd-parameters-tab" onclick="showTab('gsd-parameters')" wire:ignore.self>
+                            <div class="wizard-step" id="story-point-tab" onclick="showTab('story-point')" wire:ignore.self>
                                 <div class="wizard-step-icon">
-                                    <i class="fas fa-list-alt"></i>
+                                    <i class="fas fa-tasks"></i>
                                 </div>
                                 <div class="wizard-step-label">
-                                    GSD Parameters
+                                    User Story Points
                                 </div>
                             </div>
                             <div class="wizard-step" id="summary-tab" onclick="showTab('summary')" wire:ignore.self>
@@ -49,132 +49,7 @@
                 </div>
 
                 <div class="tab-content">
-                    <div class="tab-pane fade show active" id="story-point" role="tabpanel" aria-labelledby="story-point-tab" wire:ignore.self>
-                        <form class="wizard-content mt-2">
-                            <div class="wizard-pane">
-                                <div class="row justify-content-center">
-                                    <div class="col-md-8">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="story_point_name">Story Point Name</label>
-                                                    <input id="story_point_name" type="text" wire:model='spName' class="form-control" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="points">Points</label>
-                                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 1 ? 'active' : '' }}">
-                                                            <input type="radio" value="1" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 1)"> 1
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 2 ? 'active' : '' }}">
-                                                            <input type="radio" value="2" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 2)"> 2
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 3 ? 'active' : '' }}">
-                                                            <input type="radio" value="3" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 3)"> 3
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 5 ? 'active' : '' }}">
-                                                            <input type="radio" value="5" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 5)"> 5
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 8 ? 'active' : '' }}">
-                                                            <input type="radio" value="8" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 8)"> 8
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 13 ? 'active' : '' }}">
-                                                            <input type="radio" value="13" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 13)"> 13
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 21 ? 'active' : '' }}">
-                                                            <input type="radio" value="21" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 21)"> 21
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 34 ? 'active' : '' }}">
-                                                            <input type="radio" value="34" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 34)"> 34
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 55 ? 'active' : '' }}">
-                                                            <input type="radio" value="55" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 55)"> 55
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 89 ? 'active' : '' }}">
-                                                            <input type="radio" value="89" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 89)"> 89
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 144 ? 'active' : '' }}">
-                                                            <input type="radio" value="144" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 144)"> 144
-                                                        </label>
-                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 'custom' ? 'active' : '' }}">
-                                                            <input type="radio" value="custom" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 'custom')"> Custom
-                                                        </label>
-                                                    </div>
-                                                    @if($spValue === 'custom')
-                                                        <input type="number" wire:model="customSpValue" class="form-control mt-2" placeholder="Enter custom points">
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label for="description">Description</label>
-                                                    <textarea id="description" wire:model='spDescription' class="form-control" style="height: 120px"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 text-right">
-                                        {{-- Save Button --}}
-                                        <div class="form-group">
-                                            <button type="button" class="btn btn-primary" wire:click='saveStoryPoint'>Add Story Point</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="mt-4">
-                            <h5>Added Story Points</h5>
-                            <ul class="list-group" id="story-point-list">
-                                @forelse ($project->storyPoints as $sp)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <strong>Story Point Name:</strong> {{ $sp->name }}<br>
-                                            <strong>Description:</strong> {{ $sp->description }}<br>
-                                            <strong>Points:</strong> {{ $sp->value }}<br>
-                                        </span>
-                                        <button class="btn btn-danger btn-sm" wire:click='deleteStoryPoint("{{ $sp->id }}")'>Remove</button>
-                                    </li>
-                                @empty
-                                    <li class="list-group-item">No story points added yet.</li>
-                                @endforelse
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="project-type" role="tabpanel" aria-labelledby="project-type-tab" wire:ignore.self>
-                        <form class="wizard-content mt-2">
-                            <div class="wizard-pane">
-                                <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">Project Type</label>
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="organic" :class="{ 'focus active': $wire.projectType === 'organic' }" autocomplete="off"> Organic
-                                            </label>
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="semi-detached" :class="{ 'focus active': $wire.projectType === 'semi-detached' }" autocomplete="off"> Semi-Detached
-                                            </label>
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="embedded" :class="{ 'focus active': $wire.projectType === 'embedded' }" autocomplete="off"> Embedded
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group row align-items-center">
-                                    <div class="col-md-4 text-md-right text-left"></div>
-                                    <div class="col-lg-4 col-md-6">
-                                        <div id="project-type-description" class="mt-2">
-                                            <p><strong>Organic:</strong> Small teams with good experience working on less rigid requirements.</p>
-                                            <p><strong>Semi-Detached:</strong> Medium teams with mixed experience working on more complex requirements.</p>
-                                            <p><strong>Embedded:</strong> Large teams working on projects with strict requirements and constraints.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="gsd-parameters" role="tabpanel" aria-labelledby="gsd-parameters-tab" wire:ignore.self>
+                    <div class="tab-pane fade show active" id="gsd-parameters" role="tabpanel" aria-labelledby="gsd-parameters-tab" wire:ignore.self>
                         <form class="wizard-content mt-2" wire:submit.prevent="saveGsdParameters">
                             <div class="wizard-pane">
                                 <div class="form-group row align-items-center justify-content-center">
@@ -241,6 +116,131 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                    <div class="tab-pane fade" id="project-type" role="tabpanel" aria-labelledby="project-type-tab" wire:ignore.self>
+                        <form class="wizard-content mt-2">
+                            <div class="wizard-pane">
+                                <div class="form-group row align-items-center">
+                                    <label class="col-md-4 text-md-right text-left">Project Type</label>
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="organic" :class="{ 'focus active': $wire.projectType === 'organic' }" autocomplete="off"> Organic
+                                            </label>
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="semi-detached" :class="{ 'focus active': $wire.projectType === 'semi-detached' }" autocomplete="off"> Semi-Detached
+                                            </label>
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="embedded" :class="{ 'focus active': $wire.projectType === 'embedded' }" autocomplete="off"> Embedded
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-4 text-md-right text-left"></div>
+                                    <div class="col-lg-4 col-md-6">
+                                        <div id="project-type-description" class="mt-2">
+                                            <p><strong>Organic:</strong> Small teams with good experience working on less rigid requirements.</p>
+                                            <p><strong>Semi-Detached:</strong> Medium teams with mixed experience working on more complex requirements.</p>
+                                            <p><strong>Embedded:</strong> Large teams working on projects with strict requirements and constraints.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="story-point" role="tabpanel" aria-labelledby="story-point-tab" wire:ignore.self>
+                        <form class="wizard-content mt-2">
+                            <div class="wizard-pane">
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="story_point_name">Story Point Name</label>
+                                                    <input id="story_point_name" type="text" wire:model='spName' class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="points">Points</label>
+                                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 1 ? 'active' : '' }}">
+                                                            <input type="radio" value="1" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 1)"> 1
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 2 ? 'active' : '' }}">
+                                                            <input type="radio" value="2" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 2)"> 2
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 3 ? 'active' : '' }}">
+                                                            <input type="radio" value="3" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 3)"> 3
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 5 ? 'active' : '' }}">
+                                                            <input type="radio" value="5" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 5)"> 5
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 8 ? 'active' : '' }}">
+                                                            <input type="radio" value="8" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 8)"> 8
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 13 ? 'active' : '' }}">
+                                                            <input type="radio" value="13" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 13)"> 13
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 21 ? 'active' : '' }}">
+                                                            <input type="radio" value="21" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 21)"> 21
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 34 ? 'active' : '' }}">
+                                                            <input type="radio" value="34" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 34)"> 34
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 55 ? 'active' : '' }}">
+                                                            <input type="radio" value="55" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 55)"> 55
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 89 ? 'active' : '' }}">
+                                                            <input type="radio" value="89" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 89)"> 89
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 144 ? 'active' : '' }}">
+                                                            <input type="radio" value="144" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 144)"> 144
+                                                        </label>
+                                                        <label class="btn btn-outline-primary m-1 {{ $spValue == 'custom' ? 'active' : '' }}">
+                                                            <input type="radio" value="custom" autocomplete="off" wire:model="spValue" wire:click="$set('spValue', 'custom')"> Custom
+                                                        </label>
+                                                    </div>
+                                                    @if($spValue === 'custom')
+                                                        <input type="number" wire:model="customSpValue" class="form-control mt-2" placeholder="Enter custom points">
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="description">Description (Optional)</label>
+                                                    <textarea id="description" wire:model='spDescription' class="form-control" style="height: 120px"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 text-right">
+                                        {{-- Save Button --}}
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-primary" wire:click='saveStoryPoint'>Add Story Point</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="mt-4">
+                            <h5>Added Story Points</h5>
+                            <ul class="list-group" id="story-point-list">
+                                @forelse ($project->storyPoints as $sp)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <strong>Story Point Name:</strong> {{ $sp->name }}<br>
+                                            <strong>Description:</strong> {{ $sp->description }}<br>
+                                            <strong>Points:</strong> {{ $sp->value }}<br>
+                                        </span>
+                                        <button class="btn btn-danger btn-sm" wire:click='deleteStoryPoint("{{ $sp->id }}")'>Remove</button>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item">No story points added yet.</li>
+                                @endforelse
+                            </ul>
+                        </div>
                     </div>
                     <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab" wire:ignore.self>
                         zzz
