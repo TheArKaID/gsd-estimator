@@ -29,6 +29,8 @@ class DetailProject extends Component
     public $expectedTime = 0;
     public $standardDeviation = 0;
 
+    public $projectTypeParam;
+
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
@@ -43,6 +45,8 @@ class DetailProject extends Component
         // Load existing software metrics if available
         $this->smEmployee = $this->project->team_size ?? 0;
         $this->smVelocity = $this->project->velocity ?? 0;
+
+        $this->projectTypeParam = $this->getCocomoParameters($this->projectType);
     }
 
     public function render()
@@ -181,24 +185,54 @@ class DetailProject extends Component
         $baseTime = $this->totalStoryPoints / $velocity;
         
         // Calculate time estimates in weeks (assuming 5 work days per week)
-        // Adjusted by team size and global factors
+        // Adjusted by team size
         $baseTimeInWeeks = $baseTime / (5 * $teamSize);
         
-        // PERT estimation: Optimistic, Most Likely, Pessimistic
-        // Optimistic: 20% less than base estimate
-        $this->optimisticTime = $baseTimeInWeeks * 0.8 * $adjustmentFactor['min'];
+        // Get COCOMO parameters based on project type
+        $cocomoParams = $this->getCocomoParameters($this->projectType);
         
-        // Most likely: base estimate with regular adjustment
-        $this->mostLikelyTime = $baseTimeInWeeks * $adjustmentFactor['avg'];
+        // Apply COCOMO adjustments based on project type for most likely estimate
+        $this->mostLikelyTime = $baseTimeInWeeks * $cocomoParams['nominal']['coefficient'] * $adjustmentFactor['avg'];
         
-        // Pessimistic: 50% more than base estimate
-        $this->pessimisticTime = $baseTimeInWeeks * 1.5 * $adjustmentFactor['max'];
+        // Calculate optimistic and pessimistic based on COCOMO parameter ranges
+        $this->optimisticTime = $baseTimeInWeeks * $cocomoParams['optimistic']['coefficient'] * $adjustmentFactor['min'];
+        $this->pessimisticTime = $baseTimeInWeeks * $cocomoParams['pessimistic']['coefficient'] * $adjustmentFactor['max'];
         
         // Expected time using PERT formula: (O + 4M + P) / 6
         $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
         
         // Standard deviation: (P - O) / 6
         $this->standardDeviation = ($this->pessimisticTime - $this->optimisticTime) / 6;
+    }
+
+    /**
+     * Get COCOMO parameters based on project type
+     * 
+     * @param string $projectType The project type (organic, semi-detached, embedded)
+     * @return array Coefficient and exponent values for different scenarios
+     */
+    private function getCocomoParameters($projectType)
+    {
+        $projectTypes = [
+            'organic' => [
+                'nominal' => ['coefficient' => 2.4, 'exponent' => 1.05],
+                'optimistic' => ['coefficient' => 2.0, 'exponent' => 1.0],
+                'pessimistic' => ['coefficient' => 3.0, 'exponent' => 1.1]
+            ],
+            'semi-detached' => [
+                'nominal' => ['coefficient' => 3.0, 'exponent' => 1.12],
+                'optimistic' => ['coefficient' => 2.6, 'exponent' => 1.08],
+                'pessimistic' => ['coefficient' => 3.6, 'exponent' => 1.16]
+            ],
+            'embedded' => [
+                'nominal' => ['coefficient' => 3.6, 'exponent' => 1.20],
+                'optimistic' => ['coefficient' => 3.2, 'exponent' => 1.15],
+                'pessimistic' => ['coefficient' => 4.0, 'exponent' => 1.25]
+            ]
+        ];
+
+        // Default to organic if type is not recognized
+        return $projectTypes[$projectType] ?? $projectTypes['organic'];
     }
     
     /**
@@ -229,9 +263,15 @@ class DetailProject extends Component
         
         // If we have values, calculate the adjustment factors
         if (!empty($factorValues)) {
-            $result['min'] = 1 - (array_sum($factorValues) * 0.01); // Optimistic reduction
-            $result['avg'] = 1 + (array_sum($factorValues) * 0.02); // Average adjustment
-            $result['max'] = 1 + (array_sum($factorValues) * 0.05); // Pessimistic increase
+            // Calculate EAF (Effort Adjustment Factor) based on Boehm's approach
+            // Each criterion contributes a multiplicative factor
+            $sumOfFactors = array_sum($factorValues);
+            
+            // COCOMO uses multiplicative factors, but we'll use a simplified approach
+            // since our criteria values might be on a different scale
+            $result['min'] = 1 - ($sumOfFactors * 0.01); // Optimistic reduction
+            $result['avg'] = 1 + ($sumOfFactors * 0.02); // Average adjustment
+            $result['max'] = 1 + ($sumOfFactors * 0.05); // Pessimistic increase
             
             // Ensure minimum value is not too small
             $result['min'] = max(0.7, $result['min']);

@@ -348,11 +348,11 @@
                                                 </div>
                                                 
                                                 <div class="summary-section mt-4">
-                                                    <h5>Effort Estimation (PERT Analysis)</h5>
+                                                    <h5>Effort Estimation (PERT Analysis with COCOMO Parameters)</h5>
                                                     <div class="card bg-light mb-3">
                                                         <div class="card-body">
                                                             <p class="mb-0">
-                                                                <strong>What is PERT?</strong> Program Evaluation and Review Technique (PERT) is an estimation method that uses three time estimates: optimistic, most likely, and pessimistic. It helps account for uncertainty in project estimates.
+                                                                <strong>Estimation Method:</strong> This analysis combines PERT (Program Evaluation and Review Technique) with COCOMO I parameters based on your selected project type ({{ ucfirst($project->project_type) }}). The estimates account for project complexity, team velocity, and selected global factors.
                                                             </p>
                                                         </div>
                                                     </div>
@@ -409,6 +409,37 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    
+                                                    <div class="mt-3">
+                                                        <p><strong>COCOMO I Parameters for {{ ucfirst($project->project_type) }} Projects:</strong></p>
+                                                        <table class="table table-bordered">
+                                                            <tr>
+                                                                <th>Scenario</th>
+                                                                <th>Coefficient (a)</th>
+                                                                <th>Exponent (b)</th>
+                                                                <th>Formula</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Optimistic</td>
+                                                                <td>{{ $projectTypeParam['optimistic']['coefficient'] }}</td>
+                                                                <td>{{ $projectTypeParam['optimistic']['exponent'] }}</td>
+                                                                <td>E = {{ $projectTypeParam['optimistic']['coefficient'] }} × (Size)<sup>{{ $projectTypeParam['optimistic']['exponent'] }}</sup></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Most Likely</td>
+                                                                <td>{{ $projectTypeParam['nominal']['coefficient'] }}</td>
+                                                                <td>{{ $projectTypeParam['nominal']['exponent'] }}</td>
+                                                                <td>E = {{ $projectTypeParam['nominal']['coefficient'] }} × (Size)<sup>{{ $projectTypeParam['nominal']['exponent'] }}</sup></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Pessimistic</td>
+                                                                <td>{{ $projectTypeParam['pessimistic']['coefficient'] }}</td>
+                                                                <td>{{ $projectTypeParam['pessimistic']['exponent'] }}</td>
+                                                                <td>E = {{ $projectTypeParam['pessimistic']['coefficient'] }} × (Size)<sup>{{ $projectTypeParam['pessimistic']['exponent'] }}</sup></td>
+                                                            </tr>
+                                                        </table>
+                                                        <small class="text-muted">Note: These parameters were derived from Barry Boehm's COCOMO I model and adapted for story point-based estimation.</small>
                                                     </div>
                                                     
                                                     <div class="mt-3">
