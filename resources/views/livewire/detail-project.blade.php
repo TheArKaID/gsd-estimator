@@ -285,7 +285,168 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab" wire:ignore.self>
-                        zzz
+                        <div class="wizard-content mt-2">
+                            <div class="wizard-pane">
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4>Project Summary</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="summary-section">
+                                                    <h5>Project Details</h5>
+                                                    <table class="table">
+                                                        <tr>
+                                                            <td width="30%"><strong>Project Name</strong></td>
+                                                            <td>{{ $project->name }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Project Type</strong></td>
+                                                            <td>{{ ucfirst($project->project_type) }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Team Size</strong></td>
+                                                            <td>{{ $smEmployee }} members</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Team Velocity</strong></td>
+                                                            <td>{{ $smVelocity }} points per iteration</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Total Story Points</strong></td>
+                                                            <td>{{ $totalStoryPoints }} points</td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                                
+                                                <div class="summary-section mt-4">
+                                                    <h5>Selected Global Factors</h5>
+                                                    <ul class="list-group">
+                                                        @forelse ($projectGlobalFactorModels as $factor)
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                {{ $factor->name }}
+                                                                <span class="badge badge-primary badge-pill">
+                                                                    @php
+                                                                        $criteriaId = $project->projectGlobalFactors
+                                                                            ->where('global_factor_id', $factor->id)
+                                                                            ->first()?->global_factor_criteria_id;
+                                                                        $criteriaValue = $factor->criterias
+                                                                            ->where('id', $criteriaId)
+                                                                            ->first()?->value ?? '0';
+                                                                        $criteriaName = $factor->criterias
+                                                                            ->where('id', $criteriaId)
+                                                                            ->first()?->name ?? 'Not selected';
+                                                                    @endphp
+                                                                    {{ $criteriaName }} ({{ $criteriaValue }})
+                                                                </span>
+                                                            </li>
+                                                        @empty
+                                                            <li class="list-group-item">No global factors selected</li>
+                                                        @endforelse
+                                                    </ul>
+                                                </div>
+                                                
+                                                <div class="summary-section mt-4">
+                                                    <h5>Effort Estimation (PERT Analysis)</h5>
+                                                    <div class="card bg-light mb-3">
+                                                        <div class="card-body">
+                                                            <p class="mb-0">
+                                                                <strong>What is PERT?</strong> Program Evaluation and Review Technique (PERT) is an estimation method that uses three time estimates: optimistic, most likely, and pessimistic. It helps account for uncertainty in project estimates.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="card bg-success text-white">
+                                                                <div class="card-body text-center">
+                                                                    <h6>Optimistic Time</h6>
+                                                                    <h2>{{ number_format($optimisticTime, 1) }} weeks</h2>
+                                                                    <small>Best case scenario</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="card bg-primary text-white">
+                                                                <div class="card-body text-center">
+                                                                    <h6>Most Likely Time</h6>
+                                                                    <h2>{{ number_format($mostLikelyTime, 1) }} weeks</h2>
+                                                                    <small>Expected scenario</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="card bg-warning">
+                                                                <div class="card-body text-center">
+                                                                    <h6>Pessimistic Time</h6>
+                                                                    <h2>{{ number_format($pessimisticTime, 1) }} weeks</h2>
+                                                                    <small>Worst case scenario</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="card bg-info text-white mt-3">
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div class="col-md-8">
+                                                                    <h5 class="mb-0">Expected Project Duration</h5>
+                                                                    <p class="mb-0">Based on PERT formula: (O + 4M + P) / 6</p>
+                                                                </div>
+                                                                <div class="col-md-4 text-right">
+                                                                    <h3 class="mb-0">{{ number_format($expectedTime, 1) }} weeks</h3>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer bg-info">
+                                                            <div class="row">
+                                                                <div class="col-md-8">
+                                                                    <p class="mb-0">Standard Deviation</p>
+                                                                </div>
+                                                                <div class="col-md-4 text-right">
+                                                                    <p class="mb-0">± {{ number_format($standardDeviation, 1) }} weeks</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="mt-3">
+                                                        <p><strong>Confidence Intervals:</strong></p>
+                                                        <table class="table table-bordered">
+                                                            <tr>
+                                                                <th>Confidence Level</th>
+                                                                <th>Project Duration Range</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>68% Confidence (±1σ)</td>
+                                                                <td>
+                                                                    {{ number_format($expectedTime - $standardDeviation, 1) }} to 
+                                                                    {{ number_format($expectedTime + $standardDeviation, 1) }} weeks
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>95% Confidence (±2σ)</td>
+                                                                <td>
+                                                                    {{ number_format($expectedTime - (2 * $standardDeviation), 1) }} to 
+                                                                    {{ number_format($expectedTime + (2 * $standardDeviation), 1) }} weeks
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="text-right mt-3">
+                                            <button class="btn btn-primary" onclick="window.print()">
+                                                <i class="fas fa-print"></i> Print Summary
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -312,6 +473,22 @@
         .btn-outline-primary.active {
             background-color: #007bff;
             color: white;
+        }
+        
+        /* Print styles */
+        @media print {
+            .wizard-steps, .section-header, .section-header-breadcrumb, .btn {
+                display: none !important;
+            }
+            
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+            
+            .summary-section {
+                page-break-inside: avoid;
+            }
         }
     </style>
 @endpush

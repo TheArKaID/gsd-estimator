@@ -21,6 +21,14 @@ class DetailProject extends Component
     public $smEmployee = 0;
     public $smVelocity = 0;
 
+    // Properties for effort estimation
+    public $totalStoryPoints = 0;
+    public $optimisticTime = 0;
+    public $mostLikelyTime = 0;
+    public $pessimisticTime = 0;
+    public $expectedTime = 0;
+    public $standardDeviation = 0;
+
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
@@ -44,6 +52,10 @@ class DetailProject extends Component
                 return in_array($factor->id, $this->projectGlobalFactors);
             })
             ->keyBy('id');
+            
+        // Calculate project metrics for summary
+        $this->calculateEstimation();
+            
         return view('livewire.detail-project');
     }
 
@@ -148,5 +160,83 @@ class DetailProject extends Component
         ]);
 
         $this->dispatch('software-metrics-saved');
+    }
+
+    /**
+     * Calculate effort estimation based on story points, team velocity, and other factors
+     */
+    public function calculateEstimation()
+    {
+        // Calculate total story points
+        $this->totalStoryPoints = collect($this->project->storyPoints)->sum('value');
+        
+        // Get global factor adjustment
+        $adjustmentFactor = $this->calculateAdjustmentFactor();
+        
+        // Set default values if team metrics aren't available
+        $velocity = max(1, $this->smVelocity); // Prevent division by zero
+        $teamSize = max(1, $this->smEmployee);
+        
+        // Base time calculation (in ideal days) = Story Points / Velocity
+        $baseTime = $this->totalStoryPoints / $velocity;
+        
+        // Calculate time estimates in weeks (assuming 5 work days per week)
+        // Adjusted by team size and global factors
+        $baseTimeInWeeks = $baseTime / (5 * $teamSize);
+        
+        // PERT estimation: Optimistic, Most Likely, Pessimistic
+        // Optimistic: 20% less than base estimate
+        $this->optimisticTime = $baseTimeInWeeks * 0.8 * $adjustmentFactor['min'];
+        
+        // Most likely: base estimate with regular adjustment
+        $this->mostLikelyTime = $baseTimeInWeeks * $adjustmentFactor['avg'];
+        
+        // Pessimistic: 50% more than base estimate
+        $this->pessimisticTime = $baseTimeInWeeks * 1.5 * $adjustmentFactor['max'];
+        
+        // Expected time using PERT formula: (O + 4M + P) / 6
+        $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
+        
+        // Standard deviation: (P - O) / 6
+        $this->standardDeviation = ($this->pessimisticTime - $this->optimisticTime) / 6;
+    }
+    
+    /**
+     * Calculate adjustment factor based on selected global factors
+     * 
+     * @return array Min, avg, and max adjustment factors
+     */
+    private function calculateAdjustmentFactor()
+    {
+        $factorValues = [];
+        $result = ['min' => 1, 'avg' => 1, 'max' => 1];
+        
+        // If no global factors are selected, return default values
+        if (empty($this->projectGlobalFactors)) {
+            return $result;
+        }
+        
+        // Get the project's global factors with their criteria
+        $selectedFactors = $this->project->globalFactors()
+            ->with('criterias')
+            ->get();
+        
+        foreach ($selectedFactors as $factor) {
+            // Get the criteria selected for this factor
+            $criteriaValue = $factor->pivot->globalFactorCriteria->value ?? 1;
+            $factorValues[] = $criteriaValue;
+        }
+        
+        // If we have values, calculate the adjustment factors
+        if (!empty($factorValues)) {
+            $result['min'] = 1 - (array_sum($factorValues) * 0.01); // Optimistic reduction
+            $result['avg'] = 1 + (array_sum($factorValues) * 0.02); // Average adjustment
+            $result['max'] = 1 + (array_sum($factorValues) * 0.05); // Pessimistic increase
+            
+            // Ensure minimum value is not too small
+            $result['min'] = max(0.7, $result['min']);
+        }
+        
+        return $result;
     }
 }
