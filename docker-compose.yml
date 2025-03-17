@@ -1,5 +1,6 @@
 services:
   app:
+    image: thearka/gsd-estimator:latest
     build:
       context: .
       # Add this no-cache option to force rebuild
