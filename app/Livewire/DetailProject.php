@@ -31,6 +31,15 @@ class DetailProject extends Component
 
     public $projectTypeParam;
 
+    // Additional properties to store base estimates (without GSD factors)
+    public $baseOptimisticTime = 0;
+    public $baseMostLikelyTime = 0;
+    public $basePessimisticTime = 0;
+    public $baseExpectedTime = 0;
+    
+    // Property to track GSD impact
+    public $gsdImpactPercentage = 0;
+
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
@@ -38,6 +47,10 @@ class DetailProject extends Component
 
         // Load project global factors
         $this->projectGlobalFactors = collect($this->project->globalFactors)->pluck('id')->toArray();
+
+        $this->criteriaProjectGlobalFactors = $this->project->projectGlobalFactors()
+            ->pluck('global_factor_criteria_id', 'global_factor_id')
+            ->toArray();
 
         // Load GSD parameters
         $this->globalFactors = GlobalFactor::all();
@@ -176,7 +189,7 @@ class DetailProject extends Component
         
         // Get global factor adjustment
         $adjustmentFactor = $this->calculateAdjustmentFactor();
-        
+
         // Set default values if team metrics aren't available
         $velocity = max(1, $this->smVelocity); // Prevent division by zero
         $teamSize = max(1, $this->smEmployee);
@@ -191,18 +204,29 @@ class DetailProject extends Component
         // Get COCOMO parameters based on project type
         $cocomoParams = $this->getCocomoParameters($this->projectType);
         
-        // Apply COCOMO adjustments based on project type for most likely estimate
-        $this->mostLikelyTime = $baseTimeInWeeks * $cocomoParams['nominal']['coefficient'] * $adjustmentFactor['avg'];
+        // STEP 1: Calculate base estimates without GSD factors
+        $this->baseOptimisticTime = $baseTimeInWeeks * $cocomoParams['optimistic']['coefficient'];
+        $this->baseMostLikelyTime = $baseTimeInWeeks * $cocomoParams['nominal']['coefficient'];
+        $this->basePessimisticTime = $baseTimeInWeeks * $cocomoParams['pessimistic']['coefficient'];
+        $this->baseExpectedTime = ($this->baseOptimisticTime + (4 * $this->baseMostLikelyTime) + $this->basePessimisticTime) / 6;
         
-        // Calculate optimistic and pessimistic based on COCOMO parameter ranges
-        $this->optimisticTime = $baseTimeInWeeks * $cocomoParams['optimistic']['coefficient'] * $adjustmentFactor['min'];
-        $this->pessimisticTime = $baseTimeInWeeks * $cocomoParams['pessimistic']['coefficient'] * $adjustmentFactor['max'];
+        // STEP 2: Apply GSD factors to get final estimates
+        $this->optimisticTime = $this->baseOptimisticTime * $adjustmentFactor['min'];
+        $this->mostLikelyTime = $this->baseMostLikelyTime * $adjustmentFactor['avg'];
+        $this->pessimisticTime = $this->basePessimisticTime * $adjustmentFactor['max'];
         
         // Expected time using PERT formula: (O + 4M + P) / 6
         $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
         
         // Standard deviation: (P - O) / 6
         $this->standardDeviation = ($this->pessimisticTime - $this->optimisticTime) / 6;
+        
+        // Calculate GSD impact as percentage increase/decrease
+        if ($this->baseExpectedTime > 0) {
+            $this->gsdImpactPercentage = (($this->expectedTime - $this->baseExpectedTime) / $this->baseExpectedTime) * 100;
+        } else {
+            $this->gsdImpactPercentage = 0;
+        }
     }
 
     /**
@@ -242,7 +266,6 @@ class DetailProject extends Component
      */
     private function calculateAdjustmentFactor()
     {
-        $factorValues = [];
         $result = ['min' => 1, 'avg' => 1, 'max' => 1];
         
         // If no global factors are selected, return default values
@@ -251,32 +274,34 @@ class DetailProject extends Component
         }
         
         // Get the project's global factors with their criteria
-        $selectedFactors = $this->project->globalFactors()
-            ->with('criterias')
+        $selectedFactors = $this->project->projectGlobalFactors()
+            ->with('globalFactorCriteria')
             ->get();
         
+        // Multiplicative approach - start with 1.0 and multiply with each factor
+        $multiplier = 1.0;
         foreach ($selectedFactors as $factor) {
             // Get the criteria selected for this factor
-            $criteriaValue = $factor->pivot->globalFactorCriteria->value ?? 1;
-            $factorValues[] = $criteriaValue;
+            $criteriaValue = $factor->globalFactorCriteria->value ?? 0;
+
+            // Convert to a multiplicative factor (assuming criteriaValue is a percentage-like value)
+            // If criteriaValue is already a multiplier like 1.1, 1.2, etc., remove this conversion
+            $factorMultiplier = 1 + ($criteriaValue / 100);
+
+            // Multiply to get the cumulative effect
+            $multiplier *= $factorMultiplier;
         }
+
+        // Apply the multiplier with different weights for optimistic, average, and pessimistic
+        // Optimistic case: slightly reduce the effect
+        $result['min'] = 1 + (($multiplier - 1) * 0.8);
         
-        // If we have values, calculate the adjustment factors
-        if (!empty($factorValues)) {
-            // Calculate EAF (Effort Adjustment Factor) based on Boehm's approach
-            // Each criterion contributes a multiplicative factor
-            $sumOfFactors = array_sum($factorValues);
-            
-            // COCOMO uses multiplicative factors, but we'll use a simplified approach
-            // since our criteria values might be on a different scale
-            $result['min'] = 1 - ($sumOfFactors * 0.01); // Optimistic reduction
-            $result['avg'] = 1 + ($sumOfFactors * 0.02); // Average adjustment
-            $result['max'] = 1 + ($sumOfFactors * 0.05); // Pessimistic increase
-            
-            // Ensure minimum value is not too small
-            $result['min'] = max(0.7, $result['min']);
-        }
+        // Average case: use the multiplier directly
+        $result['avg'] = $multiplier;
         
+        // Pessimistic case: slightly amplify the effect
+        $result['max'] = 1 + (($multiplier - 1) * 1.2);
+
         return $result;
     }
 }

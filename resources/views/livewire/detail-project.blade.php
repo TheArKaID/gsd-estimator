@@ -357,55 +357,136 @@
                                                         </div>
                                                     </div>
                                                     
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="card bg-success text-white">
-                                                                <div class="card-body text-center">
-                                                                    <h6>Optimistic Time</h6>
-                                                                    <h2>{{ number_format($optimisticTime, 1) }} weeks</h2>
-                                                                    <small>Best case scenario</small>
+                                                    <!-- Base Estimates (without GSD factors) -->
+                                                    <div class="card mb-4">
+                                                        <div class="card-header bg-secondary text-white">
+                                                            <h5 class="mb-0">Base Estimates (without GSD Factors)</h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="border rounded p-3 text-center">
+                                                                        <h6>Optimistic Time</h6>
+                                                                        <h3>{{ number_format($baseOptimisticTime, 1) }} weeks</h3>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="border rounded p-3 text-center">
+                                                                        <h6>Most Likely Time</h6>
+                                                                        <h3>{{ number_format($baseMostLikelyTime, 1) }} weeks</h3>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="border rounded p-3 text-center">
+                                                                        <h6>Pessimistic Time</h6>
+                                                                        <h3>{{ number_format($basePessimisticTime, 1) }} weeks</h3>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="card bg-primary text-white">
-                                                                <div class="card-body text-center">
-                                                                    <h6>Most Likely Time</h6>
-                                                                    <h2>{{ number_format($mostLikelyTime, 1) }} weeks</h2>
-                                                                    <small>Expected scenario</small>
-                                                                </div>
+                                                            
+                                                            <div class="border rounded p-3 text-center mt-3">
+                                                                <h6>Expected Project Duration (without GSD Factors)</h6>
+                                                                <h3>{{ number_format($baseExpectedTime, 1) }} weeks</h3>
+                                                                <small>Based on PERT formula: (O + 4M + P) / 6</small>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4">
-                                                            <div class="card bg-warning">
-                                                                <div class="card-body text-center">
-                                                                    <h6>Pessimistic Time</h6>
-                                                                    <h2>{{ number_format($pessimisticTime, 1) }} weeks</h2>
-                                                                    <small>Worst case scenario</small>
+                                                    </div>
+                                                    
+                                                    <!-- Final Estimates (with GSD factors) -->
+                                                    <div class="card mb-4">
+                                                        <div class="card-header bg-primary text-white">
+                                                            <h5 class="mb-0">Final Estimates (with GSD Factors)</h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="card bg-success text-white">
+                                                                        <div class="card-body text-center">
+                                                                            <h6>Optimistic Time</h6>
+                                                                            <h2>{{ number_format($optimisticTime, 1) }} weeks</h2>
+                                                                            <small>Best case scenario</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="card bg-primary text-white">
+                                                                        <div class="card-body text-center">
+                                                                            <h6>Most Likely Time</h6>
+                                                                            <h2>{{ number_format($mostLikelyTime, 1) }} weeks</h2>
+                                                                            <small>Expected scenario</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="card bg-warning">
+                                                                        <div class="card-body text-center">
+                                                                            <h6>Pessimistic Time</h6>
+                                                                            <h2>{{ number_format($pessimisticTime, 1) }} weeks</h2>
+                                                                            <small>Worst case scenario</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="card bg-info text-white mt-3">
+                                                                <div class="card-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-8">
+                                                                            <h5 class="mb-0">Expected Project Duration</h5>
+                                                                            <p class="mb-0">Based on PERT formula: (O + 4M + P) / 6</p>
+                                                                        </div>
+                                                                        <div class="col-md-4 text-right">
+                                                                            <h3 class="mb-0">{{ number_format($expectedTime, 1) }} weeks</h3>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card-footer bg-info">
+                                                                    <div class="row">
+                                                                        <div class="col-md-8">
+                                                                            <p class="mb-0">Standard Deviation</p>
+                                                                        </div>
+                                                                        <div class="col-md-4 text-right">
+                                                                            <p class="mb-0">± {{ number_format($standardDeviation, 1) }} weeks</p>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     
-                                                    <div class="card bg-info text-white mt-3">
-                                                        <div class="card-body">
-                                                            <div class="row">
-                                                                <div class="col-md-8">
-                                                                    <h5 class="mb-0">Expected Project Duration</h5>
-                                                                    <p class="mb-0">Based on PERT formula: (O + 4M + P) / 6</p>
-                                                                </div>
-                                                                <div class="col-md-4 text-right">
-                                                                    <h3 class="mb-0">{{ number_format($expectedTime, 1) }} weeks</h3>
-                                                                </div>
-                                                            </div>
+                                                    <!-- GSD Impact Analysis -->
+                                                    <div class="card mb-4">
+                                                        <div class="card-header bg-dark text-white">
+                                                            <h5 class="mb-0">GSD Impact Analysis</h5>
                                                         </div>
-                                                        <div class="card-footer bg-info">
-                                                            <div class="row">
-                                                                <div class="col-md-8">
-                                                                    <p class="mb-0">Standard Deviation</p>
+                                                        <div class="card-body">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-md-6">
+                                                                    <h4 class="text-center mb-4">Impact on Project Duration</h4>
+                                                                    <div class="d-flex justify-content-around align-items-center">
+                                                                        <div class="text-center">
+                                                                            <h5>Without GSD</h5>
+                                                                            <h3>{{ number_format($baseExpectedTime, 1) }} weeks</h3>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <i class="fas fa-arrow-right fa-2x"></i>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <h5>With GSD</h5>
+                                                                            <h3>{{ number_format($expectedTime, 1) }} weeks</h3>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="col-md-4 text-right">
-                                                                    <p class="mb-0">± {{ number_format($standardDeviation, 1) }} weeks</p>
+                                                                <div class="col-md-6">
+                                                                    <div class="text-center p-4 {{ $gsdImpactPercentage > 0 ? 'bg-warning' : 'bg-success' }} rounded">
+                                                                        <h5>GSD Impact</h5>
+                                                                        <h2>
+                                                                            {{ $gsdImpactPercentage > 0 ? '+' : '' }}{{ number_format($gsdImpactPercentage, 1) }}%
+                                                                        </h2>
+                                                                        <p class="mb-0">
+                                                                            {{ abs(number_format($expectedTime - $baseExpectedTime, 1)) }} weeks {{ $gsdImpactPercentage > 0 ? 'increase' : 'decrease' }}
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
