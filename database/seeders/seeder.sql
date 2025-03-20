@@ -11,7 +11,7 @@ INSERT INTO `global_factors` (`id`, `name`, `description`, `created_at`, `update
 
 INSERT INTO `global_factor_criterias` (`id`, `global_factor_id`, `name`, `description`, `value`, `created_at`, `updated_at`) VALUES
 	('3f9b79cd-3bd1-4929-9742-543c94a80cbc', '01955fc8-8159-7449-b284-6ff439da49a0', 'Low', 'Overlapping hours are more than 6 hours', 1.0, '2025-03-02 21:29:08', '2025-03-02 21:29:09'),
-	('ec8aee44-48a4-459f-9cef-9f4d8b9e325c', '01955fc8-8159-7449-b284-6ff439da49a0', 'Medium', 'Overlapping hours are between 3-6 hours', 1.15, '2025-03-04 09:48:42', '2025-03-04 09:48:43'),
+	('ec8aee44-48a4-459f-9cef-9f4d8b9e325c', '01955fc8-8159-7449-b284-6ff439da49a0', 'Medium', 'Overlapping hours are between 3-6 hours', 1.1, '2025-03-04 09:48:42', '2025-03-04 09:48:43'),
 	('0b8ef5d4-aabe-4214-9335-88647e219b43', '01955fc8-8159-7449-b284-6ff439da49a0', 'High', 'Overlapping hours are between 1–3 hours', 1.25, '2025-03-04 09:48:56', '2025-03-04 09:48:57'),
 	('fc2c9ea5-512e-4956-96f0-fa6d60949f83', '01955fc8-8159-7c7d-9778-2f31278278cb', 'Low', 'Remote sites have the same mother tongue', 1.0, '2025-03-04 13:13:44', '2025-03-04 13:13:45'),
 	('9657113b-bbb7-47ae-a93b-a9b574327a9b', '01955fc8-8159-7c7d-9778-2f31278278cb', 'Medium', 'Remote sites use different mother tongues, but one of them is the project language', 1.15, '2025-03-04 13:14:19', '2025-03-04 13:14:21'),
@@ -34,8 +34,8 @@ INSERT INTO `global_factor_criterias` (`id`, `global_factor_id`, `name`, `descri
 	('9f11d488-90f3-4205-8395-87afb8bcef52', '01955fc8-8159-7168-9f91-edc4006c1645', 'Poor', 'Communication is infrequent, unclear, or significantly delayed.', 1.25, '2025-03-04 13:20:47', '2025-03-04 13:20:48'),
 	('d82b5806-2ddd-46b8-95c7-069f8ba7c030', '01955fc8-8159-7168-9f91-edc4006c1645', 'Fair', 'Communication occurs but is sometimes inconsistent or requires follow-up clarification.', 1.1, '2025-03-04 13:21:07', '2025-03-04 13:21:08'),
 	('2c146e6a-7f10-4ff8-92a6-488d107a10d6', '01955fc8-8159-7168-9f91-edc4006c1645', 'Good', 'Regular and clear communication with minor lapses.', 1.0, '2025-03-04 13:21:30', '2025-03-04 13:21:31'),
-	('5096555d-d423-40ec-9d84-26563ae893bf', '01955fc8-8159-7168-9f91-edc4006c1645', 'Excellent', 'Proactive, timely, and crystal-clear communication across all channels.', 0.8, '2025-03-04 13:21:50', '2025-03-04 13:21:51'),
+	('5096555d-d423-40ec-9d84-26563ae893bf', '01955fc8-8159-7168-9f91-edc4006c1645', 'Excellent', 'Proactive, timely, and crystal-clear communication across all channels.', 0.85, '2025-03-04 13:21:50', '2025-03-04 13:21:51'),
 	('c578f678-d563-46f7-b3d9-a473406df798', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Poor', 'Outdated or fragmented tools that hinder communication and collaboration.', 1.25, '2025-03-04 13:22:21', '2025-03-04 13:22:21'),
 	('c1da4748-7b5b-4c74-ba85-e5791eb783cc', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Fair', 'Basic tools are in place, but integration or usability issues persist.', 1.1, '2025-03-04 13:22:24', '2025-03-04 13:22:22'),
 	('e56b266d-8a3d-4966-8a07-f4369347113c', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Good', 'Modern and reliable tools that support most collaboration needs.', 1.0, '2025-03-04 13:22:56', '2025-03-04 13:22:57'),
-	('86cbf4cb-b4c8-4caa-9fc3-452b96c96122', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Excellent', 'State-of-the-art, well-integrated platforms that optimize remote teamwork.', 0.8, '2025-03-04 13:22:59', '2025-03-04 13:22:58');
+	('86cbf4cb-b4c8-4caa-9fc3-452b96c96122', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Excellent', 'State-of-the-art, well-integrated platforms that optimize remote teamwork.', 0.85, '2025-03-04 13:22:59', '2025-03-04 13:22:58');
