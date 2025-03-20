@@ -33,6 +33,11 @@ class DatabaseSeeder extends Seeder
      */
     protected function seedFromSqlFile(string $file): void
     {
+        // Check if the Database already seeded
+        if (DB::table('global_factors')->exists()) {
+            $this->command->info('Database already seeded');
+            return;
+        }
         if (File::exists($file)) {
             $sql = File::get($file);
             DB::unprepared($sql);
