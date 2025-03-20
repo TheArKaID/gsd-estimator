@@ -496,31 +496,50 @@
                                                         <p><strong>COCOMO I Parameters for {{ ucfirst($project->project_type) }} Projects:</strong></p>
                                                         <table class="table table-bordered">
                                                             <tr>
-                                                                <th>Scenario</th>
+                                                                <th>Project Type</th>
                                                                 <th>Coefficient (a)</th>
                                                                 <th>Exponent (b)</th>
                                                                 <th>Formula</th>
                                                             </tr>
                                                             <tr>
-                                                                <td>Optimistic</td>
-                                                                <td>{{ $projectTypeParam['optimistic']['coefficient'] }}</td>
-                                                                <td>{{ $projectTypeParam['optimistic']['exponent'] }}</td>
-                                                                <td>E = {{ $projectTypeParam['optimistic']['coefficient'] }} × (Size)<sup>{{ $projectTypeParam['optimistic']['exponent'] }}</sup></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Most Likely</td>
-                                                                <td>{{ $projectTypeParam['nominal']['coefficient'] }}</td>
-                                                                <td>{{ $projectTypeParam['nominal']['exponent'] }}</td>
-                                                                <td>E = {{ $projectTypeParam['nominal']['coefficient'] }} × (Size)<sup>{{ $projectTypeParam['nominal']['exponent'] }}</sup></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Pessimistic</td>
-                                                                <td>{{ $projectTypeParam['pessimistic']['coefficient'] }}</td>
-                                                                <td>{{ $projectTypeParam['pessimistic']['exponent'] }}</td>
-                                                                <td>E = {{ $projectTypeParam['pessimistic']['coefficient'] }} × (Size)<sup>{{ $projectTypeParam['pessimistic']['exponent'] }}</sup></td>
+                                                                <td>{{ ucfirst($project->project_type) }}</td>
+                                                                <td>{{ $projectTypeParam['coefficient'] }}</td>
+                                                                <td>{{ $projectTypeParam['exponent'] }}</td>
+                                                                <td>E = {{ $projectTypeParam['coefficient'] }} × (Size)<sup>{{ $projectTypeParam['exponent'] }}</sup></td>
                                                             </tr>
                                                         </table>
-                                                        <small class="text-muted">Note: These parameters were derived from Barry Boehm's COCOMO I model and adapted for story point-based estimation.</small>
+                                                        <small class="text-muted">Note: These baseline parameters were derived from Barry Boehm's COCOMO I model and adapted for story point-based estimation.</small>
+                                                    </div>
+                                                    
+                                                    <div class="mt-3">
+                                                        <p><strong>Estimation Adjustments for {{ ucfirst($project->project_type) }} Projects:</strong></p>
+                                                        <table class="table table-bordered">
+                                                            <tr>
+                                                                <th>Scenario</th>
+                                                                <th>COCOMO Base Value</th>
+                                                                <th>Percentage Adjustment</th>
+                                                                <th>Calculation</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Optimistic (Best Case)</td>
+                                                                <td>{{ $projectTypeParam['coefficient'] }}</td>
+                                                                <td>{{ $optimisticPercentage }}%</td>
+                                                                <td>Nominal × (1 + {{ $optimisticPercentage }}%)</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Most Likely (Nominal)</td>
+                                                                <td>{{ $projectTypeParam['coefficient'] }}</td>
+                                                                <td>0%</td>
+                                                                <td>Nominal</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Pessimistic (Worst Case)</td>
+                                                                <td>{{ $projectTypeParam['coefficient'] }}</td>
+                                                                <td>+{{ $pessimisticPercentage }}%</td>
+                                                                <td>Nominal × (1 + {{ $pessimisticPercentage }}%)</td>
+                                                            </tr>
+                                                        </table>
+                                                        <small class="text-muted">Note: These estimates use Barry Boehm's COCOMO I coefficients as the baseline, with percentage adjustments for optimistic and pessimistic scenarios.</small>
                                                     </div>
                                                     
                                                     <div class="mt-3">

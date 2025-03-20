@@ -40,6 +40,10 @@ class DetailProject extends Component
     // Property to track GSD impact
     public $gsdImpactPercentage = 0;
 
+    // Add properties for percentage adjustments
+    public $optimisticPercentage = -25; // 25% reduction for best case
+    public $pessimisticPercentage = 75; // 75% increase for worst case
+
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
@@ -204,16 +208,20 @@ class DetailProject extends Component
         // Get COCOMO parameters based on project type
         $cocomoParams = $this->getCocomoParameters($this->projectType);
         
-        // STEP 1: Calculate base estimates without GSD factors
-        $this->baseOptimisticTime = $baseTimeInWeeks * $cocomoParams['optimistic']['coefficient'];
-        $this->baseMostLikelyTime = $baseTimeInWeeks * $cocomoParams['nominal']['coefficient'];
-        $this->basePessimisticTime = $baseTimeInWeeks * $cocomoParams['pessimistic']['coefficient'];
+        // STEP 1: Calculate nominal estimate with COCOMO without GSD factors
+        $this->baseMostLikelyTime = $baseTimeInWeeks * $cocomoParams['coefficient'];
+        
+        // Calculate optimistic and pessimistic using percentage adjustments
+        $this->baseOptimisticTime = $this->baseMostLikelyTime * (1 + ($this->optimisticPercentage / 100));
+        $this->basePessimisticTime = $this->baseMostLikelyTime * (1 + ($this->pessimisticPercentage / 100));
+        
+        // Base expected time using PERT formula
         $this->baseExpectedTime = ($this->baseOptimisticTime + (4 * $this->baseMostLikelyTime) + $this->basePessimisticTime) / 6;
         
-        // STEP 2: Apply GSD factors to get final estimates
-        $this->optimisticTime = $this->baseOptimisticTime * $adjustmentFactor['min'];
-        $this->mostLikelyTime = $this->baseMostLikelyTime * $adjustmentFactor['avg'];
-        $this->pessimisticTime = $this->basePessimisticTime * $adjustmentFactor['max'];
+        // STEP 2: Apply GSD factors to all estimates
+        $this->mostLikelyTime = $this->baseMostLikelyTime * $adjustmentFactor;
+        $this->optimisticTime = $this->baseOptimisticTime * $adjustmentFactor;
+        $this->pessimisticTime = $this->basePessimisticTime * $adjustmentFactor;
         
         // Expected time using PERT formula: (O + 4M + P) / 6
         $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
@@ -233,40 +241,28 @@ class DetailProject extends Component
      * Get COCOMO parameters based on project type
      * 
      * @param string $projectType The project type (organic, semi-detached, embedded)
-     * @return array Coefficient and exponent values for different scenarios
+     * @return array Coefficient value for the project type
      */
     private function getCocomoParameters($projectType)
     {
-        $projectTypes = [
-            'organic' => [
-                'nominal' => ['coefficient' => 2.4, 'exponent' => 1.05],
-                'optimistic' => ['coefficient' => 2.0, 'exponent' => 1.0],
-                'pessimistic' => ['coefficient' => 3.0, 'exponent' => 1.1]
-            ],
-            'semi-detached' => [
-                'nominal' => ['coefficient' => 3.0, 'exponent' => 1.12],
-                'optimistic' => ['coefficient' => 2.6, 'exponent' => 1.08],
-                'pessimistic' => ['coefficient' => 3.6, 'exponent' => 1.16]
-            ],
-            'embedded' => [
-                'nominal' => ['coefficient' => 3.6, 'exponent' => 1.20],
-                'optimistic' => ['coefficient' => 3.2, 'exponent' => 1.15],
-                'pessimistic' => ['coefficient' => 4.0, 'exponent' => 1.25]
-            ]
+        $parameters = [
+            'organic' => ['coefficient' => 2.4, 'exponent' => 1.05],
+            'semi-detached' => ['coefficient' => 3.0, 'exponent' => 1.12],
+            'embedded' => ['coefficient' => 3.6, 'exponent' => 1.20]
         ];
 
         // Default to organic if type is not recognized
-        return $projectTypes[$projectType] ?? $projectTypes['organic'];
+        return $parameters[$projectType] ?? $parameters['organic'];
     }
     
     /**
      * Calculate adjustment factor based on selected global factors
      * 
-     * @return array Min, avg, and max adjustment factors
+     * @return float The cumulative adjustment factor
      */
     private function calculateAdjustmentFactor()
     {
-        $result = ['min' => 1, 'avg' => 1, 'max' => 1];
+        $result = 1.0;
         
         // If no global factors are selected, return default values
         if (empty($this->projectGlobalFactors)) {
@@ -277,31 +273,14 @@ class DetailProject extends Component
         $selectedFactors = $this->project->projectGlobalFactors()
             ->with('globalFactorCriteria')
             ->get();
-        
-        // Multiplicative approach - start with 1.0 and multiply with each factor
-        $multiplier = 1.0;
+
         foreach ($selectedFactors as $factor) {
             // Get the criteria selected for this factor
-            $criteriaValue = $factor->globalFactorCriteria->value ?? 0;
-
-            // Convert to a multiplicative factor (assuming criteriaValue is a percentage-like value)
-            // If criteriaValue is already a multiplier like 1.1, 1.2, etc., remove this conversion
-            $factorMultiplier = 1 + ($criteriaValue / 100);
+            $criteriaValue = $factor->globalFactorCriteria->value ?? 1.0;
 
             // Multiply to get the cumulative effect
-            $multiplier *= $factorMultiplier;
+            $result *= $criteriaValue;
         }
-
-        // Apply the multiplier with different weights for optimistic, average, and pessimistic
-        // Optimistic case: slightly reduce the effect
-        $result['min'] = 1 + (($multiplier - 1) * 0.8);
-        
-        // Average case: use the multiplier directly
-        $result['avg'] = $multiplier;
-        
-        // Pessimistic case: slightly amplify the effect
-        $result['max'] = 1 + (($multiplier - 1) * 1.2);
-
         return $result;
     }
 }
