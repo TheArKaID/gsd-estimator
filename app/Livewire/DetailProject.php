@@ -11,7 +11,7 @@ class DetailProject extends Component
 {
     public Project $project;
     public $spName, $spDescription, $spValue, $customSpValue;
-    public $projectType;
+    public $projectClarity;
     public $globalFactors = [];
     public $projectGlobalFactors = [];
     public $projectGlobalFactorModels = [];
@@ -28,8 +28,7 @@ class DetailProject extends Component
     public $pessimisticTime = 0;
     public $expectedTime = 0;
     public $standardDeviation = 0;
-
-    public $projectTypeParam;
+    public $claritySummary = '';
 
     // Additional properties to store base estimates (without GSD factors)
     public $baseOptimisticTime = 0;
@@ -40,14 +39,14 @@ class DetailProject extends Component
     // Property to track GSD impact
     public $gsdImpactPercentage = 0;
 
-    // Add properties for percentage adjustments
-    public $optimisticPercentage = -25; // 25% reduction for best case
-    public $pessimisticPercentage = 75; // 75% increase for worst case
+    // Properties for percentage adjustments based on project clarity
+    public $optimisticPercentage = 0;
+    public $pessimisticPercentage = 0;
 
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
-        $this->projectType = $this->project->project_type;
+        $this->projectClarity = $this->project->project_clarity ?? 'approximate';
 
         // Load project global factors
         $this->projectGlobalFactors = collect($this->project->globalFactors)->pluck('id')->toArray();
@@ -63,7 +62,8 @@ class DetailProject extends Component
         $this->smEmployee = $this->project->team_size ?? 0;
         $this->smVelocity = $this->project->velocity ?? 0;
 
-        $this->projectTypeParam = $this->getCocomoParameters($this->projectType);
+        // Set percentage ranges based on project clarity
+        $this->setClarityRanges($this->projectClarity);
     }
 
     public function render()
@@ -111,17 +111,38 @@ class DetailProject extends Component
         $this->dispatch('story-point-deleted', $id);
     }
 
-    function saveProjectType()
+    function saveProjectClarity()
     {
         $this->validate([
-            'projectType' => 'required'
+            'projectClarity' => 'required'
         ]);
 
         $this->project->update([
-            'project_type' => $this->projectType
+            'project_clarity' => $this->projectClarity
         ]);
 
-        $this->dispatch('project-type-saved');
+        // Update the percentage ranges based on the selected clarity
+        $this->setClarityRanges($this->projectClarity);
+
+        $this->dispatch('project-clarity-saved');
+    }
+
+    /**
+     * Set the percentage ranges for optimistic and pessimistic estimates based on project clarity
+     */
+    private function setClarityRanges($clarity)
+    {
+        $ranges = [
+            'conceptual' => ['optimistic' => -25, 'pessimistic' => 75, 'summary' => 'Range: -25% to +75%'],
+            'evolving' => ['optimistic' => -10, 'pessimistic' => 25, 'summary' => 'Range: -10% to +25%'],
+            'established' => ['optimistic' => -5, 'pessimistic' => 10, 'summary' => 'Range: -5% to +10%)']
+        ];
+
+        $selectedRange = $ranges[$clarity] ?? $ranges['approximate'];
+        
+        $this->optimisticPercentage = $selectedRange['optimistic'];
+        $this->pessimisticPercentage = $selectedRange['pessimistic'];
+        $this->claritySummary = $selectedRange['summary'];
     }
 
     public function saveGsdParameters()
@@ -205,28 +226,26 @@ class DetailProject extends Component
         // Adjusted by team size
         $baseTimeInWeeks = $baseTime / (5 * $teamSize);
         
-        // Get COCOMO parameters based on project type
-        $cocomoParams = $this->getCocomoParameters($this->projectType);
+        // STEP 1: Calculate estimates without GSD factors
+        // Using a base multiplier of 1.0 for the most likely estimate
+        $this->baseMostLikelyTime = $baseTimeInWeeks * 1.0;
         
-        // STEP 1: Calculate nominal estimate with COCOMO without GSD factors
-        $this->baseMostLikelyTime = $baseTimeInWeeks * $cocomoParams['coefficient'];
-        
-        // Calculate optimistic and pessimistic using percentage adjustments
+        // Calculate optimistic and pessimistic using percentage adjustments based on project clarity
         $this->baseOptimisticTime = $this->baseMostLikelyTime * (1 + ($this->optimisticPercentage / 100));
         $this->basePessimisticTime = $this->baseMostLikelyTime * (1 + ($this->pessimisticPercentage / 100));
         
-        // Base expected time using PERT formula
-        $this->baseExpectedTime = ($this->baseOptimisticTime + (4 * $this->baseMostLikelyTime) + $this->basePessimisticTime) / 6;
+        // Use most likely for the expected time (simpler than PERT)
+        $this->baseExpectedTime = $this->baseMostLikelyTime;
         
         // STEP 2: Apply GSD factors to all estimates
         $this->mostLikelyTime = $this->baseMostLikelyTime * $adjustmentFactor;
         $this->optimisticTime = $this->baseOptimisticTime * $adjustmentFactor;
         $this->pessimisticTime = $this->basePessimisticTime * $adjustmentFactor;
         
-        // Expected time using PERT formula: (O + 4M + P) / 6
-        $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
+        // Expected time is the most likely time (simpler than PERT)
+        $this->expectedTime = $this->mostLikelyTime;
         
-        // Standard deviation: (P - O) / 6
+        // Calculate the spread between optimistic and pessimistic for context
         $this->standardDeviation = ($this->pessimisticTime - $this->optimisticTime) / 6;
         
         // Calculate GSD impact as percentage increase/decrease
@@ -235,24 +254,6 @@ class DetailProject extends Component
         } else {
             $this->gsdImpactPercentage = 0;
         }
-    }
-
-    /**
-     * Get COCOMO parameters based on project type
-     * 
-     * @param string $projectType The project type (organic, semi-detached, embedded)
-     * @return array Coefficient value for the project type
-     */
-    private function getCocomoParameters($projectType)
-    {
-        $parameters = [
-            'organic' => ['coefficient' => 2.4, 'exponent' => 1.05],
-            'semi-detached' => ['coefficient' => 3.0, 'exponent' => 1.12],
-            'embedded' => ['coefficient' => 3.6, 'exponent' => 1.20]
-        ];
-
-        // Default to organic if type is not recognized
-        return $parameters[$projectType] ?? $parameters['organic'];
     }
     
     /**

@@ -25,7 +25,7 @@
                                     <i class="fas fa-box-open"></i>
                                 </div>
                                 <div class="wizard-step-label">
-                                    Project Type
+                                    Project Clarity
                                 </div>
                             </div>
                             <div class="wizard-step" id="software-metrics-tab" onclick="showTab('software-metrics')" wire:ignore.self>
@@ -121,17 +121,17 @@
                         <form class="wizard-content mt-2">
                             <div class="wizard-pane">
                                 <div class="form-group row align-items-center">
-                                    <label class="col-md-4 text-md-right text-left">Project Type</label>
+                                    <label class="col-md-4 text-md-right text-left">Project Clarity</label>
                                     <div class="col-lg-4 col-md-6">
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                             <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="organic" :class="{ 'focus active': $wire.projectType === 'organic' }" autocomplete="off"> Organic
+                                                <input type="radio" wire:model='projectClarity' wire:change='saveProjectClarity' value="conceptual" :class="{ 'focus active': $wire.projectClarity === 'conceptual' }" autocomplete="off"> Conceptual
                                             </label>
                                             <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="semi-detached" :class="{ 'focus active': $wire.projectType === 'semi-detached' }" autocomplete="off"> Semi-Detached
+                                                <input type="radio" wire:model='projectClarity' wire:change='saveProjectClarity' value="evolving" :class="{ 'focus active': $wire.projectClarity === 'evolving' }" autocomplete="off"> Evolving
                                             </label>
                                             <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="embedded" :class="{ 'focus active': $wire.projectType === 'embedded' }" autocomplete="off"> Embedded
+                                                <input type="radio" wire:model='projectClarity' wire:change='saveProjectClarity' value="established" :class="{ 'focus active': $wire.projectClarity === 'established' }" autocomplete="off"> Established
                                             </label>
                                         </div>
                                     </div>
@@ -140,9 +140,9 @@
                                     <div class="col-md-4 text-md-right text-left"></div>
                                     <div class="col-lg-4 col-md-6">
                                         <div id="project-type-description" class="mt-2">
-                                            <p><strong>Organic:</strong> Small teams with good experience working on less rigid requirements.</p>
-                                            <p><strong>Semi-Detached:</strong> Medium teams with mixed experience working on more complex requirements.</p>
-                                            <p><strong>Embedded:</strong> Large teams working on projects with strict requirements and constraints.</p>
+                                            <p><strong>Conceptual Clarity:</strong> Requirements are not well-defined and are expected to change significantly. <br>Estimation range: -25% to +75%</p>
+                                            <p><strong>Evolving Clarity:</strong> Requirements are partially defined with some expected changes. <br>Estimation range: -10% to +25%</p>
+                                            <p><strong>Established Clarity:</strong> Requirements are well-defined with minimal expected changes. <br>Estimation range: -5% to +10%</p>
                                         </div>
                                     </div>
                                 </div>
@@ -162,17 +162,30 @@
                                                 <div class="form-group row mb-4">
                                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Size</label>
                                                     <div class="col-sm-12 col-md-7">
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size is the number of developers working on the project. It's used to calculate resource allocation and workload distribution."></i>
                                                         <input type="number" class="form-control" wire:model="smEmployee" min="1">
                                                         @error('smEmployee') <span class="text-danger">{{ $message }}</span> @enderror
-                                                        <small class="form-text text-muted">Enter the number of team members working on this project</small>
+                                                        <small class="form-text text-muted">
+                                                            Enter the number of team members working on this project.
+                                                            <span class="d-block mt-1">
+                                                                <strong>How it affects estimation:</strong> Larger teams can work in parallel, reducing calendar time needed for project completion.
+                                                            </span>
+                                                        </small>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row mb-4">
                                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Velocity</label>
                                                     <div class="col-sm-12 col-md-7">
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Velocity is the number of story points a team can complete in a single iteration (sprint). It's a key metric for estimating project duration."></i>
                                                         <input type="number" class="form-control" wire:model="smVelocity" min="1">
                                                         @error('smVelocity') <span class="text-danger">{{ $message }}</span> @enderror
-                                                        <small class="form-text text-muted">Enter the average story points completed per sprint/iteration</small>
+                                                        <small class="form-text text-muted">
+                                                            Enter the average story points completed per sprint/iteration.
+                                                            <span class="d-block mt-1">
+                                                                
+                                                                <strong>How it affects estimation:</strong> The formula used is: Duration = Total Story Points ÷ Velocity. A higher velocity means more work can be completed in a shorter time.
+                                                            </span>
+                                                        </small>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row mb-4">
@@ -302,8 +315,8 @@
                                                             <td>{{ $project->name }}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>Project Type</strong></td>
-                                                            <td>{{ ucfirst($project->project_type) }}</td>
+                                                            <td><strong>Project Clarity</strong></td>
+                                                            <td>{{ ucfirst($project->project_clarity) }} ({{ $claritySummary }})</td>
                                                         </tr>
                                                         <tr>
                                                             <td><strong>Team Size</strong></td>
@@ -348,11 +361,11 @@
                                                 </div>
                                                 
                                                 <div class="summary-section mt-4">
-                                                    <h5>Effort Estimation (PERT Analysis with COCOMO Parameters)</h5>
+                                                    <h5>Effort Estimation (Three-Point Estimate with Project Clarity)</h5>
                                                     <div class="card bg-light mb-3">
                                                         <div class="card-body">
                                                             <p class="mb-0">
-                                                                <strong>Estimation Method:</strong> This analysis combines PERT (Program Evaluation and Review Technique) with COCOMO I parameters based on your selected project type ({{ ucfirst($project->project_type) }}). The estimates account for project complexity, team velocity, and selected global factors.
+                                                                <strong>Estimation Method:</strong> This analysis uses a three-point estimation approach based on your selected project clarity level ({{ ucfirst($project->project_clarity) }}). The estimates account for project complexity, team velocity, and selected global factors.
                                                             </p>
                                                         </div>
                                                     </div>
@@ -387,7 +400,7 @@
                                                             <div class="border rounded p-3 text-center mt-3">
                                                                 <h6>Expected Project Duration (without GSD Factors)</h6>
                                                                 <h3>{{ number_format($baseExpectedTime, 1) }} weeks</h3>
-                                                                <small>Based on PERT formula: (O + 4M + P) / 6</small>
+                                                                <small>Based on most likely scenario with range consideration</small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -433,7 +446,7 @@
                                                                     <div class="row">
                                                                         <div class="col-md-8">
                                                                             <h5 class="mb-0">Expected Project Duration</h5>
-                                                                            <p class="mb-0">Based on PERT formula: (O + 4M + P) / 6</p>
+                                                                            <p class="mb-0">Based on most likely scenario</p>
                                                                         </div>
                                                                         <div class="col-md-4 text-right">
                                                                             <h3 class="mb-0">{{ number_format($expectedTime, 1) }} weeks</h3>
@@ -443,10 +456,10 @@
                                                                 <div class="card-footer bg-info">
                                                                     <div class="row">
                                                                         <div class="col-md-8">
-                                                                            <p class="mb-0">Standard Deviation</p>
+                                                                            <p class="mb-0">Estimation Range (based on Project Clarity)</p>
                                                                         </div>
                                                                         <div class="col-md-4 text-right">
-                                                                            <p class="mb-0">± {{ number_format($standardDeviation, 1) }} weeks</p>
+                                                                            <p class="mb-0">{{ number_format($optimisticTime, 1) }} - {{ number_format($pessimisticTime, 1) }} weeks</p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -493,75 +506,54 @@
                                                     </div>
                                                     
                                                     <div class="mt-3">
-                                                        <p><strong>COCOMO I Parameters for {{ ucfirst($project->project_type) }} Projects:</strong></p>
-                                                        <table class="table table-bordered">
-                                                            <tr>
-                                                                <th>Project Type</th>
-                                                                <th>Coefficient (a)</th>
-                                                                <th>Exponent (b)</th>
-                                                                <th>Formula</th>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>{{ ucfirst($project->project_type) }}</td>
-                                                                <td>{{ $projectTypeParam['coefficient'] }}</td>
-                                                                <td>{{ $projectTypeParam['exponent'] }}</td>
-                                                                <td>E = {{ $projectTypeParam['coefficient'] }} × (Size)<sup>{{ $projectTypeParam['exponent'] }}</sup></td>
-                                                            </tr>
-                                                        </table>
-                                                        <small class="text-muted">Note: These baseline parameters were derived from Barry Boehm's COCOMO I model and adapted for story point-based estimation.</small>
-                                                    </div>
-                                                    
-                                                    <div class="mt-3">
-                                                        <p><strong>Estimation Adjustments for {{ ucfirst($project->project_type) }} Projects:</strong></p>
+                                                        <p><strong>Estimation Adjustments for {{ ucfirst($project->project_clarity) }} Clarity Projects:</strong></p>
                                                         <table class="table table-bordered">
                                                             <tr>
                                                                 <th>Scenario</th>
-                                                                <th>COCOMO Base Value</th>
+                                                                <th>Base Value</th>
                                                                 <th>Percentage Adjustment</th>
                                                                 <th>Calculation</th>
                                                             </tr>
                                                             <tr>
                                                                 <td>Optimistic (Best Case)</td>
-                                                                <td>{{ $projectTypeParam['coefficient'] }}</td>
+                                                                <td>Nominal Estimate</td>
                                                                 <td>{{ $optimisticPercentage }}%</td>
                                                                 <td>Nominal × (1 + {{ $optimisticPercentage }}%)</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Most Likely (Nominal)</td>
-                                                                <td>{{ $projectTypeParam['coefficient'] }}</td>
+                                                                <td>Nominal Estimate</td>
                                                                 <td>0%</td>
                                                                 <td>Nominal</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Pessimistic (Worst Case)</td>
-                                                                <td>{{ $projectTypeParam['coefficient'] }}</td>
+                                                                <td>Nominal Estimate</td>
                                                                 <td>+{{ $pessimisticPercentage }}%</td>
                                                                 <td>Nominal × (1 + {{ $pessimisticPercentage }}%)</td>
                                                             </tr>
                                                         </table>
-                                                        <small class="text-muted">Note: These estimates use Barry Boehm's COCOMO I coefficients as the baseline, with percentage adjustments for optimistic and pessimistic scenarios.</small>
+                                                        <small class="text-muted">Note: These estimates use the selected project clarity level to determine the range for the three-point estimate (optimistic, most likely, pessimistic).</small>
                                                     </div>
                                                     
                                                     <div class="mt-3">
                                                         <p><strong>Confidence Intervals:</strong></p>
                                                         <table class="table table-bordered">
                                                             <tr>
-                                                                <th>Confidence Level</th>
-                                                                <th>Project Duration Range</th>
+                                                                <th>Scenario</th>
+                                                                <th>Project Duration</th>
                                                             </tr>
                                                             <tr>
-                                                                <td>68% Confidence (±1σ)</td>
-                                                                <td>
-                                                                    {{ number_format($expectedTime - $standardDeviation, 1) }} to 
-                                                                    {{ number_format($expectedTime + $standardDeviation, 1) }} weeks
-                                                                </td>
+                                                                <td>Optimistic Estimate</td>
+                                                                <td>{{ number_format($optimisticTime, 1) }} weeks</td>
                                                             </tr>
                                                             <tr>
-                                                                <td>95% Confidence (±2σ)</td>
-                                                                <td>
-                                                                    {{ number_format($expectedTime - (2 * $standardDeviation), 1) }} to 
-                                                                    {{ number_format($expectedTime + (2 * $standardDeviation), 1) }} weeks
-                                                                </td>
+                                                                <td>Most Likely (Expected) Estimate</td>
+                                                                <td>{{ number_format($expectedTime, 1) }} weeks</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Pessimistic Estimate</td>
+                                                                <td>{{ number_format($pessimisticTime, 1) }} weeks</td>
                                                             </tr>
                                                         </table>
                                                     </div>
