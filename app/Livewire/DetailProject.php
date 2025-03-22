@@ -234,18 +234,18 @@ class DetailProject extends Component
         $this->baseOptimisticTime = $this->baseMostLikelyTime * (1 + ($this->optimisticPercentage / 100));
         $this->basePessimisticTime = $this->baseMostLikelyTime * (1 + ($this->pessimisticPercentage / 100));
         
-        // Use most likely for the expected time (simpler than PERT)
-        $this->baseExpectedTime = $this->baseMostLikelyTime;
+        // Calculate expected time using PERT formula: (O + 4M + P) / 6
+        $this->baseExpectedTime = ($this->baseOptimisticTime + (4 * $this->baseMostLikelyTime) + $this->basePessimisticTime) / 6;
         
         // STEP 2: Apply GSD factors to all estimates
         $this->mostLikelyTime = $this->baseMostLikelyTime * $adjustmentFactor;
         $this->optimisticTime = $this->baseOptimisticTime * $adjustmentFactor;
         $this->pessimisticTime = $this->basePessimisticTime * $adjustmentFactor;
         
-        // Expected time is the most likely time (simpler than PERT)
-        $this->expectedTime = $this->mostLikelyTime;
+        // Calculate expected time using PERT formula for final estimate
+        $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
         
-        // Calculate the spread between optimistic and pessimistic for context
+        // Standard deviation: (P - O) / 6
         $this->standardDeviation = ($this->pessimisticTime - $this->optimisticTime) / 6;
         
         // Calculate GSD impact as percentage increase/decrease

@@ -156,7 +156,7 @@
                                     <div class="col-md-8">
                                         <div class="card">
                                             <div class="card-header">
-                                                <h4>Team Information</h4>
+                                                <h4>Team Information <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="These metrics impact the base estimate before applying Project Clarity ranges and PERT analysis."></i></h4>
                                             </div>
                                             <div class="card-body">
                                                 <div class="form-group row mb-4">
@@ -365,7 +365,7 @@
                                                     <div class="card bg-light mb-3">
                                                         <div class="card-body">
                                                             <p class="mb-0">
-                                                                <strong>Estimation Method:</strong> This analysis uses a three-point estimation approach based on your selected project clarity level ({{ ucfirst($project->project_clarity) }}). The estimates account for project complexity, team velocity, and selected global factors.
+                                                                <strong>Estimation Method:</strong> This analysis uses a three-point estimation approach based on your selected project clarity level ({{ ucfirst($project->project_clarity) }}). The estimates account for project complexity, team velocity, and selected global factors.on, giving more weight to the most likely scenario.
                                                             </p>
                                                         </div>
                                                     </div>
@@ -400,7 +400,7 @@
                                                             <div class="border rounded p-3 text-center mt-3">
                                                                 <h6>Expected Project Duration (without GSD Factors)</h6>
                                                                 <h3>{{ number_format($baseExpectedTime, 1) }} weeks</h3>
-                                                                <small>Based on most likely scenario with range consideration</small>
+                                                                <small>Based on PERT formula: (O + 4M + P) / 6</small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -446,7 +446,7 @@
                                                                     <div class="row">
                                                                         <div class="col-md-8">
                                                                             <h5 class="mb-0">Expected Project Duration</h5>
-                                                                            <p class="mb-0">Based on most likely scenario</p>
+                                                                            <p class="mb-0">Based on PERT formula: (O + 4M + P) / 6</p>
                                                                         </div>
                                                                         <div class="col-md-4 text-right">
                                                                             <h3 class="mb-0">{{ number_format($expectedTime, 1) }} weeks</h3>
@@ -506,34 +506,38 @@
                                                     </div>
                                                     
                                                     <div class="mt-3">
-                                                        <p><strong>Estimation Adjustments for {{ ucfirst($project->project_clarity) }} Clarity Projects:</strong></p>
+                                                        <p><strong>PERT Analysis for {{ ucfirst($project->project_clarity) }} Clarity Projects:</strong></p>
                                                         <table class="table table-bordered">
                                                             <tr>
-                                                                <th>Scenario</th>
-                                                                <th>Base Value</th>
-                                                                <th>Percentage Adjustment</th>
-                                                                <th>Calculation</th>
+                                                                <th>Component</th>
+                                                                <th>Value</th>
+                                                                <th>Weight in PERT</th>
+                                                                <th>Description</th>
                                                             </tr>
                                                             <tr>
-                                                                <td>Optimistic (Best Case)</td>
-                                                                <td>Nominal Estimate</td>
-                                                                <td>{{ $optimisticPercentage }}%</td>
-                                                                <td>Nominal × (1 + {{ $optimisticPercentage }}%)</td>
+                                                                <td>Optimistic (O)</td>
+                                                                <td>{{ number_format($optimisticTime, 1) }} weeks</td>
+                                                                <td>1x</td>
+                                                                <td>Best case scenario ({{ $optimisticPercentage }}% adjustment)</td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Most Likely (Nominal)</td>
-                                                                <td>Nominal Estimate</td>
-                                                                <td>0%</td>
-                                                                <td>Nominal</td>
+                                                                <td>Most Likely (M)</td>
+                                                                <td>{{ number_format($mostLikelyTime, 1) }} weeks</td>
+                                                                <td>4x</td>
+                                                                <td>Most probable scenario (base estimate)</td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Pessimistic (Worst Case)</td>
-                                                                <td>Nominal Estimate</td>
-                                                                <td>+{{ $pessimisticPercentage }}%</td>
-                                                                <td>Nominal × (1 + {{ $pessimisticPercentage }}%)</td>
+                                                                <td>Pessimistic (P)</td>
+                                                                <td>{{ number_format($pessimisticTime, 1) }} weeks</td>
+                                                                <td>1x</td>
+                                                                <td>Worst case scenario (+{{ $pessimisticPercentage }}% adjustment)</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2"><strong>PERT Formula:</strong> (O + 4M + P) / 6</td>
+                                                                <td colspan="2"><strong>Expected Duration:</strong> {{ number_format($expectedTime, 1) }} weeks</td>
                                                             </tr>
                                                         </table>
-                                                        <small class="text-muted">Note: These estimates use the selected project clarity level to determine the range for the three-point estimate (optimistic, most likely, pessimistic).</small>
+                                                        <small class="text-muted">Note: PERT gives more weight (4x) to the most likely estimate, resulting in an expected duration that better reflects real-world outcomes than a simple average.</small>
                                                     </div>
                                                     
                                                     <div class="mt-3">
