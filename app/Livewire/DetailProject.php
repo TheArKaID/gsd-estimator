@@ -261,7 +261,8 @@ class DetailProject extends Component
     {
         // Calculate total story points
         $this->totalStoryPoints = collect($this->project->storyPoints)->sum('value');
-        $this->totalStoryPointsProjectTypeMultiplied = $this->totalStoryPoints * $this->projectTypeMultiplier;
+        // Round it to the nearest whole number
+        $this->totalStoryPointsProjectTypeMultiplied = round($this->totalStoryPoints * $this->projectTypeMultiplier);
 
         // Get global factor adjustment
         $adjustmentFactor = $this->calculateAdjustmentFactor();
