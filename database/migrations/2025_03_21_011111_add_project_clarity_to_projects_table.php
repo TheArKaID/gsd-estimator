@@ -14,7 +14,7 @@ class AddProjectClarityToProjectsTable extends Migration
     public function up()
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->string('project_clarity')->default('approximate')->after('description');
+            $table->string('project_clarity')->default('approximate')->after('project_type');
         });
     }
 

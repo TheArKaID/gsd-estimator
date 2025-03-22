@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string $session_id
  * @property string $name
  * @property string $description
+ * @property string $project_type
  * @property string $project_clarity
  * @property string $team_size
  * @property string $velocity
@@ -42,7 +43,7 @@ class Project extends Model
     /**
      * @var array
      */
-    protected $fillable = ['session_id', 'name', 'description', 'project_clarity', 'team_size', 'velocity', 'created_at', 'updated_at'];
+    protected $fillable = ['session_id', 'name', 'description', 'project_type', 'project_clarity', 'team_size', 'velocity', 'created_at', 'updated_at'];
 
     /**
      * Get all of the storyPoints for the Project
