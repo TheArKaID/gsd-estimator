@@ -21,12 +21,12 @@ class DetailProject extends Component
     public $projectGlobalFactorModels = [];
     public $criteriaProjectGlobalFactors = [];
 
-    public $smUSP = 0;
     public $smEmployee = 0;
     public $smVelocity = 0;
 
     // Properties for effort estimation
     public $totalStoryPoints = 0;
+    public $totalStoryPointsProjectTypeMultiplied = 0;
     public $optimisticTime = 0;
     public $mostLikelyTime = 0;
     public $pessimisticTime = 0;
@@ -255,29 +255,25 @@ class DetailProject extends Component
     }
 
     /**
-     * Calculate effort estimation based on story points, team velocity, and other factors
+     * Calculate effort estimation based on story points and team's avg velocity
      */
     public function calculateEstimation()
     {
         // Calculate total story points
         $this->totalStoryPoints = collect($this->project->storyPoints)->sum('value');
-        
+        $this->totalStoryPointsProjectTypeMultiplied = $this->totalStoryPoints * $this->projectTypeMultiplier;
+
         // Get global factor adjustment
         $adjustmentFactor = $this->calculateAdjustmentFactor();
 
         // Set default values if team metrics aren't available
-        $velocity = max(1, $this->smVelocity); // Prevent division by zero
-        $teamSize = max(1, $this->smEmployee);
+        $velocity = max(1, $this->smVelocity);
         
-        // Base time calculation (in ideal days) = Story Points / Velocity
-        $baseTime = $this->totalStoryPoints / $velocity;
+        // Base time calculation (in sprints) = Story Points / Velocity
+        $baseTime = ($this->totalStoryPointsProjectTypeMultiplied / $velocity);
         
-        // Calculate time estimates in weeks (assuming 5 work days per week)
-        // Adjusted by team size
-        $baseTimeInWeeks = $baseTime / (5 * $teamSize);
-        
-        // Apply COCOMO Project Type multiplier
-        $baseTimeInWeeks = $baseTimeInWeeks * $this->projectTypeMultiplier;
+        // Calculate time estimates in weeks (assuming 2 weeks per sprint)
+        $baseTimeInWeeks = $baseTime * 2;
         
         // S1: Calculate estimates without GSD factors
         // Using a base multiplier of 1.0 for the most likely estimate

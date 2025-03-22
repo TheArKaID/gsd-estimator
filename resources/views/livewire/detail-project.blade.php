@@ -194,25 +194,25 @@
                                                 <div class="form-group row mb-4">
                                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Size</label>
                                                     <div class="col-sm-12 col-md-7">
-                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size is the number of developers working on the project. It's used to calculate resource allocation and workload distribution."></i>
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size is used for documentation and resource planning purposes only. It does not directly affect the velocity-based estimation."></i>
                                                         <input type="number" class="form-control" wire:model="smEmployee" min="1">
                                                         @error('smEmployee') <span class="text-danger">{{ $message }}</span> @enderror
                                                         <small class="form-text text-muted">
-                                                            Enter the number of team members working on this project.
+                                                            Enter the number of team members working on this project (for documentation purposes).
                                                             <span class="d-block mt-1">
-                                                                <strong>How it affects estimation:</strong> Larger teams can work in parallel, reducing calendar time needed for project completion.
+                                                                <strong>Note:</strong> This value is stored for planning purposes but does not directly impact the estimation calculation, as team velocity already accounts for the team's collective capacity.
                                                             </span>
                                                         </small>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row mb-4">
-                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Velocity</label>
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Average Velocity</label>
                                                     <div class="col-sm-12 col-md-7">
-                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Velocity is the number of story points a team can complete in a single iteration (sprint). It's a key metric for estimating project duration."></i>
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Average Velocity is the number of story points a team can complete in a single iteration (sprint). It's a key metric for estimating project duration."></i>
                                                         <input type="number" class="form-control" wire:model="smVelocity" min="1">
                                                         @error('smVelocity') <span class="text-danger">{{ $message }}</span> @enderror
                                                         <small class="form-text text-muted">
-                                                            Enter the average story points completed per sprint/iteration.
+                                                            Enter the team's average story points completed per sprint/iteration.
                                                             <span class="d-block mt-1">
                                                                 <strong>How it affects estimation:</strong> The formula used is: Duration = Total Story Points ÷ Velocity. A higher velocity means more work can be completed in a shorter time.
                                                             </span>
@@ -300,7 +300,7 @@
                                                     <button type="button" class="btn btn-primary" wire:click='saveStoryPoint'>Add Story Point</button>
                                                 </div>
                                             </div>
-                                            <div class="col-md-8">
+                                            <div class="col-md-12">
                                                 <div class="mt-4">
                                                     <h5>Added Story Points</h5>
                                                     <ul class="list-group" id="story-point-list">
@@ -347,20 +347,24 @@
                                                             <td>{{ ucfirst($project->project_clarity) }} ({{ $claritySummary }})</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>Project Type</strong></td>
-                                                            <td>{{ ucfirst($project->project_type) }} (COCOMO I Coefficient: {{ $projectTypeCoefficient }}, Multiplier: {{ number_format($projectTypeMultiplier, 2) }})</td>
-                                                        </tr>
-                                                        <tr>
                                                             <td><strong>Team Size</strong></td>
                                                             <td>{{ $smEmployee }} members</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>Team Velocity</strong></td>
+                                                            <td><strong>Team's Average Velocity</strong></td>
                                                             <td>{{ $smVelocity }} points per iteration</td>
                                                         </tr>
                                                         <tr>
                                                             <td><strong>Total Story Points</strong></td>
                                                             <td>{{ $totalStoryPoints }} points</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Project Type</strong></td>
+                                                            <td>{{ ucfirst($project->project_type) }} (COCOMO I Coefficient: {{ $projectTypeCoefficient }}, Multiplier: {{ number_format($projectTypeMultiplier, 2) }})</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Story Points (Multiplied)</strong></td>
+                                                            <td>{{ $totalStoryPointsProjectTypeMultiplied }} points</td>
                                                         </tr>
                                                     </table>
                                                 </div>
