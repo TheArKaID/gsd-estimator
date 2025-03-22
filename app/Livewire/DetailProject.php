@@ -146,7 +146,7 @@ class DetailProject extends Component
             'established' => ['optimistic' => -5, 'pessimistic' => 10, 'summary' => 'Range: -5% to +10%)']
         ];
 
-        $selectedRange = $ranges[$clarity] ?? $ranges['approximate'];
+        $selectedRange = $ranges[$clarity] ?? $ranges['evolving'];
         
         $this->optimisticPercentage = $selectedRange['optimistic'];
         $this->pessimisticPercentage = $selectedRange['pessimistic'];
