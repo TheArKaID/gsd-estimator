@@ -138,11 +138,43 @@
                                 </div>
                                 <div class="form-group row align-items-center">
                                     <div class="col-md-4 text-md-right text-left"></div>
-                                    <div class="col-lg-4 col-md-6">
+                                    <div class="col-lg-6 col-md-8">
                                         <div id="project-type-description" class="mt-2">
                                             <p><strong>Conceptual Clarity:</strong> Requirements are not well-defined and are expected to change significantly. <br>Estimation range: -25% to +75%</p>
                                             <p><strong>Evolving Clarity:</strong> Requirements are partially defined with some expected changes. <br>Estimation range: -10% to +25%</p>
                                             <p><strong>Established Clarity:</strong> Requirements are well-defined with minimal expected changes. <br>Estimation range: -5% to +10%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Add Project Type selection -->
+                                <div class="form-group row align-items-center">
+                                    <label class="col-md-4 text-md-right text-left">Project Type</label>
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="organic" :class="{ 'focus active': $wire.projectType === 'organic' }" autocomplete="off"> Organic
+                                            </label>
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="semi-detached" :class="{ 'focus active': $wire.projectType === 'semi-detached' }" autocomplete="off"> Semi-Detached
+                                            </label>
+                                            <label class="btn btn-outline-primary" wire:ignore.self>
+                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="embedded" :class="{ 'focus active': $wire.projectType === 'embedded' }" autocomplete="off"> Embedded
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-4 text-md-right text-left"></div>
+                                    <div class="col-lg-6 col-md-8">
+                                        <div id="project-type-cocomo-description" class="mt-4">
+                                            <p><strong>COCOMO I Project Types:</strong></p>
+                                            <ul>
+                                                <li><strong>Organic:</strong> Small teams with good application experience working with less rigid requirements. <i>(Coefficient: 2.4, Multiplier: 1.0)</i></li>
+                                                <li><strong>Semi-detached:</strong> Medium teams with mixed experience working with a mix of rigid and less rigid requirements. <i>(Coefficient: 3.0, Multiplier: 1.6)</i></li>
+                                                <li><strong>Embedded:</strong> Developed within tight constraints with little flexibility. <i>(Coefficient: 3.6, Multiplier: 2.2)</i></li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -182,7 +214,6 @@
                                                         <small class="form-text text-muted">
                                                             Enter the average story points completed per sprint/iteration.
                                                             <span class="d-block mt-1">
-                                                                
                                                                 <strong>How it affects estimation:</strong> The formula used is: Duration = Total Story Points ÷ Velocity. A higher velocity means more work can be completed in a shorter time.
                                                             </span>
                                                         </small>
@@ -205,9 +236,6 @@
                                 <div class="row justify-content-center">
                                     <div class="col-md-8">
                                         <div class="row">
-                                            <div class="card-header">
-                                                <h4>Story Point</h4>
-                                            </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="story_point_name">Story Point Name</label>
@@ -266,31 +294,31 @@
                                                     <textarea id="description" wire:model='spDescription' class="form-control" style="height: 120px"></textarea>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 text-right">
-                                        {{-- Save Button --}}
-                                        <div class="form-group">
-                                            <button type="button" class="btn btn-primary" wire:click='saveStoryPoint'>Add Story Point</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="mt-4">
-                                            <h5>Added Story Points</h5>
-                                            <ul class="list-group" id="story-point-list">
-                                                @forelse ($project->storyPoints as $sp)
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <span>
-                                                            <strong>Story Point Name:</strong> {{ $sp->name }}<br>
-                                                            <strong>Description:</strong> {{ $sp->description }}<br>
-                                                            <strong>Points:</strong> {{ $sp->value }}<br>
-                                                        </span>
-                                                        <button class="btn btn-danger btn-sm" wire:click='deleteStoryPoint("{{ $sp->id }}")'>Remove</button>
-                                                    </li>
-                                                @empty
-                                                    <li class="list-group-item">No story points added yet.</li>
-                                                @endforelse
-                                            </ul>
+                                            <div class="col-md-12 text-right">
+                                                {{-- Save Button --}}
+                                                <div class="form-group">
+                                                    <button type="button" class="btn btn-primary" wire:click='saveStoryPoint'>Add Story Point</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="mt-4">
+                                                    <h5>Added Story Points</h5>
+                                                    <ul class="list-group" id="story-point-list">
+                                                        @forelse ($project->storyPoints as $sp)
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <span>
+                                                                    <strong>Story Point Name:</strong> {{ $sp->name }}<br>
+                                                                    <strong>Description:</strong> {{ $sp->description }}<br>
+                                                                    <strong>Points:</strong> {{ $sp->value }}<br>
+                                                                </span>
+                                                                <button class="btn btn-danger btn-sm" wire:click='deleteStoryPoint("{{ $sp->id }}")'>Remove</button>
+                                                            </li>
+                                                        @empty
+                                                            <li class="list-group-item">No story points added yet.</li>
+                                                        @endforelse
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -319,6 +347,10 @@
                                                             <td>{{ ucfirst($project->project_clarity) }} ({{ $claritySummary }})</td>
                                                         </tr>
                                                         <tr>
+                                                            <td><strong>Project Type</strong></td>
+                                                            <td>{{ ucfirst($project->project_type) }} (COCOMO I Coefficient: {{ $projectTypeCoefficient }}, Multiplier: {{ number_format($projectTypeMultiplier, 2) }})</td>
+                                                        </tr>
+                                                        <tr>
                                                             <td><strong>Team Size</strong></td>
                                                             <td>{{ $smEmployee }} members</td>
                                                         </tr>
@@ -332,7 +364,6 @@
                                                         </tr>
                                                     </table>
                                                 </div>
-                                                
                                                 <div class="summary-section mt-4">
                                                     <h5>Selected Global Factors</h5>
                                                     <ul class="list-group">
@@ -359,17 +390,15 @@
                                                         @endforelse
                                                     </ul>
                                                 </div>
-                                                
                                                 <div class="summary-section mt-4">
-                                                    <h5>Effort Estimation (Three-Point Estimate with Project Clarity)</h5>
+                                                    <h5>Effort Estimation (PERT Analysis with Project Clarity and COCOMO I)</h5>
                                                     <div class="card bg-light mb-3">
                                                         <div class="card-body">
                                                             <p class="mb-0">
-                                                                <strong>Estimation Method:</strong> This analysis uses a three-point estimation approach based on your selected project clarity level ({{ ucfirst($project->project_clarity) }}). The estimates account for project complexity, team velocity, and selected global factors.on, giving more weight to the most likely scenario.
+                                                                <strong>Estimation Method:</strong> This analysis combines PERT (Program Evaluation and Review Technique) with COCOMO I and your selected project clarity level. The base estimate is influenced by your project type ({{ ucfirst($project->project_type) }}), and the three-point range is determined by your project clarity level ({{ ucfirst($project->project_clarity) }}).
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    
                                                     <!-- Base Estimates (without GSD factors) -->
                                                     <div class="card mb-4">
                                                         <div class="card-header bg-secondary text-white">
@@ -396,7 +425,6 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
                                                             <div class="border rounded p-3 text-center mt-3">
                                                                 <h6>Expected Project Duration (without GSD Factors)</h6>
                                                                 <h3>{{ number_format($baseExpectedTime, 1) }} weeks</h3>
@@ -404,7 +432,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
                                                     <!-- Final Estimates (with GSD factors) -->
                                                     <div class="card mb-4">
                                                         <div class="card-header bg-primary text-white">
@@ -440,7 +467,6 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
                                                             <div class="card bg-info text-white mt-3">
                                                                 <div class="card-body">
                                                                     <div class="row">
@@ -453,7 +479,7 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="card-footer bg-info">
+                                                                <div class="card-footer bg-info text-white">
                                                                     <div class="row">
                                                                         <div class="col-md-8">
                                                                             <p class="mb-0">Estimation Range (based on Project Clarity)</p>
@@ -466,7 +492,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
                                                     <!-- GSD Impact Analysis -->
                                                     <div class="card mb-4">
                                                         <div class="card-header bg-dark text-white">
@@ -506,6 +531,32 @@
                                                     </div>
                                                     
                                                     <div class="mt-3">
+                                                        <p><strong>COCOMO I Basic Parameters for {{ ucfirst($project->project_type) }} Projects:</strong></p>
+                                                        <table class="table table-bordered">
+                                                            <tr>
+                                                                <th>Project Type</th>
+                                                                <th>Coefficient (a)</th>
+                                                                <th>Exponent (b)</th>
+                                                                <th>Formula</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>{{ ucfirst($project->project_type) }}</td>
+                                                                <td>{{ $projectTypeCoefficient }}</td>
+                                                                <td>{{ $projectTypeExponent }}</td>
+                                                                <td>Story Point = Story Point x ({{ $projectTypeCoefficient }} × (1)<sup>{{ $projectTypeExponent }}</sup>)</td>
+                                                            </tr>
+                                                        </table>
+                                                        <small class="text-muted">Note: 
+                                                            <ul>
+                                                                <li>These baseline parameters were derived from Barry Boehm's COCOMO I Basic model and adapted for story point-based estimation.</li>
+                                                                <li>COCOMO I Basic model, however works with KLOC (Kilo Delivered Source Instructions) as the size metric. To adapt it for story points, we use the formula: Story Point Multiplier = (Coefficient × (1)<sup>Exponent</sup>) - (Organic Coefficient) + 1</li>
+                                                                <li>While the adapted formula is not a direct translation and the exponent become unused, it results in a close approximation of the original COCOMO I Basic model.</li>
+                                                            </ul>
+                                                            
+                                                        </small>
+                                                    </div>
+                                                    
+                                                    <div class="mt-3">
                                                         <p><strong>PERT Analysis for {{ ucfirst($project->project_clarity) }} Clarity Projects:</strong></p>
                                                         <table class="table table-bordered">
                                                             <tr>
@@ -538,26 +589,27 @@
                                                             </tr>
                                                         </table>
                                                         <small class="text-muted">Note: PERT gives more weight (4x) to the most likely estimate, resulting in an expected duration that better reflects real-world outcomes than a simple average.</small>
-                                                    </div>
-                                                    
+                                                    </div>                                                    
                                                     <div class="mt-3">
                                                         <p><strong>Confidence Intervals:</strong></p>
                                                         <table class="table table-bordered">
                                                             <tr>
-                                                                <th>Scenario</th>
-                                                                <th>Project Duration</th>
+                                                                <th>Confidence Level</th>
+                                                                <th>Project Duration Range</th>
                                                             </tr>
                                                             <tr>
-                                                                <td>Optimistic Estimate</td>
-                                                                <td>{{ number_format($optimisticTime, 1) }} weeks</td>
+                                                                <td>68% Confidence (±1σ)</td>
+                                                                <td>
+                                                                    {{ number_format($expectedTime - $standardDeviation, 1) }} to 
+                                                                    {{ number_format($expectedTime + $standardDeviation, 1) }} weeks
+                                                                </td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Most Likely (Expected) Estimate</td>
-                                                                <td>{{ number_format($expectedTime, 1) }} weeks</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Pessimistic Estimate</td>
-                                                                <td>{{ number_format($pessimisticTime, 1) }} weeks</td>
+                                                                <td>95% Confidence (±2σ)</td>
+                                                                <td>
+                                                                    {{ number_format($expectedTime - (2 * $standardDeviation), 1) }} to 
+                                                                    {{ number_format($expectedTime + (2 * $standardDeviation), 1) }} weeks
+                                                                </td>
                                                             </tr>
                                                         </table>
                                                     </div>

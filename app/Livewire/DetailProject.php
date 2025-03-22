@@ -12,6 +12,10 @@ class DetailProject extends Component
     public Project $project;
     public $spName, $spDescription, $spValue, $customSpValue;
     public $projectClarity;
+    public $projectType; 
+    public $projectTypeCoefficient;
+    public $projectTypeExponent;
+    public $projectTypeMultiplier; 
     public $globalFactors = [];
     public $projectGlobalFactors = [];
     public $projectGlobalFactorModels = [];
@@ -46,7 +50,8 @@ class DetailProject extends Component
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
-        $this->projectClarity = $this->project->project_clarity ?? 'approximate';
+        $this->projectClarity = $this->project->project_clarity ?? 'evolving';
+        $this->projectType = $this->project->project_type ?? 'organic';  // Set default project type
 
         // Load project global factors
         $this->projectGlobalFactors = collect($this->project->globalFactors)->pluck('id')->toArray();
@@ -64,6 +69,9 @@ class DetailProject extends Component
 
         // Set percentage ranges based on project clarity
         $this->setClarityRanges($this->projectClarity);
+        
+        // Set COCOMO parameters based on project type
+        $this->setProjectTypeParameters($this->projectType);
     }
 
     public function render()
@@ -205,6 +213,48 @@ class DetailProject extends Component
     }
 
     /**
+     * Save the project type selection
+     */
+    function saveProjectType()
+    {
+        $this->validate([
+            'projectType' => 'required|in:organic,semi-detached,embedded'
+        ]);
+
+        $this->project->update([
+            'project_type' => $this->projectType
+        ]);
+
+        // Update the COCOMO parameters
+        $this->setProjectTypeParameters($this->projectType);
+
+        $this->dispatch('project-type-saved');
+    }
+
+    /**
+     * Set COCOMO parameters based on project type
+     */
+    private function setProjectTypeParameters($type)
+    {
+        $parameters = [
+            'organic' => ['coefficient' => 2.4, 'exponent' => 1.05], // Baseline
+            'semi-detached' => ['coefficient' => 3.0, 'exponent' => 1.12],
+            'embedded' => ['coefficient' => 3.6, 'exponent' => 1.20]
+        ];
+
+        // Multiplier for organic projects: 2.4 * 1^1.05 = 2.4 - 2.4 = 0 + 1 = 1.0 (default)
+        // Multiplier for semi-detached projects: 3.0 * 1^1.12 = 3.0 - 2.4 = 0.6 + 1 = 1.6
+        // Multiplier for embedded projects: 3.6 * 1^1.20 = 3.6 - 2.4 = 1.2 + 1 = 2.2
+        $baseMultiplier = $parameters['organic']['coefficient'] * (1 ** $parameters['organic']['exponent']);
+
+        $selected = $parameters[$type] ?? $parameters['organic'];
+        
+        $this->projectTypeCoefficient = $selected['coefficient'];
+        $this->projectTypeExponent = $selected['exponent'];
+        $this->projectTypeMultiplier = 1 + ($selected['coefficient'] - $baseMultiplier);
+    }
+
+    /**
      * Calculate effort estimation based on story points, team velocity, and other factors
      */
     public function calculateEstimation()
@@ -226,7 +276,10 @@ class DetailProject extends Component
         // Adjusted by team size
         $baseTimeInWeeks = $baseTime / (5 * $teamSize);
         
-        // STEP 1: Calculate estimates without GSD factors
+        // Apply COCOMO Project Type multiplier
+        $baseTimeInWeeks = $baseTimeInWeeks * $this->projectTypeMultiplier;
+        
+        // S1: Calculate estimates without GSD factors
         // Using a base multiplier of 1.0 for the most likely estimate
         $this->baseMostLikelyTime = $baseTimeInWeeks * 1.0;
         
@@ -237,7 +290,7 @@ class DetailProject extends Component
         // Calculate expected time using PERT formula: (O + 4M + P) / 6
         $this->baseExpectedTime = ($this->baseOptimisticTime + (4 * $this->baseMostLikelyTime) + $this->basePessimisticTime) / 6;
         
-        // STEP 2: Apply GSD factors to all estimates
+        // S2: Apply GSD factors to all estimates
         $this->mostLikelyTime = $this->baseMostLikelyTime * $adjustmentFactor;
         $this->optimisticTime = $this->baseOptimisticTime * $adjustmentFactor;
         $this->pessimisticTime = $this->basePessimisticTime * $adjustmentFactor;
