@@ -242,16 +242,15 @@ class DetailProject extends Component
             'embedded' => ['coefficient' => 3.6, 'exponent' => 1.20]
         ];
 
-        // Multiplier for organic projects: 2.4 * 1^1.05 = 2.4 - 2.4 = 0 + 1 = 1.0 (default)
-        // Multiplier for semi-detached projects: 3.0 * 1^1.12 = 3.0 - 2.4 = 0.6 + 1 = 1.6
-        // Multiplier for embedded projects: 3.6 * 1^1.20 = 3.6 - 2.4 = 1.2 + 1 = 2.2
+        // Semi-detached: 3.0 / 2.4 = 1.25 => increase 25%
+        // Embedded: 3.6 / 2.4 = 1.5 => increase 50%
         $baseMultiplier = $parameters['organic']['coefficient'] * (1 ** $parameters['organic']['exponent']);
 
         $selected = $parameters[$type] ?? $parameters['organic'];
         
         $this->projectTypeCoefficient = $selected['coefficient'];
         $this->projectTypeExponent = $selected['exponent'];
-        $this->projectTypeMultiplier = 1 + ($selected['coefficient'] - $baseMultiplier);
+        $this->projectTypeMultiplier = $selected['coefficient'] / $baseMultiplier;
     }
 
     /**
