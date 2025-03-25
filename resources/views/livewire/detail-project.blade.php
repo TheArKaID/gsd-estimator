@@ -182,8 +182,8 @@
                                             <p><strong>COCOMO I Project Types:</strong></p>
                                             <ul>
                                                 <li><strong>Organic:</strong> Small teams with good application experience working with less rigid requirements. <i>(Coefficient: 2.4, Multiplier: 1.0)</i></li>
-                                                <li><strong>Semi-detached:</strong> Medium teams with mixed experience working with a mix of rigid and less rigid requirements. <i>(Coefficient: 3.0, Multiplier: 1.6)</i></li>
-                                                <li><strong>Embedded:</strong> Developed within tight constraints with little flexibility. <i>(Coefficient: 3.6, Multiplier: 2.2)</i></li>
+                                                <li><strong>Semi-detached:</strong> Medium teams with mixed experience working with a mix of rigid and less rigid requirements. <i>(Coefficient: 3.0, Multiplier: 1.25)</i></li>
+                                                <li><strong>Embedded:</strong> Developed within tight constraints with little flexibility. <i>(Coefficient: 3.6, Multiplier: 1.5)</i></li>
                                             </ul>
                                         </div>
                                     </div>
