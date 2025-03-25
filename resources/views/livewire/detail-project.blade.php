@@ -204,27 +204,24 @@
                                                 <div class="form-group row mb-4">
                                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Size</label>
                                                     <div class="col-sm-12 col-md-7">
-                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size is used for documentation and resource planning purposes only. It does not directly affect the velocity-based estimation."></i>
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size is used for documentation and resource planning purposes only. It does not directly affect, as team velocity already accounts for the team's collective capacity."></i>
                                                         <input type="number" class="form-control" wire:model="smEmployee" min="1">
                                                         @error('smEmployee') <span class="text-danger">{{ $message }}</span> @enderror
                                                         <small class="form-text text-muted">
                                                             Enter the number of team members working on this project (for documentation purposes).
-                                                            <span class="d-block mt-1">
-                                                                <strong>Note:</strong> This value is stored for planning purposes but does not directly impact the estimation calculation, as team velocity already accounts for the team's collective capacity.
-                                                            </span>
                                                         </small>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row mb-4">
                                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Average Velocity</label>
                                                     <div class="col-sm-12 col-md-7">
-                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Average Velocity is the number of story points a team can complete in a single iteration (sprint). It's a key metric for estimating project duration."></i>
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="You derive your Team Velocity as: Team's Velocity = Histrory of Completed Story Point ÷ Total Sprint"></i>
                                                         <input type="number" class="form-control" wire:model="smVelocity" min="1">
                                                         @error('smVelocity') <span class="text-danger">{{ $message }}</span> @enderror
                                                         <small class="form-text text-muted">
                                                             Enter the team's average story points completed per sprint/iteration.
                                                             <span class="d-block mt-1">
-                                                                <strong>How it affects estimation:</strong> The formula used is: Duration = Total Story Points ÷ Velocity. A higher velocity means more work can be completed in a shorter time.
+                                                                <strong>How it affects estimation:</strong> The formula used is: Duration = Total Story Points ÷ Velocity. Team Average Velocity is the number of story points a team can complete in a single iteration (sprint). It's a key metric for estimating project duration.
                                                             </span>
                                                         </small>
                                                     </div>
