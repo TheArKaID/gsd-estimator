@@ -170,7 +170,7 @@
                                     <div class="col-md-6">
                                         <strong>Project Example:</strong> {{ 
                                             $projectType == 'organic' ? 'Small in-house business systems, Batch data processing, Basic inventory control, Familiar OS/compiler, Simple Inventory/Production Control' 
-                                            : ($projectType == 'semi-detached' ? 'Most transaction processing, Multi-file systems, New OS, DBMS, Ambitious ventory/Production Control, Simple Command Control' 
+                                            : ($projectType == 'semi-detached' ? 'Most transaction processing, Multi-file systems, New OS, DBMS, Ambitious Inventory/Production Control, Simple Command Control' 
                                             : 'Large/Complex real-time, Extensive transaction processing, Large OS, Avionics, Command-and-control') 
                                         }}
                                     </div>
