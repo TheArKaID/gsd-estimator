@@ -1,6 +1,6 @@
 <div class="navbar-bg" style="background-color: #ef6767;"></div>
 <nav class="navbar navbar-expand-lg main-navbar">
-    <a href="index.html" class="navbar-brand sidebar-gone-hide">Stisla</a>
+    <a href="/" class="navbar-brand sidebar-gone-hide">GSD Estimate</a>
     <div class="navbar-nav">
         <a href="#" class="nav-link sidebar-gone-show" data-toggle="sidebar"><i class="fas fa-bars"></i></a>
     </div>
@@ -10,8 +10,6 @@
         </a>
         <ul class="navbar-nav">
             <li class="nav-item active"><a href="#" class="nav-link">Application</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Report Something</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Server Status</a></li>
         </ul>
     </div>
     <form class="form-inline ml-auto">
@@ -31,7 +29,7 @@
                     Histories
                 </div>
                 <div class="search-item">
-                    <a href="#">How to hack NASA using CSS</a>
+                    <a href="#">
                     <a href="#" class="search-close"><i class="fas fa-times"></i></a>
                 </div>
                 <div class="search-item">
@@ -222,18 +220,17 @@
         </li>
         <li class="dropdown">
             <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-                <img alt="image" src="../assets/img/avatar/avatar-1.png" class="rounded-circle mr-1">
-                <div class="d-sm-none d-lg-inline-block">Hi, Ujang Maman</div>
+                <div class="d-sm-none d-lg-inline-block">Hi, Estimator</div>
             </a>
             <div class="dropdown-menu dropdown-menu-right">
                 <div class="dropdown-title">Logged in 5 min ago</div>
-                <a href="features-profile.html" class="dropdown-item has-icon">
+                <a href="#" class="dropdown-item has-icon">
                     <i class="far fa-user"></i> Profile
                 </a>
-                <a href="features-activities.html" class="dropdown-item has-icon">
+                <a href="#" class="dropdown-item has-icon">
                     <i class="fas fa-bolt"></i> Activities
                 </a>
-                <a href="features-settings.html" class="dropdown-item has-icon">
+                <a href="#" class="dropdown-item has-icon">
                     <i class="fas fa-cog"></i> Settings
                 </a>
                 <div class="dropdown-divider"></div>
@@ -249,39 +246,7 @@
     <div class="container">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a href="#" class="nav-link"><i class="far fa-heart"></i><span>Dashboard</span></a>
-            </li>
-            <li class="nav-item dropdown">
-                <a href="#" data-toggle="dropdown" class="nav-link has-dropdown">
-                    <i class="fas fa-fire"></i>
-                    <span>Top Navigation</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li class="nav-item"><a href="index-0.html" class="nav-link">General Dashboard</a></li>
-                    <li class="nav-item"><a href="index.html" class="nav-link">Ecommerce Dashboard</a></li>
-                </ul>
-            </li>
-            <li class="nav-item dropdown">
-                <a href="#" data-toggle="dropdown" class="nav-link has-dropdown">
-                    <i class="far fa-clone"></i>
-                    <span>Multiple Dropdown</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li class="nav-item"><a href="#" class="nav-link">Not Dropdown Link</a></li>
-                    <li class="nav-item dropdown"><a href="#" class="nav-link has-dropdown">Hover Me</a>
-                        <ul class="dropdown-menu">
-                            <li class="nav-item"><a href="#" class="nav-link">Link</a></li>
-                            <li class="nav-item dropdown"><a href="#" class="nav-link has-dropdown">Link 2</a>
-                                <ul class="dropdown-menu">
-                                    <li class="nav-item"><a href="#" class="nav-link">Link</a></li>
-                                    <li class="nav-item"><a href="#" class="nav-link">Link</a></li>
-                                    <li class="nav-item"><a href="#" class="nav-link">Link</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Link 3</a></li>
-                        </ul>
-                    </li>
-                </ul>
+                <a href="#" class="nav-link"><i class="fa fa-fire"></i><span>Dashboard</span></a>
             </li>
         </ul>
     </div>
