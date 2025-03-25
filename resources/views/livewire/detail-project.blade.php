@@ -25,7 +25,7 @@
                                     <i class="fas fa-box-open"></i>
                                 </div>
                                 <div class="wizard-step-label">
-                                    Project Clarity
+                                    Project Details
                                 </div>
                             </div>
                             <div class="wizard-step" id="software-metrics-tab" onclick="showTab('software-metrics')" wire:ignore.self>
@@ -167,8 +167,18 @@
                                 
                                 <div class="form-group row align-items-center">
                                     <div class="col-md-4 text-md-right text-left"></div>
+                                    <div class="col-md-6">
+                                        <strong>Project Example:</strong> {{ 
+                                            $projectType == 'organic' ? 'Small in-house business systems, Batch data processing, Basic inventory control, Familiar OS/compiler, Simple Inventory/Production Control' 
+                                            : ($projectType == 'semi-detached' ? 'Most transaction processing, Multi-file systems, New OS, DBMS, Ambitious ventory/Production Control, Simple Command Control' 
+                                            : 'Large/Complex real-time, Extensive transaction processing, Large OS, Avionics, Command-and-control') 
+                                        }}
+                                    </div>
+                                </div>
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-4 text-md-right text-left"></div>
                                     <div class="col-lg-6 col-md-8">
-                                        <div id="project-type-cocomo-description" class="mt-4">
+                                        <div id="project-type-cocomo-description">
                                             <p><strong>COCOMO I Project Types:</strong></p>
                                             <ul>
                                                 <li><strong>Organic:</strong> Small teams with good application experience working with less rigid requirements. <i>(Coefficient: 2.4, Multiplier: 1.0)</i></li>
