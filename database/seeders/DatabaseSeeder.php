@@ -38,10 +38,15 @@ class DatabaseSeeder extends Seeder
             $this->command->info('Database already seeded');
             return;
         }
+        
         if (File::exists($file)) {
-            $sql = File::get($file);
-            DB::unprepared($sql);
-            $this->command->info('SQL file imported successfully: ' . $file);
+            try {
+                $sql = File::get($file);
+                DB::unprepared($sql);
+                $this->command->info('SQL file imported successfully: ' . $file);
+            } catch (\Exception $e) {
+                $this->command->error('Error importing SQL file: ' . $e->getMessage());
+            }
         } else {
             $this->command->error('SQL file not found: ' . $file);
         }
