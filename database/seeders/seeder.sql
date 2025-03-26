@@ -36,4 +36,4 @@ INSERT INTO `global_factor_criterias` (`id`, `global_factor_id`, `name`, `descri
 	('2c146e6a-7f10-4ff8-92a6-488d107a10d6', '01955fc8-8159-7168-9f91-edc4006c1645', 'Good', 'Regular and clear communication with minor lapses.', 1.0, '2025-03-04 13:21:30', '2025-03-04 13:21:31'),
 	('c578f678-d563-46f7-b3d9-a473406df798', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Poor', 'Outdated or fragmented tools that hinder communication and collaboration.', 1.25, '2025-03-04 13:22:21', '2025-03-04 13:22:21'),
 	('c1da4748-7b5b-4c74-ba85-e5791eb783cc', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Fair', 'Basic tools are in place, but integration or usability issues persist.', 1.1, '2025-03-04 13:22:24', '2025-03-04 13:22:22'),
-	('e56b266d-8a3d-4966-8a07-f4369347113c', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Good', 'Modern and reliable tools that support most collaboration needs.', 1.0, '2025-03-04 13:22:56', '2025-03-04 13:22:57'),
+	('e56b266d-8a3d-4966-8a07-f4369347113c', '01955fc8-8159-73be-bfbd-20360141fd2c', 'Good', 'Modern and reliable tools that support most collaboration needs.', 1.0, '2025-03-04 13:22:56', '2025-03-04 13:22:57');
