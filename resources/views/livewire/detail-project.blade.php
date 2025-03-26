@@ -213,15 +213,15 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row mb-4">
-                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Average Velocity</label>
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Velocity</label>
                                                     <div class="col-sm-12 col-md-7">
                                                         <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="You derive your Team Velocity as: Team's Velocity = Histrory of Completed Story Point ÷ Total Sprint"></i>
                                                         <input type="number" class="form-control" wire:model="smVelocity" min="1">
                                                         @error('smVelocity') <span class="text-danger">{{ $message }}</span> @enderror
                                                         <small class="form-text text-muted">
-                                                            Enter the team's average story points completed per sprint/iteration.
+                                                            Enter the team's story points completed per sprint/iteration.
                                                             <span class="d-block mt-1">
-                                                                <strong>How it affects estimation:</strong> The formula used is: Duration = Total Story Points ÷ Velocity. Team Average Velocity is the number of story points a team can complete in a single iteration (sprint). It's a key metric for estimating project duration.
+                                                                <strong>How it affects estimation:</strong> The formula used is: Duration = Total Story Points ÷ Velocity. Team Velocity is the number of story points a team can complete in a single iteration (sprint). It's a key metric for estimating project duration.
                                                             </span>
                                                         </small>
                                                     </div>
@@ -358,7 +358,7 @@
                                                             <td>{{ $smEmployee }} members</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>Team's Average Velocity</strong></td>
+                                                            <td><strong>Team's Velocity</strong></td>
                                                             <td>{{ $smVelocity }} points per iteration</td>
                                                         </tr>
                                                         <tr>
