@@ -227,6 +227,17 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row mb-4">
+                                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Sprint Length (days)</label>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="The number of working days in one sprint/iteration"></i>
+                                                        <input type="number" class="form-control" wire:model="smSprintLength" min="1">
+                                                        @error('smSprintLength') <span class="text-danger">{{ $message }}</span> @enderror
+                                                        <small class="form-text text-muted">
+                                                            Enter the length of a sprint in working days (typically 10 for 2-week sprints).
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-4">
                                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3"></label>
                                                     <div class="col-sm-12 col-md-7">
                                                         <button type="submit" class="btn btn-primary">Save Team Information</button>
@@ -359,7 +370,11 @@
                                                         </tr>
                                                         <tr>
                                                             <td><strong>Team's Velocity</strong></td>
-                                                            <td>{{ $smVelocity }} points per iteration</td>
+                                                            <td>{{ $smVelocity }} points per sprint</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Sprint Length</strong></td>
+                                                            <td>{{ $smSprintLength }} days</td>
                                                         </tr>
                                                         <tr>
                                                             <td><strong>Total Story Points</strong></td>
@@ -420,25 +435,29 @@
                                                                 <div class="col-md-4">
                                                                     <div class="border rounded p-3 text-center">
                                                                         <h6>Optimistic Time</h6>
-                                                                        <h3>{{ number_format($baseOptimisticTime, 1) }} weeks</h3>
+                                                                        <h3>{{ number_format($baseOptimisticTime / $smSprintLength, 1) }} sprints</h3>
+                                                                        <small>{{ number_format($baseOptimisticTime, 1) }} days</small>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     <div class="border rounded p-3 text-center">
                                                                         <h6>Most Likely Time</h6>
-                                                                        <h3>{{ number_format($baseMostLikelyTime, 1) }} weeks</h3>
+                                                                        <h3>{{ number_format($baseMostLikelyTime / $smSprintLength, 1) }} sprints</h3>
+                                                                        <small>{{ number_format($baseMostLikelyTime, 1) }} days</small>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     <div class="border rounded p-3 text-center">
                                                                         <h6>Pessimistic Time</h6>
-                                                                        <h3>{{ number_format($basePessimisticTime, 1) }} weeks</h3>
+                                                                        <h3>{{ number_format($basePessimisticTime / $smSprintLength, 1) }} sprints</h3>
+                                                                        <small>{{ number_format($basePessimisticTime, 1) }} days</small>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div class="border rounded p-3 text-center mt-3">
                                                                 <h6>Expected Project Duration (without GSD Factors)</h6>
-                                                                <h3>{{ number_format($baseExpectedTime, 1) }} weeks</h3>
+                                                                <h3>{{ number_format($baseExpectedTime / $smSprintLength, 1) }} sprints</h3>
+                                                                <p>{{ number_format($baseExpectedTime, 1) }} days</p>
                                                                 <small>Based on PERT formula: (O + 4M + P) / 6</small>
                                                             </div>
                                                         </div>
@@ -454,7 +473,8 @@
                                                                     <div class="card bg-success text-white">
                                                                         <div class="card-body text-center">
                                                                             <h6>Optimistic Time</h6>
-                                                                            <h2>{{ number_format($optimisticTime, 1) }} weeks</h2>
+                                                                            <h2>{{ number_format($optimisticTime / $smSprintLength, 1) }} sprints</h2>
+                                                                            <p>{{ number_format($optimisticTime, 1) }} days</p>
                                                                             <small>Best case scenario</small>
                                                                         </div>
                                                                     </div>
@@ -463,7 +483,8 @@
                                                                     <div class="card bg-primary text-white">
                                                                         <div class="card-body text-center">
                                                                             <h6>Most Likely Time</h6>
-                                                                            <h2>{{ number_format($mostLikelyTime, 1) }} weeks</h2>
+                                                                            <h2>{{ number_format($mostLikelyTime / $smSprintLength, 1) }} sprints</h2>
+                                                                            <p>{{ number_format($mostLikelyTime, 1) }} days</p>
                                                                             <small>Expected scenario</small>
                                                                         </div>
                                                                     </div>
@@ -472,7 +493,8 @@
                                                                     <div class="card bg-warning">
                                                                         <div class="card-body text-center">
                                                                             <h6>Pessimistic Time</h6>
-                                                                            <h2>{{ number_format($pessimisticTime, 1) }} weeks</h2>
+                                                                            <h2>{{ number_format($pessimisticTime / $smSprintLength, 1) }} sprints</h2>
+                                                                            <p>{{ number_format($pessimisticTime, 1) }} days</p>
                                                                             <small>Worst case scenario</small>
                                                                         </div>
                                                                     </div>
@@ -486,7 +508,8 @@
                                                                             <p class="mb-0">Based on PERT formula: (O + 4M + P) / 6</p>
                                                                         </div>
                                                                         <div class="col-md-4 text-right">
-                                                                            <h3 class="mb-0">{{ number_format($expectedTime, 1) }} weeks</h3>
+                                                                            <h3 class="mb-0">{{ number_format($expectedTime / $smSprintLength, 1) }} sprints</h3>
+                                                                            <p>{{ number_format($expectedTime, 1) }} days</p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -496,7 +519,8 @@
                                                                             <p class="mb-0">Estimation Range (based on Project Clarity)</p>
                                                                         </div>
                                                                         <div class="col-md-4 text-right">
-                                                                            <p class="mb-0">{{ number_format($optimisticTime, 1) }} - {{ number_format($pessimisticTime, 1) }} weeks</p>
+                                                                            <p class="mb-0">{{ number_format($optimisticTime / $smSprintLength, 1) }} - {{ number_format($pessimisticTime / $smSprintLength, 1) }} sprints</p>
+                                                                            <small>{{ number_format($optimisticTime, 1) }} - {{ number_format($pessimisticTime, 1) }} days</small>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -515,14 +539,16 @@
                                                                     <div class="d-flex justify-content-around align-items-center">
                                                                         <div class="text-center">
                                                                             <h5>Without GSD</h5>
-                                                                            <h3>{{ number_format($baseExpectedTime, 1) }} weeks</h3>
+                                                                            <h3>{{ number_format($baseExpectedTime / $smSprintLength, 1) }} sprints</h3>
+                                                                            <small>{{ number_format($baseExpectedTime, 1) }} days</small>
                                                                         </div>
                                                                         <div class="text-center">
                                                                             <i class="fas fa-arrow-right fa-2x"></i>
                                                                         </div>
                                                                         <div class="text-center">
                                                                             <h5>With GSD</h5>
-                                                                            <h3>{{ number_format($expectedTime, 1) }} weeks</h3>
+                                                                            <h3>{{ number_format($expectedTime / $smSprintLength, 1) }} sprints</h3>
+                                                                            <small>{{ number_format($expectedTime, 1) }} days</small>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -533,7 +559,7 @@
                                                                             {{ $gsdImpactPercentage > 0 ? '+' : '' }}{{ number_format($gsdImpactPercentage, 1) }}%
                                                                         </h2>
                                                                         <p class="mb-0">
-                                                                            {{ abs(number_format($expectedTime - $baseExpectedTime, 1)) }} weeks {{ $gsdImpactPercentage > 0 ? 'increase' : 'decrease' }}
+                                                                            {{ abs(number_format($expectedTime - $baseExpectedTime, 1)) }} days {{ $gsdImpactPercentage > 0 ? 'increase' : 'decrease' }}
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -578,25 +604,25 @@
                                                             </tr>
                                                             <tr>
                                                                 <td>Optimistic (O)</td>
-                                                                <td>{{ number_format($optimisticTime, 1) }} weeks</td>
+                                                                <td>{{ number_format($optimisticTime, 1) }} days</td>
                                                                 <td>1x</td>
                                                                 <td>Best case scenario ({{ $optimisticPercentage }}% adjustment)</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Most Likely (M)</td>
-                                                                <td>{{ number_format($mostLikelyTime, 1) }} weeks</td>
+                                                                <td>{{ number_format($mostLikelyTime, 1) }} days</td>
                                                                 <td>4x</td>
                                                                 <td>Most probable scenario (base estimate)</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Pessimistic (P)</td>
-                                                                <td>{{ number_format($pessimisticTime, 1) }} weeks</td>
+                                                                <td>{{ number_format($pessimisticTime, 1) }} days</td>
                                                                 <td>1x</td>
                                                                 <td>Worst case scenario (+{{ $pessimisticPercentage }}% adjustment)</td>
                                                             </tr>
                                                             <tr>
                                                                 <td colspan="2"><strong>PERT Formula:</strong> (O + 4M + P) / 6</td>
-                                                                <td colspan="2"><strong>Expected Duration:</strong> {{ number_format($expectedTime, 1) }} weeks</td>
+                                                                <td colspan="2"><strong>Expected Duration:</strong> {{ number_format($expectedTime, 1) }} days ({{ number_format($expectedTime / $smSprintLength, 1) }} sprints)</td>
                                                             </tr>
                                                         </table>
                                                         <small class="text-muted">Note: PERT gives more weight (4x) to the most likely estimate, resulting in an expected duration that better reflects real-world outcomes than a simple average.</small>
@@ -612,14 +638,24 @@
                                                                 <td>68% Confidence (±1σ)</td>
                                                                 <td>
                                                                     {{ number_format($expectedTime - $standardDeviation, 1) }} to 
-                                                                    {{ number_format($expectedTime + $standardDeviation, 1) }} weeks
+                                                                    {{ number_format($expectedTime + $standardDeviation, 1) }} days
+                                                                    <br>
+                                                                    <small>
+                                                                        {{ number_format(($expectedTime - $standardDeviation) / $smSprintLength, 1) }} to 
+                                                                        {{ number_format(($expectedTime + $standardDeviation) / $smSprintLength, 1) }} sprints
+                                                                    </small>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>95% Confidence (±2σ)</td>
                                                                 <td>
                                                                     {{ number_format($expectedTime - (2 * $standardDeviation), 1) }} to 
-                                                                    {{ number_format($expectedTime + (2 * $standardDeviation), 1) }} weeks
+                                                                    {{ number_format($expectedTime + (2 * $standardDeviation), 1) }} days
+                                                                    <br>
+                                                                    <small>
+                                                                        {{ number_format(($expectedTime - (2 * $standardDeviation)) / $smSprintLength, 1) }} to 
+                                                                        {{ number_format(($expectedTime + (2 * $standardDeviation)) / $smSprintLength, 1) }} sprints
+                                                                    </small>
                                                                 </td>
                                                             </tr>
                                                         </table>

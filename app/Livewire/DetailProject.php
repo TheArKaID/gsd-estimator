@@ -23,6 +23,7 @@ class DetailProject extends Component
 
     public $smEmployee = 0;
     public $smVelocity = 0;
+    public $smSprintLength = 14; // Default sprint length of 14 days (2 weeks)
 
     // Properties for effort estimation
     public $totalStoryPoints = 0;
@@ -66,6 +67,7 @@ class DetailProject extends Component
         // Load existing software metrics if available
         $this->smEmployee = $this->project->team_size ?? 0;
         $this->smVelocity = $this->project->velocity ?? 0;
+        $this->smSprintLength = $this->project->sprint_length ?? 14;
 
         // Set percentage ranges based on project clarity
         $this->setClarityRanges($this->projectClarity);
@@ -202,11 +204,13 @@ class DetailProject extends Component
         $this->validate([
             'smEmployee' => 'required|numeric|min:1',
             'smVelocity' => 'required|numeric|min:1',
+            'smSprintLength' => 'required|numeric|min:1|max:30',
         ]);
 
         $this->project->update([
             'team_size' => $this->smEmployee,
-            'velocity' => $this->smVelocity
+            'velocity' => $this->smVelocity,
+            'sprint_length' => $this->smSprintLength
         ]);
 
         $this->dispatch('software-metrics-saved');
@@ -268,16 +272,17 @@ class DetailProject extends Component
 
         // Set default values if team metrics aren't available
         $velocity = max(1, $this->smVelocity);
+        $sprintLength = max(1, $this->smSprintLength);
         
         // Base time calculation (in sprints) = Story Points / Velocity
         $baseTime = ($this->totalStoryPointsProjectTypeMultiplied / $velocity);
         
-        // Calculate time estimates in weeks (assuming 2 weeks per sprint)
-        $baseTimeInWeeks = $baseTime * 2;
+        // Calculate time estimates in days
+        $baseTimeInDays = $baseTime * $sprintLength;
         
         // S1: Calculate estimates without GSD factors
         // Using a base multiplier of 1.0 for the most likely estimate
-        $this->baseMostLikelyTime = $baseTimeInWeeks * 1.0;
+        $this->baseMostLikelyTime = $baseTimeInDays * 1.0;
         
         // Calculate optimistic and pessimistic using percentage adjustments based on project clarity
         $this->baseOptimisticTime = $this->baseMostLikelyTime * (1 + ($this->optimisticPercentage / 100));
@@ -332,5 +337,14 @@ class DetailProject extends Component
             $result *= $criteriaValue;
         }
         return $result;
+    }
+
+    /**
+     * Helper function to convert days to sprint count
+     */
+    public function daysToSprints($days)
+    {
+        $sprintLength = max(1, $this->smSprintLength);
+        return $days / $sprintLength;
     }
 }

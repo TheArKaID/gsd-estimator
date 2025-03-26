@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string $project_clarity
  * @property string $team_size
  * @property string $velocity
+ * @property string $sprint_length
  * @property string $created_at
  * @property string $updated_at
  * @property StoryPoint[] $storyPoints
