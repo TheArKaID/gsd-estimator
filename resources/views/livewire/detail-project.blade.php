@@ -435,29 +435,29 @@
                                                                 <div class="col-md-4">
                                                                     <div class="border rounded p-3 text-center">
                                                                         <h6>Optimistic Time</h6>
-                                                                        <h3>{{ number_format($baseOptimisticTime / $smSprintLength, 1) }} sprints</h3>
-                                                                        <small>{{ number_format($baseOptimisticTime, 1) }} days</small>
+                                                                        <h3>{{ $sprintBaseOptimisticTime }} sprints</h3>
+                                                                        <small>({{ $formattedBaseOptimisticTime }} days)</small>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     <div class="border rounded p-3 text-center">
                                                                         <h6>Most Likely Time</h6>
-                                                                        <h3>{{ number_format($baseMostLikelyTime / $smSprintLength, 1) }} sprints</h3>
-                                                                        <small>{{ number_format($baseMostLikelyTime, 1) }} days</small>
+                                                                        <h3>{{ $sprintBaseMostLikelyTime }} sprints</h3>
+                                                                        <small>({{ $formattedBaseMostLikelyTime }} days)</small>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     <div class="border rounded p-3 text-center">
                                                                         <h6>Pessimistic Time</h6>
-                                                                        <h3>{{ number_format($basePessimisticTime / $smSprintLength, 1) }} sprints</h3>
-                                                                        <small>{{ number_format($basePessimisticTime, 1) }} days</small>
+                                                                        <h3>{{ $sprintBasePessimisticTime }} sprints</h3>
+                                                                        <small>({{ $formattedBasePessimisticTime }} days)</small>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div class="border rounded p-3 text-center mt-3">
                                                                 <h6>Expected Project Duration (without GSD Factors)</h6>
-                                                                <h3>{{ number_format($baseExpectedTime / $smSprintLength, 1) }} sprints</h3>
-                                                                <p>{{ number_format($baseExpectedTime, 1) }} days</p>
+                                                                <h3>{{ $sprintBaseExpectedTime }} sprints</h3>
+                                                                <p>{{ $formattedBaseExpectedTime }} days</p>
                                                                 <small>Based on PERT formula: (O + 4M + P) / 6</small>
                                                             </div>
                                                         </div>
@@ -473,8 +473,8 @@
                                                                     <div class="card bg-success text-white">
                                                                         <div class="card-body text-center">
                                                                             <h6>Optimistic Time</h6>
-                                                                            <h2>{{ number_format($optimisticTime / $smSprintLength, 1) }} sprints</h2>
-                                                                            <p>{{ number_format($optimisticTime, 1) }} days</p>
+                                                                            <h2>{{ $sprintOptimisticTime }} sprints</h2>
+                                                                            <p>{{ $formattedOptimisticTime }} days</p>
                                                                             <small>Best case scenario</small>
                                                                         </div>
                                                                     </div>
@@ -483,8 +483,8 @@
                                                                     <div class="card bg-primary text-white">
                                                                         <div class="card-body text-center">
                                                                             <h6>Most Likely Time</h6>
-                                                                            <h2>{{ number_format($mostLikelyTime / $smSprintLength, 1) }} sprints</h2>
-                                                                            <p>{{ number_format($mostLikelyTime, 1) }} days</p>
+                                                                            <h2>{{ $sprintMostLikelyTime }} sprints</h2>
+                                                                            <p>{{ $formattedMostLikelyTime }} days</p>
                                                                             <small>Expected scenario</small>
                                                                         </div>
                                                                     </div>
@@ -493,8 +493,8 @@
                                                                     <div class="card bg-warning">
                                                                         <div class="card-body text-center">
                                                                             <h6>Pessimistic Time</h6>
-                                                                            <h2>{{ number_format($pessimisticTime / $smSprintLength, 1) }} sprints</h2>
-                                                                            <p>{{ number_format($pessimisticTime, 1) }} days</p>
+                                                                            <h2>{{ $sprintPessimisticTime }} sprints</h2>
+                                                                            <p>{{ $formattedPessimisticTime }} days</p>
                                                                             <small>Worst case scenario</small>
                                                                         </div>
                                                                     </div>
@@ -508,8 +508,8 @@
                                                                             <p class="mb-0">Based on PERT formula: (O + 4M + P) / 6</p>
                                                                         </div>
                                                                         <div class="col-md-4 text-right">
-                                                                            <h3 class="mb-0">{{ number_format($expectedTime / $smSprintLength, 1) }} sprints</h3>
-                                                                            <p>{{ number_format($expectedTime, 1) }} days</p>
+                                                                            <h3 class="mb-0">{{ $sprintExpectedTime }} sprints</h3>
+                                                                            <p>{{ $formattedExpectedTime }} days</p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -519,8 +519,8 @@
                                                                             <p class="mb-0">Estimation Range (based on Project Clarity)</p>
                                                                         </div>
                                                                         <div class="col-md-4 text-right">
-                                                                            <p class="mb-0">{{ number_format($optimisticTime / $smSprintLength, 1) }} - {{ number_format($pessimisticTime / $smSprintLength, 1) }} sprints</p>
-                                                                            <small>{{ number_format($optimisticTime, 1) }} - {{ number_format($pessimisticTime, 1) }} days</small>
+                                                                            <p class="mb-0">{{ $sprintOptimisticTime }} - {{ $sprintPessimisticTime }} sprints</p>
+                                                                            <small>{{ $formattedOptimisticTime }} - {{ $formattedPessimisticTime }} days</small>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -539,16 +539,16 @@
                                                                     <div class="d-flex justify-content-around align-items-center">
                                                                         <div class="text-center">
                                                                             <h5>Without GSD</h5>
-                                                                            <h3>{{ number_format($baseExpectedTime / $smSprintLength, 1) }} sprints</h3>
-                                                                            <small>{{ number_format($baseExpectedTime, 1) }} days</small>
+                                                                            <h3>{{ $sprintBaseExpectedTime }} sprints</h3>
+                                                                            <small>{{ $formattedBaseExpectedTime }} days</small>
                                                                         </div>
                                                                         <div class="text-center">
                                                                             <i class="fas fa-arrow-right fa-2x"></i>
                                                                         </div>
                                                                         <div class="text-center">
                                                                             <h5>With GSD</h5>
-                                                                            <h3>{{ number_format($expectedTime / $smSprintLength, 1) }} sprints</h3>
-                                                                            <small>{{ number_format($expectedTime, 1) }} days</small>
+                                                                            <h3>{{ $sprintExpectedTime }} sprints</h3>
+                                                                            <small>{{ $formattedExpectedTime }} days</small>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -559,7 +559,7 @@
                                                                             {{ $gsdImpactPercentage > 0 ? '+' : '' }}{{ number_format($gsdImpactPercentage, 1) }}%
                                                                         </h2>
                                                                         <p class="mb-0">
-                                                                            {{ abs(number_format($expectedTime - $baseExpectedTime, 1)) }} days {{ $gsdImpactPercentage > 0 ? 'increase' : 'decrease' }}
+                                                                            {{ $formattedGsdImpactDays }} days {{ $gsdImpactPercentage > 0 ? 'increase' : 'decrease' }}
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -637,25 +637,21 @@
                                                             <tr>
                                                                 <td>68% Confidence (±1σ)</td>
                                                                 <td>
-                                                                    {{ number_format($expectedTime - $standardDeviation, 1) }} to 
-                                                                    {{ number_format($expectedTime + $standardDeviation, 1) }} days
+                                                                    {{ $confidenceInterval68Low }} to 
+                                                                    {{ $confidenceInterval68High }} days
                                                                     <br>
-                                                                    <small>
-                                                                        {{ number_format(($expectedTime - $standardDeviation) / $smSprintLength, 1) }} to 
-                                                                        {{ number_format(($expectedTime + $standardDeviation) / $smSprintLength, 1) }} sprints
-                                                                    </small>
+                                                                    <small>({{ $sprintConfidenceInterval68Low }} to 
+                                                                    {{ $sprintConfidenceInterval68High }} sprints)</small>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>95% Confidence (±2σ)</td>
                                                                 <td>
-                                                                    {{ number_format($expectedTime - (2 * $standardDeviation), 1) }} to 
-                                                                    {{ number_format($expectedTime + (2 * $standardDeviation), 1) }} days
+                                                                    {{ $confidenceInterval95Low }} to 
+                                                                    {{ $confidenceInterval95High }} days
                                                                     <br>
-                                                                    <small>
-                                                                        {{ number_format(($expectedTime - (2 * $standardDeviation)) / $smSprintLength, 1) }} to 
-                                                                        {{ number_format(($expectedTime + (2 * $standardDeviation)) / $smSprintLength, 1) }} sprints
-                                                                    </small>
+                                                                    <small>({{ $sprintConfidenceInterval95Low }} to 
+                                                                    {{ $sprintConfidenceInterval95High }} sprints)</small>
                                                                 </td>
                                                             </tr>
                                                         </table>

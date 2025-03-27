@@ -40,13 +40,45 @@ class DetailProject extends Component
     public $baseMostLikelyTime = 0;
     public $basePessimisticTime = 0;
     public $baseExpectedTime = 0;
+
+    // Additional properties to store sprint-based estimates
+    public $optimisticPercentage = 0;
+    public $pessimisticPercentage = 0;
     
     // Property to track GSD impact
     public $gsdImpactPercentage = 0;
+    public $gsdImpactDays = 0;
 
-    // Properties for percentage adjustments based on project clarity
-    public $optimisticPercentage = 0;
-    public $pessimisticPercentage = 0;
+    // Properties for formatted display values (in days)
+    public $formattedOptimisticTime = '';
+    public $formattedMostLikelyTime = '';
+    public $formattedPessimisticTime = '';
+    public $formattedExpectedTime = '';
+    public $formattedBaseOptimisticTime = '';
+    public $formattedBaseMostLikelyTime = '';
+    public $formattedBasePessimisticTime = '';
+    public $formattedBaseExpectedTime = '';
+    public $formattedGsdImpactDays = '';
+    
+    // Properties for sprint-based values
+    public $sprintOptimisticTime = '';
+    public $sprintMostLikelyTime = '';
+    public $sprintPessimisticTime = '';
+    public $sprintExpectedTime = '';
+    public $sprintBaseOptimisticTime = '';
+    public $sprintBaseMostLikelyTime = '';
+    public $sprintBasePessimisticTime = '';
+    public $sprintBaseExpectedTime = '';
+    
+    // Properties for confidence intervals
+    public $confidenceInterval68Low = '';
+    public $confidenceInterval68High = '';
+    public $confidenceInterval95Low = '';
+    public $confidenceInterval95High = '';
+    public $sprintConfidenceInterval68Low = '';
+    public $sprintConfidenceInterval68High = '';
+    public $sprintConfidenceInterval95Low = '';
+    public $sprintConfidenceInterval95High = '';
 
     function mount($id)
     {
@@ -86,6 +118,9 @@ class DetailProject extends Component
             
         // Calculate project metrics for summary
         $this->calculateEstimation();
+        
+        // Format all display values
+        $this->formatDisplayValues();
             
         return view('livewire.detail-project');
     }
@@ -305,11 +340,61 @@ class DetailProject extends Component
         // Calculate GSD impact as percentage increase/decrease
         if ($this->baseExpectedTime > 0) {
             $this->gsdImpactPercentage = (($this->expectedTime - $this->baseExpectedTime) / $this->baseExpectedTime) * 100;
+            $this->gsdImpactDays = $this->expectedTime - $this->baseExpectedTime;
         } else {
             $this->gsdImpactPercentage = 0;
+            $this->gsdImpactDays = 0;
         }
     }
-    
+
+    /**
+     * Format all display values after calculation
+     */
+    private function formatDisplayValues()
+    {
+        // Format day-based values
+        $this->formattedOptimisticTime = number_format($this->optimisticTime, 1);
+        $this->formattedMostLikelyTime = number_format($this->mostLikelyTime, 1);
+        $this->formattedPessimisticTime = number_format($this->pessimisticTime, 1);
+        $this->formattedExpectedTime = number_format($this->expectedTime, 1);
+        
+        $this->formattedBaseOptimisticTime = number_format($this->baseOptimisticTime, 1);
+        $this->formattedBaseMostLikelyTime = number_format($this->baseMostLikelyTime, 1);
+        $this->formattedBasePessimisticTime = number_format($this->basePessimisticTime, 1);
+        $this->formattedBaseExpectedTime = number_format($this->baseExpectedTime, 1);
+        
+        $this->formattedGsdImpactDays = number_format(abs($this->gsdImpactDays), 1);
+        
+        // Calculate confidence intervals
+        $confidenceInterval68Low = $this->expectedTime - $this->standardDeviation;
+        $confidenceInterval68High = $this->expectedTime + $this->standardDeviation;
+        $confidenceInterval95Low = $this->expectedTime - (2 * $this->standardDeviation);
+        $confidenceInterval95High = $this->expectedTime + (2 * $this->standardDeviation);
+        
+        $this->confidenceInterval68Low = number_format($confidenceInterval68Low, 1);
+        $this->confidenceInterval68High = number_format($confidenceInterval68High, 1);
+        $this->confidenceInterval95Low = number_format($confidenceInterval95Low, 1);
+        $this->confidenceInterval95High = number_format($confidenceInterval95High, 1);
+
+        // Calculate sprint-based values
+        $sprintLength = max(1, $this->smSprintLength);
+        
+        $this->sprintOptimisticTime = number_format($this->optimisticTime / $sprintLength, 1);
+        $this->sprintMostLikelyTime = number_format($this->mostLikelyTime / $sprintLength, 1);
+        $this->sprintPessimisticTime = number_format($this->pessimisticTime / $sprintLength, 1);
+        $this->sprintExpectedTime = number_format($this->expectedTime / $sprintLength, 1);
+        
+        $this->sprintBaseOptimisticTime = number_format($this->baseOptimisticTime / $sprintLength, 1);
+        $this->sprintBaseMostLikelyTime = number_format($this->baseMostLikelyTime / $sprintLength, 1);
+        $this->sprintBasePessimisticTime = number_format($this->basePessimisticTime / $sprintLength, 1);
+        $this->sprintBaseExpectedTime = number_format($this->baseExpectedTime / $sprintLength, 1);
+        
+        $this->sprintConfidenceInterval68Low = number_format($confidenceInterval68Low / $sprintLength, 1);
+        $this->sprintConfidenceInterval68High = number_format($confidenceInterval68High / $sprintLength, 1);
+        $this->sprintConfidenceInterval95Low = number_format($confidenceInterval95Low / $sprintLength, 1);
+        $this->sprintConfidenceInterval95High = number_format($confidenceInterval95High / $sprintLength, 1);
+    }
+
     /**
      * Calculate adjustment factor based on selected global factors
      * 
