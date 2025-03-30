@@ -130,6 +130,11 @@ class DetailProject extends Component
     public $gsdOnlyImpactPercentage = 0;
     public $formattedGsdOnlyImpactDays = '';
 
+    // Add properties for tracking PERT impact
+    public $pertImpactDays = 0;
+    public $pertImpactPercentage = 0;
+    public $formattedPertImpactDays = '';
+
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
@@ -381,44 +386,54 @@ class DetailProject extends Component
         $this->baseOptimisticTime = $this->baseMostLikelyTime * (1 + ($this->optimisticPercentage / 100));
         $this->basePessimisticTime = $this->baseMostLikelyTime * (1 + ($this->pessimisticPercentage / 100));
         
-        // Calculate expected time using PERT formula: (O + 4M + P) / 6
-        $this->baseExpectedTime = ($this->baseOptimisticTime + (4 * $this->baseMostLikelyTime) + $this->basePessimisticTime) / 6;
+        // Set baseExpectedTime equal to baseMostLikelyTime (no PERT)
+        $this->baseExpectedTime = $this->baseMostLikelyTime;
         
         // S2: Apply communication complexity only (no GSD factors)
         $this->commMostLikelyTime = $this->baseMostLikelyTime * $this->communicationComplexityFactor;
         $this->commOptimisticTime = $this->baseOptimisticTime * $this->communicationComplexityFactor;
         $this->commPessimisticTime = $this->basePessimisticTime * $this->communicationComplexityFactor;
-        $this->commExpectedTime = ($this->commOptimisticTime + (4 * $this->commMostLikelyTime) + $this->commPessimisticTime) / 6;
+        
+        // No PERT for communication complexity - just use most likely time
+        $this->commExpectedTime = $this->commMostLikelyTime;
         
         // S3: Apply GSD factors to communication-adjusted estimates for final values
         $this->mostLikelyTime = $this->commMostLikelyTime * $gsdAdjustmentFactor;
         $this->optimisticTime = $this->commOptimisticTime * $gsdAdjustmentFactor;
         $this->pessimisticTime = $this->commPessimisticTime * $gsdAdjustmentFactor;
         
-        // Calculate expected time using PERT formula for final estimate
+        // Calculate expected time using PERT formula for final estimate ONLY
         $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
         
         // Standard deviation: (P - O) / 6
         $this->standardDeviation = ($this->pessimisticTime - $this->optimisticTime) / 6;
         
         // Calculate communication impact as percentage increase/decrease from base
-        if ($this->baseExpectedTime > 0) {
-            $this->communicationImpactPercentage = (($this->commExpectedTime - $this->baseExpectedTime) / $this->baseExpectedTime) * 100;
-            $this->communicationImpactDays = $this->commExpectedTime - $this->baseExpectedTime;
+        // Use most likely times for comparisons
+        if ($this->baseMostLikelyTime > 0) {
+            $this->communicationImpactPercentage = (($this->commMostLikelyTime - $this->baseMostLikelyTime) / $this->baseMostLikelyTime) * 100;
+            $this->communicationImpactDays = $this->commMostLikelyTime - $this->baseMostLikelyTime;
             
-            // Calculate GSD-only impact (from comm-adjusted to final)
-            $this->gsdOnlyImpactDays = $this->expectedTime - $this->commExpectedTime;
-            $this->gsdOnlyImpactPercentage = ($this->commExpectedTime > 0) ? 
-                (($this->expectedTime - $this->commExpectedTime) / $this->commExpectedTime) * 100 : 0;
-                
-            // For backward compatibility, maintain the overall GSD impact (from base to final)
-            $this->gsdImpactPercentage = (($this->expectedTime - $this->baseExpectedTime) / $this->baseExpectedTime) * 100;
-            $this->gsdImpactDays = $this->expectedTime - $this->baseExpectedTime;
+            // Calculate GSD-only impact (compare most likely times)
+            $this->gsdOnlyImpactDays = $this->mostLikelyTime - $this->commMostLikelyTime;
+            $this->gsdOnlyImpactPercentage = ($this->commMostLikelyTime > 0) ? 
+                (($this->mostLikelyTime - $this->commMostLikelyTime) / $this->commMostLikelyTime) * 100 : 0;
+            
+            // Calculate PERT impact (difference between PERT expected and most likely)
+            $this->pertImpactDays = $this->expectedTime - $this->mostLikelyTime;
+            $this->pertImpactPercentage = ($this->mostLikelyTime > 0) ?
+                (($this->expectedTime - $this->mostLikelyTime) / $this->mostLikelyTime) * 100 : 0;
+            
+            // For backward compatibility, calculate overall impact from base to final
+            $this->gsdImpactPercentage = (($this->expectedTime - $this->baseMostLikelyTime) / $this->baseMostLikelyTime) * 100;
+            $this->gsdImpactDays = $this->expectedTime - $this->baseMostLikelyTime;
         } else {
             $this->communicationImpactPercentage = 0;
             $this->communicationImpactDays = 0;
             $this->gsdOnlyImpactDays = 0;
             $this->gsdOnlyImpactPercentage = 0;
+            $this->pertImpactDays = 0;
+            $this->pertImpactPercentage = 0;
             $this->gsdImpactPercentage = 0;
             $this->gsdImpactDays = 0;
         }
@@ -451,6 +466,9 @@ class DetailProject extends Component
         $this->formattedCommunicationImpactDays = number_format(abs($this->communicationImpactDays), 1);
         $this->formattedGsdOnlyImpactDays = number_format(abs($this->gsdOnlyImpactDays), 1);
         $this->formattedGsdImpactDays = number_format(abs($this->gsdImpactDays), 1);
+        
+        // Format PERT impact values
+        $this->formattedPertImpactDays = number_format(abs($this->pertImpactDays), 1);
         
         // Calculate confidence intervals
         $confidenceInterval68Low = $this->expectedTime - $this->standardDeviation;

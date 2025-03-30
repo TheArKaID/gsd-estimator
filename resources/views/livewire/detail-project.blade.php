@@ -514,12 +514,6 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="border rounded p-3 text-center mt-3">
-                                                                <h6>Expected Project Duration (without any factors)</h6>
-                                                                <h3>{{ $sprintBaseExpectedTime }} sprints</h3>
-                                                                <p>{{ $formattedBaseExpectedTime }} days</p>
-                                                                <small>Based on PERT formula: (O + 4M + P) / 6</small>
-                                                            </div>
                                                         </div>
                                                     </div>
                                                     
@@ -551,12 +545,6 @@
                                                                         <small>({{ $formattedCommPessimisticTime }} days)</small>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            <div class="border rounded p-3 text-center mt-3">
-                                                                <h6>Expected Project Duration</h6>
-                                                                <h3>{{ $sprintCommExpectedTime }} sprints</h3>
-                                                                <p>{{ $formattedCommExpectedTime }} days</p>
-                                                                <small>Base estimate adjusted for team size and communication complexity</small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -638,17 +626,17 @@
                                                                     <h4 class="text-center mb-4">Impact on Project Duration</h4>
                                                                     <div class="d-flex justify-content-around align-items-center">
                                                                         <div class="text-center">
-                                                                            <h5>Base Estimate</h5>
-                                                                            <h3>{{ $sprintBaseExpectedTime }} sprints</h3>
-                                                                            <small>{{ $formattedBaseExpectedTime }} days</small>
+                                                                            <h5>Base Duration</h5>
+                                                                            <h3>{{ $sprintBaseMostLikelyTime }} sprints</h3>
+                                                                            <small>{{ $formattedBaseMostLikelyTime }} days</small>
                                                                         </div>
                                                                         <div class="text-center">
                                                                             <i class="fas fa-arrow-right fa-2x"></i>
                                                                         </div>
                                                                         <div class="text-center">
-                                                                            <h5>Communication Complexity</h5>
-                                                                            <h3>{{ $sprintCommExpectedTime }} sprints</h3>
-                                                                            <small>{{ $formattedCommExpectedTime }} days</small>
+                                                                            <h5>With Communication</h5>
+                                                                            <h3>{{ $sprintCommMostLikelyTime }} sprints</h3>
+                                                                            <small>{{ $formattedCommMostLikelyTime }} days</small>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -682,16 +670,16 @@
                                                                     <div class="d-flex justify-content-around align-items-center">
                                                                         <div class="text-center">
                                                                             <h5>Without GSD</h5>
-                                                                            <h3>{{ $sprintCommExpectedTime }} sprints</h3>
-                                                                            <small>{{ $formattedCommExpectedTime }} days</small>
+                                                                            <h3>{{ $sprintCommMostLikelyTime }} sprints</h3>
+                                                                            <small>{{ $formattedCommMostLikelyTime }} days</small>
                                                                         </div>
                                                                         <div class="text-center">
                                                                             <i class="fas fa-arrow-right fa-2x"></i>
                                                                         </div>
                                                                         <div class="text-center">
                                                                             <h5>With GSD</h5>
-                                                                            <h3>{{ $sprintExpectedTime }} sprints</h3>
-                                                                            <small>{{ $formattedExpectedTime }} days</small>
+                                                                            <h3>{{ $sprintMostLikelyTime }} sprints</h3>
+                                                                            <small>{{ $formattedMostLikelyTime }} days</small>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -704,6 +692,47 @@
                                                                         <p class="mb-0">
                                                                             {{ $formattedGsdOnlyImpactDays }} days {{ $gsdOnlyImpactPercentage > 0 ? 'increase' : 'decrease' }}
                                                                         </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- PERT Impact Analysis -->
+                                                    <div class="card mb-4">
+                                                        <div class="card-header bg-info text-white">
+                                                            <h5 class="mb-0">PERT Analysis Impact</h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-md-6">
+                                                                    <h4 class="text-center mb-4">Impact on Final Estimate</h4>
+                                                                    <div class="d-flex justify-content-around align-items-center">
+                                                                        <div class="text-center">
+                                                                            <h5>Most Likely (ML)</h5>
+                                                                            <h3>{{ $sprintMostLikelyTime }} sprints</h3>
+                                                                            <small>{{ $formattedMostLikelyTime }} days</small>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <i class="fas fa-arrow-right fa-2x"></i>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <h5>PERT Expected</h5>
+                                                                            <h3>{{ $sprintExpectedTime }} sprints</h3>
+                                                                            <small>{{ $formattedExpectedTime }} days</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="text-center p-4 bg-info text-white rounded">
+                                                                        <h5>PERT Formula</h5>
+                                                                        <p class="mb-1">(O + 4ML + P) / 6</p>
+                                                                        <h5 class="mt-3">Components</h5>
+                                                                        <p class="mb-1">Optimistic: {{ $sprintOptimisticTime }} sprints</p>
+                                                                        <p class="mb-1">Most Likely: {{ $sprintMostLikelyTime }} sprints × 4</p>
+                                                                        <p class="mb-1">Pessimistic: {{ $sprintPessimisticTime }} sprints</p>
+                                                                        <hr class="bg-white my-2">
+                                                                        <p class="mb-0">= {{ $sprintExpectedTime }} sprints</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
