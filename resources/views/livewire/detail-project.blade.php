@@ -487,7 +487,7 @@
                                                     
                                                     <!-- Base Estimates (without any factors) -->
                                                     <div class="card mb-4">
-                                                        <div class="card-header bg-secondary text-white">
+                                                        <div class="card-header bg-secondary">
                                                             <h5 class="mb-0 text-black">Base Estimates (without any factors)</h5>
                                                         </div>
                                                         <div class="card-body">
@@ -524,28 +524,43 @@
                                                         </div>
                                                         <div class="card-body">
                                                             <div class="row">
-                                                                <div class="col-md-4">
+                                                                <div class="col-md-6">
                                                                     <div class="border rounded p-3 text-center">
-                                                                        <h6>Optimistic Time</h6>
-                                                                        <h3>{{ $sprintCommOptimisticTime }} sprints</h3>
-                                                                        <small>({{ $formattedCommOptimisticTime }} days)</small>
+                                                                        <h6>Base Most Likely Time</h6>
+                                                                        <h3>{{ $sprintBaseMostLikelyTime }} sprints</h3>
+                                                                        <small>({{ $formattedBaseMostLikelyTime }} days)</small>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-4">
+                                                                <div class="col-md-6">
                                                                     <div class="border rounded p-3 text-center">
-                                                                        <h6>Most Likely Time</h6>
+                                                                        <h6>With Communication Complexity</h6>
                                                                         <h3>{{ $sprintCommMostLikelyTime }} sprints</h3>
                                                                         <small>({{ $formattedCommMostLikelyTime }} days)</small>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-4">
-                                                                    <div class="border rounded p-3 text-center">
-                                                                        <h6>Pessimistic Time</h6>
-                                                                        <h3>{{ $sprintCommPessimisticTime }} sprints</h3>
-                                                                        <small>({{ $formattedCommPessimisticTime }} days)</small>
+                                                                        @if($exceedsScrumTeamSize)
+                                                                            <div class="mt-2 p-1 bg-light rounded">
+                                                                                <small>Applied factor: ×{{ number_format($communicationComplexityFactor, 2) }}</small>
+                                                                            </div>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            @if($exceedsScrumTeamSize)
+                                                                <div class="row mt-3">
+                                                                    <div class="col-md-12">
+                                                                        <div class="alert alert-warning">
+                                                                            <div class="d-flex">
+                                                                                <div class="mr-3">
+                                                                                    <i class="fas fa-info-circle fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h5 class="mb-1">Communication Complexity Impact</h5>
+                                                                                    <p class="mb-0">Your team size of {{ $smEmployee }} people creates {{ $communicationChannels }} communication channels, which is {{ $communicationComplexityImpact }}% more than a standard 7-person Scrum team. This additional complexity adds {{ $formattedCommunicationImpactDays }} days to your project timeline.</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                     
@@ -641,13 +656,14 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="text-center p-4 {{ $communicationImpactPercentage > 0 && $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success text-white' }} rounded">
+                                                                    <div class="text-center text-white p-4 {{ $communicationImpactPercentage > 0 && $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success text-white' }} rounded">
                                                                         <h5>Communication Impact</h5>
                                                                         @if($exceedsScrumTeamSize)
                                                                             <h2>+{{ number_format($communicationImpactPercentage, 1) }}%</h2>
                                                                             <p class="mb-0">
                                                                                 {{ $formattedCommunicationImpactDays }} days increase
                                                                             </p>
+                                                                            <small>Multiplier: ×{{ number_format($communicationComplexityFactor, 2) }}</small>
                                                                         @else
                                                                             <h2>0%</h2>
                                                                             <p class="mb-0">Standard Scrum team size - no additional impact</p>
@@ -684,7 +700,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="text-center p-4 {{ $gsdOnlyImpactPercentage > 0 ? 'bg-warning' : 'bg-success' }} rounded">
+                                                                    <div class="text-center text-white p-4 {{ $gsdOnlyImpactPercentage > 0 ? 'bg-warning' : 'bg-success' }} rounded">
                                                                         <h5>GSD Impact</h5>
                                                                         <h2>
                                                                             {{ $gsdOnlyImpactPercentage > 0 ? '+' : '' }}{{ number_format($gsdOnlyImpactPercentage, 1) }}%
