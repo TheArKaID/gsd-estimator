@@ -204,11 +204,11 @@
                                                 <div class="form-group row mb-4">
                                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Size</label>
                                                     <div class="col-sm-12 col-md-7">
-                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size is used for documentation and resource planning purposes only. It does not directly affect, as team velocity already accounts for the team's collective capacity."></i>
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size affects communication complexity. As team size increases, communication channels increase exponentially by the formula n(n-1)/2."></i>
                                                         <input type="number" class="form-control" wire:model="smEmployee" min="1">
                                                         @error('smEmployee') <span class="text-danger">{{ $message }}</span> @enderror
                                                         <small class="form-text text-muted">
-                                                            Enter the number of team members working on this project (for documentation purposes).
+                                                            Enter the number of team members working on this project. Team size directly affects communication complexity.
                                                         </small>
                                                     </div>
                                                 </div>
@@ -242,6 +242,61 @@
                                                     <div class="col-sm-12 col-md-7">
                                                         <button type="submit" class="btn btn-primary">Save Team Information</button>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Add Communication Complexity Card -->
+                                        <div class="card mt-4">
+                                            <div class="card-header {{ $exceedsScrumTeamSize ? 'bg-warning text-white' : 'bg-success text-white' }}">
+                                                <h4 class="text-white">Communication Complexity</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="text-center p-3 border rounded">
+                                                            <h5>Communication Channels</h5>
+                                                            <h2>{{ $communicationChannels }}</h2>
+                                                            <small>Formula: n(n-1)/2 where n = {{ $smEmployee }}</small>
+                                                            <div class="mt-2">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span>Standard Scrum Team (7 people):</span>
+                                                                    <strong>21 channels</strong>
+                                                                </div>
+                                                                <div class="progress mt-1">
+                                                                    <div class="progress-bar {{ $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success' }}" role="progressbar" style="width: {{ min(100, ($communicationChannels / $baselineCommunicationChannels) * 100) }}%" aria-valuenow="{{ $communicationChannels }}" aria-valuemin="0" aria-valuemax="21"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        @if($exceedsScrumTeamSize)
+                                                            <div class="text-center p-3 border rounded bg-warning text-white">
+                                                                <h5>Complexity Impact</h5>
+                                                                <h2>+{{ $communicationComplexityImpact }}%</h2>
+                                                                <p>{{ $communicationComplexityLevel }} complexity level</p>
+                                                                <small>Applied as a multiplier to your estimates</small>
+                                                            </div>
+                                                        @else
+                                                            <div class="text-center p-3 border rounded bg-success text-white">
+                                                                <h5>Complexity Impact</h5>
+                                                                <h2>None</h2>
+                                                                <p>Standard Scrum Team Size</p>
+                                                                <small>No additional complexity factor applied</small>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <p><strong>About Communication Complexity:</strong></p>
+                                                    <p>Communication complexity follows the formula n(n-1)/2, creating an exponential growth in communication channels as team size increases:</p>
+                                                    <ul>
+                                                        <li><strong>Standard Scrum Team (≤7 people):</strong> Up to 21 communication channels - no additional complexity factor</li>
+                                                        <li><strong>8-person Team:</strong> 28 channels - 33% increase from baseline</li>
+                                                        <li><strong>9-person Team:</strong> 36 channels - 71% increase from baseline</li>
+                                                        <li><strong>10-person Team:</strong> 45 channels - 114% increase from baseline</li>
+                                                    </ul>
+                                                    <p>When team size exceeds 7 people, the percentage increase in communication channels is applied as a separate multiplier to the estimated development time.</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -369,6 +424,10 @@
                                                             <td>{{ $smEmployee }} members</td>
                                                         </tr>
                                                         <tr>
+                                                            <td><strong>Communication Channels</strong></td>
+                                                            <td>{{ $communicationChannels }} (Complexity: {{ $communicationComplexityLevel }})</td>
+                                                        </tr>
+                                                        <tr>
                                                             <td><strong>Team's Velocity</strong></td>
                                                             <td>{{ $smVelocity }} points per sprint</td>
                                                         </tr>
@@ -425,10 +484,11 @@
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <!-- Base Estimates (without GSD factors) -->
+                                                    
+                                                    <!-- Base Estimates (without any factors) -->
                                                     <div class="card mb-4">
                                                         <div class="card-header bg-secondary text-white">
-                                                            <h5 class="mb-0">Base Estimates (without GSD Factors)</h5>
+                                                            <h5 class="mb-0 text-black">Base Estimates (without any factors)</h5>
                                                         </div>
                                                         <div class="card-body">
                                                             <div class="row">
@@ -455,14 +515,53 @@
                                                                 </div>
                                                             </div>
                                                             <div class="border rounded p-3 text-center mt-3">
-                                                                <h6>Expected Project Duration (without GSD Factors)</h6>
+                                                                <h6>Expected Project Duration (without any factors)</h6>
                                                                 <h3>{{ $sprintBaseExpectedTime }} sprints</h3>
                                                                 <p>{{ $formattedBaseExpectedTime }} days</p>
                                                                 <small>Based on PERT formula: (O + 4M + P) / 6</small>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <!-- Final Estimates (with GSD factors) -->
+                                                    
+                                                    <!-- Communication Complexity Estimates -->
+                                                    <div class="card mb-4">
+                                                        <div class="card-header {{ $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success text-white' }}">
+                                                            <h5 class="mb-0 text-white">Additional Communication Complexity</h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="border rounded p-3 text-center">
+                                                                        <h6>Optimistic Time</h6>
+                                                                        <h3>{{ $sprintCommOptimisticTime }} sprints</h3>
+                                                                        <small>({{ $formattedCommOptimisticTime }} days)</small>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="border rounded p-3 text-center">
+                                                                        <h6>Most Likely Time</h6>
+                                                                        <h3>{{ $sprintCommMostLikelyTime }} sprints</h3>
+                                                                        <small>({{ $formattedCommMostLikelyTime }} days)</small>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="border rounded p-3 text-center">
+                                                                        <h6>Pessimistic Time</h6>
+                                                                        <h3>{{ $sprintCommPessimisticTime }} sprints</h3>
+                                                                        <small>({{ $formattedCommPessimisticTime }} days)</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="border rounded p-3 text-center mt-3">
+                                                                <h6>Expected Project Duration</h6>
+                                                                <h3>{{ $sprintCommExpectedTime }} sprints</h3>
+                                                                <p>{{ $formattedCommExpectedTime }} days</p>
+                                                                <small>Base estimate adjusted for team size and communication complexity</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Final Estimates (with GSD Factors) -->
                                                     <div class="card mb-4">
                                                         <div class="card-header bg-primary text-white">
                                                             <h5 class="mb-0">Final Estimates (with GSD Factors)</h5>
@@ -527,6 +626,50 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    
+                                                    <!-- Team Communication Impact Analysis -->
+                                                    <div class="card mb-4">
+                                                        <div class="card-header {{ $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success text-white' }}">
+                                                            <h5 class="mb-0 text-white">Communication Complexity Impact Analysis</h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-md-6">
+                                                                    <h4 class="text-center mb-4">Impact on Project Duration</h4>
+                                                                    <div class="d-flex justify-content-around align-items-center">
+                                                                        <div class="text-center">
+                                                                            <h5>Base Estimate</h5>
+                                                                            <h3>{{ $sprintBaseExpectedTime }} sprints</h3>
+                                                                            <small>{{ $formattedBaseExpectedTime }} days</small>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <i class="fas fa-arrow-right fa-2x"></i>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <h5>Communication Complexity</h5>
+                                                                            <h3>{{ $sprintCommExpectedTime }} sprints</h3>
+                                                                            <small>{{ $formattedCommExpectedTime }} days</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="text-center p-4 {{ $communicationImpactPercentage > 0 && $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success text-white' }} rounded">
+                                                                        <h5>Communication Impact</h5>
+                                                                        @if($exceedsScrumTeamSize)
+                                                                            <h2>+{{ number_format($communicationImpactPercentage, 1) }}%</h2>
+                                                                            <p class="mb-0">
+                                                                                {{ $formattedCommunicationImpactDays }} days increase
+                                                                            </p>
+                                                                        @else
+                                                                            <h2>0%</h2>
+                                                                            <p class="mb-0">Standard Scrum team size - no additional impact</p>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
                                                     <!-- GSD Impact Analysis -->
                                                     <div class="card mb-4">
                                                         <div class="card-header bg-dark text-white">
@@ -539,8 +682,8 @@
                                                                     <div class="d-flex justify-content-around align-items-center">
                                                                         <div class="text-center">
                                                                             <h5>Without GSD</h5>
-                                                                            <h3>{{ $sprintBaseExpectedTime }} sprints</h3>
-                                                                            <small>{{ $formattedBaseExpectedTime }} days</small>
+                                                                            <h3>{{ $sprintCommExpectedTime }} sprints</h3>
+                                                                            <small>{{ $formattedCommExpectedTime }} days</small>
                                                                         </div>
                                                                         <div class="text-center">
                                                                             <i class="fas fa-arrow-right fa-2x"></i>
@@ -553,13 +696,13 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="text-center p-4 {{ $gsdImpactPercentage > 0 ? 'bg-warning' : 'bg-success' }} rounded">
+                                                                    <div class="text-center p-4 {{ $gsdOnlyImpactPercentage > 0 ? 'bg-warning' : 'bg-success' }} rounded">
                                                                         <h5>GSD Impact</h5>
                                                                         <h2>
-                                                                            {{ $gsdImpactPercentage > 0 ? '+' : '' }}{{ number_format($gsdImpactPercentage, 1) }}%
+                                                                            {{ $gsdOnlyImpactPercentage > 0 ? '+' : '' }}{{ number_format($gsdOnlyImpactPercentage, 1) }}%
                                                                         </h2>
                                                                         <p class="mb-0">
-                                                                            {{ $formattedGsdImpactDays }} days {{ $gsdImpactPercentage > 0 ? 'increase' : 'decrease' }}
+                                                                            {{ $formattedGsdOnlyImpactDays }} days {{ $gsdOnlyImpactPercentage > 0 ? 'increase' : 'decrease' }}
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -744,12 +887,100 @@
         @this.set('activeTab', 'story-point');
     });
 
-    // document.addEventListener('livewire:update', function () {
-    //     // Reapply active class to GSD Parameters after Livewire update
-    //     @this.projectGlobalFactors.forEach(function(factor) {
-    //         document.querySelector(`input[value="${factor}"]`).closest('label').classList.add('active');
-    //     });
-    // });
+    // Add communication channels visualization
+    document.addEventListener('livewire:load', function () {
+        Livewire.on('software-metrics-saved', function () {
+            renderCommunicationChart();
+        });
+    });
+    
+    function renderCommunicationChart() {
+        const ctx = document.getElementById('communicationChannelsChart');
+        if (!ctx) return;
+        
+        const teamSize = @this.smEmployee;
+        const channels = @this.communicationChannels;
+        const baseline = @this.baselineCommunicationChannels;
+        const exceedsScrumTeamSize = @this.exceedsScrumTeamSize;
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'Team Members', 
+                    'Communication Channels',
+                    exceedsScrumTeamSize ? 'Extra Complexity' : 'Standard Baseline'
+                ],
+                datasets: [{
+                    data: [
+                        teamSize, 
+                        exceedsScrumTeamSize ? baseline : channels,
+                        exceedsScrumTeamSize ? channels - baseline : baseline
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        exceedsScrumTeamSize ? 'rgba(255, 99, 132, 0.7)' : 'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        exceedsScrumTeamSize ? 'rgba(255, 99, 132, 1)' : 'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            generateLabels: function(chart) {
+                                // Custom label generation to include values
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map(function(label, i) {
+                                        const value = data.datasets[0].data[i];
+                                        return {
+                                            text: `${label}: ${value}`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            strokeStyle: data.datasets[0].borderColor[i],
+                                            lineWidth: 1,
+                                            index: i
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Initialize chart when tab is shown
+    document.getElementById('summary-tab').addEventListener('click', function() {
+        setTimeout(renderCommunicationChart, 100);
+    });
+
+    document.addEventListener('livewire:update', function () {
+        // Reapply active class to GSD Parameters after Livewire update
+        @this.projectGlobalFactors.forEach(function(factor) {
+            document.querySelector(`input[value="${factor}"]`).closest('label').classList.add('active');
+        });
+    });
 </script>
 @endpush
 
@@ -779,6 +1010,9 @@
                 position: 'topRight'
             });
         });
+
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
     }, { once: true });
 </script>
 @endscript

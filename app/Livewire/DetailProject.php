@@ -80,6 +80,56 @@ class DetailProject extends Component
     public $sprintConfidenceInterval95Low = '';
     public $sprintConfidenceInterval95High = '';
 
+    // Communication complexity properties
+    public $communicationChannels = 0;
+    public $baselineCommunicationChannels = 21; // For a standard 7-person Scrum team
+    public $communicationComplexityFactor = 1.0;
+    public $communicationComplexityImpact = 0;
+    public $communicationComplexityLevel = '';
+    public $exceedsScrumTeamSize = false;
+
+    // Properties for tracking communication impact separately from GSD
+    public $communicationImpactDays = 0;
+    public $communicationImpactPercentage = 0;
+    public $formattedCommunicationImpactDays = '';
+
+    // Add properties for estimates with only GSD factors (no communication complexity)
+    public $gsdOptimisticTime = 0;
+    public $gsdMostLikelyTime = 0;
+    public $gsdPessimisticTime = 0;
+    public $gsdExpectedTime = 0;
+    
+    public $formattedGsdOptimisticTime = '';
+    public $formattedGsdMostLikelyTime = '';
+    public $formattedGsdPessimisticTime = '';
+    public $formattedGsdExpectedTime = '';
+    
+    public $sprintGsdOptimisticTime = '';
+    public $sprintGsdMostLikelyTime = '';
+    public $sprintGsdPessimisticTime = '';
+    public $sprintGsdExpectedTime = '';
+
+    // Add properties for estimates with only communication factors (no GSD)
+    public $commOptimisticTime = 0;
+    public $commMostLikelyTime = 0;
+    public $commPessimisticTime = 0;
+    public $commExpectedTime = 0;
+    
+    public $formattedCommOptimisticTime = '';
+    public $formattedCommMostLikelyTime = '';
+    public $formattedCommPessimisticTime = '';
+    public $formattedCommExpectedTime = '';
+    
+    public $sprintCommOptimisticTime = '';
+    public $sprintCommMostLikelyTime = '';
+    public $sprintCommPessimisticTime = '';
+    public $sprintCommExpectedTime = '';
+    
+    // Add properties for tracking GSD impact (from comm-only to final)
+    public $gsdOnlyImpactDays = 0;
+    public $gsdOnlyImpactPercentage = 0;
+    public $formattedGsdOnlyImpactDays = '';
+
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
@@ -106,6 +156,9 @@ class DetailProject extends Component
         
         // Set COCOMO parameters based on project type
         $this->setProjectTypeParameters($this->projectType);
+
+        // Calculate initial communication complexity
+        $this->calculateCommunicationComplexity();
     }
 
     public function render()
@@ -116,6 +169,9 @@ class DetailProject extends Component
             })
             ->keyBy('id');
             
+        // Calculate communication complexity whenever needed
+        $this->calculateCommunicationComplexity();
+        
         // Calculate project metrics for summary
         $this->calculateEstimation();
         
@@ -248,6 +304,9 @@ class DetailProject extends Component
             'sprint_length' => $this->smSprintLength
         ]);
 
+        // Recalculate communication complexity when team size changes
+        $this->calculateCommunicationComplexity();
+
         $this->dispatch('software-metrics-saved');
     }
 
@@ -302,9 +361,9 @@ class DetailProject extends Component
         // Round it to the nearest whole number
         $this->totalStoryPointsProjectTypeMultiplied = round($this->totalStoryPoints * $this->projectTypeMultiplier);
 
-        // Get global factor adjustment
-        $adjustmentFactor = $this->calculateAdjustmentFactor();
-
+        // Get GSD factor adjustment (excluding communication complexity)
+        $gsdAdjustmentFactor = $this->calculateGsdAdjustmentFactor();
+        
         // Set default values if team metrics aren't available
         $velocity = max(1, $this->smVelocity);
         $sprintLength = max(1, $this->smSprintLength);
@@ -315,8 +374,7 @@ class DetailProject extends Component
         // Calculate time estimates in days
         $baseTimeInDays = $baseTime * $sprintLength;
         
-        // S1: Calculate estimates without GSD factors
-        // Using a base multiplier of 1.0 for the most likely estimate
+        // S1: Calculate base estimates without any factors
         $this->baseMostLikelyTime = $baseTimeInDays * 1.0;
         
         // Calculate optimistic and pessimistic using percentage adjustments based on project clarity
@@ -326,10 +384,16 @@ class DetailProject extends Component
         // Calculate expected time using PERT formula: (O + 4M + P) / 6
         $this->baseExpectedTime = ($this->baseOptimisticTime + (4 * $this->baseMostLikelyTime) + $this->basePessimisticTime) / 6;
         
-        // S2: Apply GSD factors to all estimates
-        $this->mostLikelyTime = $this->baseMostLikelyTime * $adjustmentFactor;
-        $this->optimisticTime = $this->baseOptimisticTime * $adjustmentFactor;
-        $this->pessimisticTime = $this->basePessimisticTime * $adjustmentFactor;
+        // S2: Apply communication complexity only (no GSD factors)
+        $this->commMostLikelyTime = $this->baseMostLikelyTime * $this->communicationComplexityFactor;
+        $this->commOptimisticTime = $this->baseOptimisticTime * $this->communicationComplexityFactor;
+        $this->commPessimisticTime = $this->basePessimisticTime * $this->communicationComplexityFactor;
+        $this->commExpectedTime = ($this->commOptimisticTime + (4 * $this->commMostLikelyTime) + $this->commPessimisticTime) / 6;
+        
+        // S3: Apply GSD factors to communication-adjusted estimates for final values
+        $this->mostLikelyTime = $this->commMostLikelyTime * $gsdAdjustmentFactor;
+        $this->optimisticTime = $this->commOptimisticTime * $gsdAdjustmentFactor;
+        $this->pessimisticTime = $this->commPessimisticTime * $gsdAdjustmentFactor;
         
         // Calculate expected time using PERT formula for final estimate
         $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
@@ -337,11 +401,24 @@ class DetailProject extends Component
         // Standard deviation: (P - O) / 6
         $this->standardDeviation = ($this->pessimisticTime - $this->optimisticTime) / 6;
         
-        // Calculate GSD impact as percentage increase/decrease
+        // Calculate communication impact as percentage increase/decrease from base
         if ($this->baseExpectedTime > 0) {
+            $this->communicationImpactPercentage = (($this->commExpectedTime - $this->baseExpectedTime) / $this->baseExpectedTime) * 100;
+            $this->communicationImpactDays = $this->commExpectedTime - $this->baseExpectedTime;
+            
+            // Calculate GSD-only impact (from comm-adjusted to final)
+            $this->gsdOnlyImpactDays = $this->expectedTime - $this->commExpectedTime;
+            $this->gsdOnlyImpactPercentage = ($this->commExpectedTime > 0) ? 
+                (($this->expectedTime - $this->commExpectedTime) / $this->commExpectedTime) * 100 : 0;
+                
+            // For backward compatibility, maintain the overall GSD impact (from base to final)
             $this->gsdImpactPercentage = (($this->expectedTime - $this->baseExpectedTime) / $this->baseExpectedTime) * 100;
             $this->gsdImpactDays = $this->expectedTime - $this->baseExpectedTime;
         } else {
+            $this->communicationImpactPercentage = 0;
+            $this->communicationImpactDays = 0;
+            $this->gsdOnlyImpactDays = 0;
+            $this->gsdOnlyImpactPercentage = 0;
             $this->gsdImpactPercentage = 0;
             $this->gsdImpactDays = 0;
         }
@@ -352,17 +429,27 @@ class DetailProject extends Component
      */
     private function formatDisplayValues()
     {
-        // Format day-based values
-        $this->formattedOptimisticTime = number_format($this->optimisticTime, 1);
-        $this->formattedMostLikelyTime = number_format($this->mostLikelyTime, 1);
-        $this->formattedPessimisticTime = number_format($this->pessimisticTime, 1);
-        $this->formattedExpectedTime = number_format($this->expectedTime, 1);
-        
+        // Format day-based values for base estimates
         $this->formattedBaseOptimisticTime = number_format($this->baseOptimisticTime, 1);
         $this->formattedBaseMostLikelyTime = number_format($this->baseMostLikelyTime, 1);
         $this->formattedBasePessimisticTime = number_format($this->basePessimisticTime, 1);
         $this->formattedBaseExpectedTime = number_format($this->baseExpectedTime, 1);
         
+        // Format day-based values for communication-only estimates
+        $this->formattedCommOptimisticTime = number_format($this->commOptimisticTime, 1);
+        $this->formattedCommMostLikelyTime = number_format($this->commMostLikelyTime, 1);
+        $this->formattedCommPessimisticTime = number_format($this->commPessimisticTime, 1);
+        $this->formattedCommExpectedTime = number_format($this->commExpectedTime, 1);
+        
+        // Format day-based values for final estimates
+        $this->formattedOptimisticTime = number_format($this->optimisticTime, 1);
+        $this->formattedMostLikelyTime = number_format($this->mostLikelyTime, 1);
+        $this->formattedPessimisticTime = number_format($this->pessimisticTime, 1);
+        $this->formattedExpectedTime = number_format($this->expectedTime, 1);
+        
+        // Format impact values
+        $this->formattedCommunicationImpactDays = number_format(abs($this->communicationImpactDays), 1);
+        $this->formattedGsdOnlyImpactDays = number_format(abs($this->gsdOnlyImpactDays), 1);
         $this->formattedGsdImpactDays = number_format(abs($this->gsdImpactDays), 1);
         
         // Calculate confidence intervals
@@ -379,16 +466,25 @@ class DetailProject extends Component
         // Calculate sprint-based values
         $sprintLength = max(1, $this->smSprintLength);
         
-        $this->sprintOptimisticTime = number_format($this->optimisticTime / $sprintLength, 1);
-        $this->sprintMostLikelyTime = number_format($this->mostLikelyTime / $sprintLength, 1);
-        $this->sprintPessimisticTime = number_format($this->pessimisticTime / $sprintLength, 1);
-        $this->sprintExpectedTime = number_format($this->expectedTime / $sprintLength, 1);
-        
+        // Sprint-based values for base estimates
         $this->sprintBaseOptimisticTime = number_format($this->baseOptimisticTime / $sprintLength, 1);
         $this->sprintBaseMostLikelyTime = number_format($this->baseMostLikelyTime / $sprintLength, 1);
         $this->sprintBasePessimisticTime = number_format($this->basePessimisticTime / $sprintLength, 1);
         $this->sprintBaseExpectedTime = number_format($this->baseExpectedTime / $sprintLength, 1);
         
+        // Sprint-based values for communication-only estimates
+        $this->sprintCommOptimisticTime = number_format($this->commOptimisticTime / $sprintLength, 1);
+        $this->sprintCommMostLikelyTime = number_format($this->commMostLikelyTime / $sprintLength, 1);
+        $this->sprintCommPessimisticTime = number_format($this->commPessimisticTime / $sprintLength, 1);
+        $this->sprintCommExpectedTime = number_format($this->commExpectedTime / $sprintLength, 1);
+        
+        // Sprint-based values for final estimates
+        $this->sprintOptimisticTime = number_format($this->optimisticTime / $sprintLength, 1);
+        $this->sprintMostLikelyTime = number_format($this->mostLikelyTime / $sprintLength, 1);
+        $this->sprintPessimisticTime = number_format($this->pessimisticTime / $sprintLength, 1);
+        $this->sprintExpectedTime = number_format($this->expectedTime / $sprintLength, 1);
+        
+        // Sprint-based confidence intervals
         $this->sprintConfidenceInterval68Low = number_format($confidenceInterval68Low / $sprintLength, 1);
         $this->sprintConfidenceInterval68High = number_format($confidenceInterval68High / $sprintLength, 1);
         $this->sprintConfidenceInterval95Low = number_format($confidenceInterval95Low / $sprintLength, 1);
@@ -396,11 +492,11 @@ class DetailProject extends Component
     }
 
     /**
-     * Calculate adjustment factor based on selected global factors
+     * Calculate adjustment factor based on selected global factors (GSD only)
      * 
      * @return float The cumulative adjustment factor
      */
-    private function calculateAdjustmentFactor()
+    private function calculateGsdAdjustmentFactor()
     {
         $result = 1.0;
         
@@ -422,6 +518,57 @@ class DetailProject extends Component
             $result *= $criteriaValue;
         }
         return $result;
+    }
+    
+    /**
+     * Calculate overall adjustment factor (for backward compatibility)
+     * 
+     * @return float The cumulative adjustment factor including communication complexity
+     */
+    private function calculateAdjustmentFactor()
+    {
+        $gsdFactor = $this->calculateGsdAdjustmentFactor();
+        $commFactor = $this->exceedsScrumTeamSize ? $this->communicationComplexityFactor : 1.0;
+        return $gsdFactor * $commFactor;
+    }
+
+    /**
+     * Calculate communication complexity based on team size
+     * Using a standard Scrum Team (7 people, 21 links) as baseline
+     */
+    private function calculateCommunicationComplexity()
+    {
+        $teamSize = max(1, $this->smEmployee);
+        
+        // Calculate communication channels using the formula: n(n-1)/2
+        $this->communicationChannels = ($teamSize * ($teamSize - 1)) / 2;
+        
+        // Use a 7-person team (21 communication links) as the baseline
+        if ($teamSize <= 7) {
+            // No additional complexity for standard Scrum team size
+            $this->communicationComplexityLevel = 'Standard';
+            $this->communicationComplexityFactor = 1.0;
+            $this->communicationComplexityImpact = 0;
+            $this->exceedsScrumTeamSize = false;
+        } else {
+            // Calculate percentage increase from baseline (21 links)
+            $increasePercentage = (($this->communicationChannels - $this->baselineCommunicationChannels) / $this->baselineCommunicationChannels) * 100;
+            $this->communicationComplexityImpact = round($increasePercentage);
+            
+            // Convert to multiplier: 25% increase = 1.25x multiplier
+            $this->communicationComplexityFactor = 1 + ($increasePercentage / 100);
+            
+            // Set complexity level based on percentage increase
+            if ($increasePercentage <= 50) {
+                $this->communicationComplexityLevel = 'Elevated';
+            } elseif ($increasePercentage <= 100) {
+                $this->communicationComplexityLevel = 'High';
+            } else {
+                $this->communicationComplexityLevel = 'Very High';
+            }
+            
+            $this->exceedsScrumTeamSize = true;
+        }
     }
 
     /**
