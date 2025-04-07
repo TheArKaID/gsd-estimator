@@ -82,7 +82,7 @@ class DetailProject extends Component
 
     // Communication complexity properties
     public $communicationChannels = 0;
-    public $baselineCommunicationChannels = 21; // For a standard 7-person Scrum team
+    public $baselineCommunicationChannels = 45; // For a standard 10-person Scrum team
     public $communicationComplexityFactor = 1.0;
     public $communicationComplexityImpact = 0;
     public $communicationComplexityLevel = '';
@@ -552,7 +552,7 @@ class DetailProject extends Component
 
     /**
      * Calculate communication complexity based on team size
-     * Using a standard Scrum Team (7 people, 21 links) as baseline
+     * Using a standard Scrum Team (10 people, 45 links) as baseline
      */
     private function calculateCommunicationComplexity()
     {
@@ -561,15 +561,15 @@ class DetailProject extends Component
         // Calculate communication channels using the formula: n(n-1)/2
         $this->communicationChannels = ($teamSize * ($teamSize - 1)) / 2;
         
-        // Use a 7-person team (21 communication links) as the baseline
-        if ($teamSize <= 7) {
+        // Use a 10-person team (45 communication links) as the baseline
+        if ($teamSize <= 10) {
             // No additional complexity for standard Scrum team size
             $this->communicationComplexityLevel = 'Standard';
             $this->communicationComplexityFactor = 1.0;
             $this->communicationComplexityImpact = 0;
             $this->exceedsScrumTeamSize = false;
         } else {
-            // Calculate percentage increase from baseline (21 links)
+            // Calculate percentage increase from baseline (45 links)
             $increasePercentage = (($this->communicationChannels - $this->baselineCommunicationChannels) / $this->baselineCommunicationChannels) * 100;
             $this->communicationComplexityImpact = round($increasePercentage);
             
