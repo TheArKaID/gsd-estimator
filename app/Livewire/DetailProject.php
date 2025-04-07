@@ -537,18 +537,6 @@ class DetailProject extends Component
         }
         return $result;
     }
-    
-    /**
-     * Calculate overall adjustment factor (for backward compatibility)
-     * 
-     * @return float The cumulative adjustment factor including communication complexity
-     */
-    private function calculateAdjustmentFactor()
-    {
-        $gsdFactor = $this->calculateGsdAdjustmentFactor();
-        $commFactor = $this->exceedsScrumTeamSize ? $this->communicationComplexityFactor : 1.0;
-        return $gsdFactor * $commFactor;
-    }
 
     /**
      * Calculate communication complexity based on team size
