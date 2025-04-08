@@ -2,7 +2,7 @@ FROM dunglas/frankenphp
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    git unzip netcat-openbsd supervisor
+    git zip unzip netcat-openbsd supervisor
 
 RUN install-php-extensions \
     gd pcntl opcache pdo pdo_mysql
