@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\GlobalFactor;
 use App\Models\Project;
 use App\Models\ProjectGlobalFactor;
+use App\Services\GsdEstimationService;
 use Livewire\Component;
 
 class DetailProject extends Component
@@ -135,6 +136,14 @@ class DetailProject extends Component
     public $pertImpactPercentage = 0;
     public $formattedPertImpactDays = '';
 
+    // Inject GSD Estimation Service
+    protected $gsdService;
+
+    public function boot(GsdEstimationService $gsdService)
+    {
+        $this->gsdService = $gsdService;
+    }
+
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
@@ -173,11 +182,8 @@ class DetailProject extends Component
                 return in_array($factor->id, $this->projectGlobalFactors);
             })
             ->keyBy('id');
-            
-        // Calculate communication complexity whenever needed
-        $this->calculateCommunicationComplexity();
         
-        // Calculate project metrics for summary
+        // Calculate project metrics for summary using service
         $this->calculateEstimation();
         
         // Format all display values
@@ -238,17 +244,11 @@ class DetailProject extends Component
      */
     private function setClarityRanges($clarity)
     {
-        $ranges = [
-            'conceptual' => ['optimistic' => -25, 'pessimistic' => 75, 'summary' => 'Range: -25% to +75%'],
-            'evolving' => ['optimistic' => -10, 'pessimistic' => 25, 'summary' => 'Range: -10% to +25%'],
-            'established' => ['optimistic' => -5, 'pessimistic' => 10, 'summary' => 'Range: -5% to +10%)']
-        ];
-
-        $selectedRange = $ranges[$clarity] ?? $ranges['evolving'];
+        $ranges = $this->gsdService->getClarityRanges($clarity);
         
-        $this->optimisticPercentage = $selectedRange['optimistic'];
-        $this->pessimisticPercentage = $selectedRange['pessimistic'];
-        $this->claritySummary = $selectedRange['summary'];
+        $this->optimisticPercentage = $ranges['optimistic'];
+        $this->pessimisticPercentage = $ranges['pessimistic'];
+        $this->claritySummary = $ranges['summary'];
     }
 
     public function saveGsdParameters()
@@ -309,9 +309,6 @@ class DetailProject extends Component
             'sprint_length' => $this->smSprintLength
         ]);
 
-        // Recalculate communication complexity when team size changes
-        $this->calculateCommunicationComplexity();
-
         $this->dispatch('software-metrics-saved');
     }
 
@@ -339,104 +336,99 @@ class DetailProject extends Component
      */
     private function setProjectTypeParameters($type)
     {
+        $typeMultiplier = $this->gsdService->getProjectTypeMultiplier($type);
+        
         $parameters = [
             'organic' => ['coefficient' => 2.4, 'exponent' => 1.05], // Baseline
             'semi-detached' => ['coefficient' => 3.0, 'exponent' => 1.12],
             'embedded' => ['coefficient' => 3.6, 'exponent' => 1.20]
         ];
 
-        // Semi-detached: 3.0 / 2.4 = 1.25 => increase 25%
-        // Embedded: 3.6 / 2.4 = 1.5 => increase 50%
-        $baseMultiplier = $parameters['organic']['coefficient'] * (1 ** $parameters['organic']['exponent']);
-
         $selected = $parameters[$type] ?? $parameters['organic'];
         
         $this->projectTypeCoefficient = $selected['coefficient'];
         $this->projectTypeExponent = $selected['exponent'];
-        $this->projectTypeMultiplier = $selected['coefficient'] / $baseMultiplier;
+        $this->projectTypeMultiplier = $typeMultiplier;
     }
 
     /**
-     * Calculate effort estimation based on story points and team's avg velocity
+     * Calculate effort estimation using the GsdEstimationService
      */
-    public function calculateEstimation()
+    private function calculateEstimation()
     {
-        // Calculate total story points
-        $this->totalStoryPoints = collect($this->project->storyPoints)->sum('value');
-        // Round it to the nearest whole number
-        $this->totalStoryPointsProjectTypeMultiplied = round($this->totalStoryPoints * $this->projectTypeMultiplier);
-
-        // Get GSD factor adjustment (excluding communication complexity)
-        $gsdAdjustmentFactor = $this->calculateGsdAdjustmentFactor();
+        // Ensure project relationships are loaded
+        $this->project->refresh()->load(['storyPoints', 'projectGlobalFactors.globalFactorCriteria']);
         
-        // Set default values if team metrics aren't available
-        $velocity = max(1, $this->smVelocity);
-        $sprintLength = max(1, $this->smSprintLength);
+        // Use the service to calculate all estimation data
+        $estimationData = $this->gsdService->calculateProjectEstimation($this->project);
         
-        // Base time calculation (in sprints) = Story Points / Velocity
-        $baseTime = ($this->totalStoryPointsProjectTypeMultiplied / $velocity);
+        // Update total story points data
+        $this->totalStoryPoints = $estimationData['total_story_points'];
+        $this->totalStoryPointsProjectTypeMultiplied = $estimationData['adjusted_story_points'];
         
-        // Calculate time estimates in days
-        $baseTimeInDays = $baseTime * $sprintLength;
+        // Update base estimates
+        $this->baseOptimisticTime = $estimationData['base']['optimistic'];
+        $this->baseMostLikelyTime = $estimationData['base']['most_likely'];
+        $this->basePessimisticTime = $estimationData['base']['pessimistic'];
+        $this->baseExpectedTime = $estimationData['base']['expected'];
         
-        // S1: Calculate base estimates without any factors
-        $this->baseMostLikelyTime = $baseTimeInDays * 1.0;
+        // Update communication-adjusted estimates
+        $this->commOptimisticTime = $estimationData['with_communication']['optimistic'];
+        $this->commMostLikelyTime = $estimationData['with_communication']['most_likely'];
+        $this->commPessimisticTime = $estimationData['with_communication']['pessimistic'];
+        $this->commExpectedTime = $estimationData['with_communication']['expected'];
         
-        // Calculate optimistic and pessimistic using percentage adjustments based on project clarity
-        $this->baseOptimisticTime = $this->baseMostLikelyTime * (1 + ($this->optimisticPercentage / 100));
-        $this->basePessimisticTime = $this->baseMostLikelyTime * (1 + ($this->pessimisticPercentage / 100));
+        // Update final estimates with GSD factors
+        $this->optimisticTime = $estimationData['final']['optimistic'];
+        $this->mostLikelyTime = $estimationData['final']['most_likely'];
+        $this->pessimisticTime = $estimationData['final']['pessimistic'];
+        $this->expectedTime = $estimationData['final']['expected'];
+        $this->standardDeviation = $estimationData['final']['standard_deviation'];
         
-        // Set baseExpectedTime equal to baseMostLikelyTime (no PERT)
-        $this->baseExpectedTime = $this->baseMostLikelyTime;
+        // Update communication complexity data
+        $this->communicationChannels = $estimationData['communication']['channels'];
+        $this->communicationComplexityFactor = $estimationData['communication']['factor'];
+        $this->communicationComplexityImpact = $estimationData['communication']['impact'];
+        $this->communicationComplexityLevel = $estimationData['communication']['level'];
+        $this->exceedsScrumTeamSize = $estimationData['communication']['exceeds_baseline'];
         
-        // S2: Apply communication complexity only (no GSD factors)
-        $this->commMostLikelyTime = $this->baseMostLikelyTime * $this->communicationComplexityFactor;
-        $this->commOptimisticTime = $this->baseOptimisticTime * $this->communicationComplexityFactor;
-        $this->commPessimisticTime = $this->basePessimisticTime * $this->communicationComplexityFactor;
-        
-        // No PERT for communication complexity - just use most likely time
-        $this->commExpectedTime = $this->commMostLikelyTime;
-        
-        // S3: Apply GSD factors to communication-adjusted estimates for final values
-        $this->mostLikelyTime = $this->commMostLikelyTime * $gsdAdjustmentFactor;
-        $this->optimisticTime = $this->commOptimisticTime * $gsdAdjustmentFactor;
-        $this->pessimisticTime = $this->commPessimisticTime * $gsdAdjustmentFactor;
-        
-        // Calculate expected time using PERT formula for final estimate ONLY
-        $this->expectedTime = ($this->optimisticTime + (4 * $this->mostLikelyTime) + $this->pessimisticTime) / 6;
-        
-        // Standard deviation: (P - O) / 6
-        $this->standardDeviation = ($this->pessimisticTime - $this->optimisticTime) / 6;
-        
-        // Calculate communication impact as percentage increase/decrease from base
-        // Use most likely times for comparisons
+        // Calculate impact percentages and days
         if ($this->baseMostLikelyTime > 0) {
+            // Communication impact
             $this->communicationImpactPercentage = (($this->commMostLikelyTime - $this->baseMostLikelyTime) / $this->baseMostLikelyTime) * 100;
             $this->communicationImpactDays = $this->commMostLikelyTime - $this->baseMostLikelyTime;
             
-            // Calculate GSD-only impact (compare most likely times)
+            // GSD-only impact
             $this->gsdOnlyImpactDays = $this->mostLikelyTime - $this->commMostLikelyTime;
             $this->gsdOnlyImpactPercentage = ($this->commMostLikelyTime > 0) ? 
                 (($this->mostLikelyTime - $this->commMostLikelyTime) / $this->commMostLikelyTime) * 100 : 0;
             
-            // Calculate PERT impact (difference between PERT expected and most likely)
+            // PERT impact
             $this->pertImpactDays = $this->expectedTime - $this->mostLikelyTime;
             $this->pertImpactPercentage = ($this->mostLikelyTime > 0) ?
                 (($this->expectedTime - $this->mostLikelyTime) / $this->mostLikelyTime) * 100 : 0;
             
-            // For backward compatibility, calculate overall impact from base to final
+            // Total GSD impact
             $this->gsdImpactPercentage = (($this->expectedTime - $this->baseMostLikelyTime) / $this->baseMostLikelyTime) * 100;
             $this->gsdImpactDays = $this->expectedTime - $this->baseMostLikelyTime;
         } else {
-            $this->communicationImpactPercentage = 0;
-            $this->communicationImpactDays = 0;
-            $this->gsdOnlyImpactDays = 0;
-            $this->gsdOnlyImpactPercentage = 0;
-            $this->pertImpactDays = 0;
-            $this->pertImpactPercentage = 0;
-            $this->gsdImpactPercentage = 0;
-            $this->gsdImpactDays = 0;
+            $this->resetImpactValues();
         }
+    }
+    
+    /**
+     * Reset impact values when base time is zero or not available
+     */
+    private function resetImpactValues()
+    {
+        $this->communicationImpactPercentage = 0;
+        $this->communicationImpactDays = 0;
+        $this->gsdOnlyImpactDays = 0;
+        $this->gsdOnlyImpactPercentage = 0;
+        $this->pertImpactDays = 0;
+        $this->pertImpactPercentage = 0;
+        $this->gsdImpactPercentage = 0;
+        $this->gsdImpactDays = 0;
     }
 
     /**
@@ -510,71 +502,18 @@ class DetailProject extends Component
     }
 
     /**
-     * Calculate adjustment factor based on selected global factors (GSD only)
-     * 
-     * @return float The cumulative adjustment factor
-     */
-    private function calculateGsdAdjustmentFactor()
-    {
-        $result = 1.0;
-        
-        // If no global factors are selected, return default values
-        if (empty($this->projectGlobalFactors)) {
-            return $result;
-        }
-        
-        // Get the project's global factors with their criteria
-        $selectedFactors = $this->project->projectGlobalFactors()
-            ->with('globalFactorCriteria')
-            ->get();
-
-        foreach ($selectedFactors as $factor) {
-            // Get the criteria selected for this factor
-            $criteriaValue = $factor->globalFactorCriteria->value ?? 1.0;
-
-            // Multiply to get the cumulative effect
-            $result *= $criteriaValue;
-        }
-        return $result;
-    }
-
-    /**
      * Calculate communication complexity based on team size
-     * Using a standard Scrum Team (10 people, 45 links) as baseline
+     * This is for backward compatibility, now using the service for calculations
      */
     private function calculateCommunicationComplexity()
     {
-        $teamSize = max(1, $this->smEmployee);
+        $commData = $this->gsdService->calculateCommunicationComplexity($this->smEmployee);
         
-        // Calculate communication channels using the formula: n(n-1)/2
-        $this->communicationChannels = ($teamSize * ($teamSize - 1)) / 2;
-        
-        // Use a 10-person team (45 communication links) as the baseline
-        if ($teamSize <= 10) {
-            // No additional complexity for standard Scrum team size
-            $this->communicationComplexityLevel = 'Standard';
-            $this->communicationComplexityFactor = 1.0;
-            $this->communicationComplexityImpact = 0;
-            $this->exceedsScrumTeamSize = false;
-        } else {
-            // Calculate percentage increase from baseline (45 links)
-            $increasePercentage = (($this->communicationChannels - $this->baselineCommunicationChannels) / $this->baselineCommunicationChannels) * 100;
-            $this->communicationComplexityImpact = round($increasePercentage);
-            
-            // Convert to multiplier: 25% increase = 1.25x multiplier
-            $this->communicationComplexityFactor = 1 + ($increasePercentage / 100);
-            
-            // Set complexity level based on percentage increase
-            if ($increasePercentage <= 50) {
-                $this->communicationComplexityLevel = 'Elevated';
-            } elseif ($increasePercentage <= 100) {
-                $this->communicationComplexityLevel = 'High';
-            } else {
-                $this->communicationComplexityLevel = 'Very High';
-            }
-            
-            $this->exceedsScrumTeamSize = true;
-        }
+        $this->communicationChannels = $commData['channels'];
+        $this->communicationComplexityFactor = $commData['factor'];
+        $this->communicationComplexityImpact = $commData['impact'];
+        $this->communicationComplexityLevel = $commData['level'];
+        $this->exceedsScrumTeamSize = $commData['exceeds_baseline'];
     }
 
     /**
