@@ -228,7 +228,7 @@ class GsdEstimationService
         $difference = abs($estimate - $actual);
         
         // Calculate percentage difference
-        $percentDifference = round(($difference / $actual) * 100, 2);
+        $percentDifference = round(100 - ($difference / $actual) * 100, 2);
         
         // Determine if estimate was over, under, or exact
         $type = 'exact';
