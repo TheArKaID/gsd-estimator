@@ -40,9 +40,9 @@
                 <td>
                     @if($project['actual_effort'])
                         @if($project['vs_estimation_better'] === true)
-                            GSD (more accurate by {{ $project['previous_accuracy_percent'] - $project['gsd_accuracy_percent'] }}%)
+                            GSD (more accurate by {{ $project['gsd_accuracy_percent'] - $project['previous_accuracy_percent'] }}%)
                         @elseif($project['vs_estimation_better'] === false)
-                            Previous (more accurate by {{ $project['gsd_accuracy_percent'] - $project['previous_accuracy_percent'] }}%)
+                            Previous (more accurate by {{ $project['previous_accuracy_percent'] - $project['gsd_accuracy_percent'] }}%)
                         @else
                             Equal accuracy
                         @endif
