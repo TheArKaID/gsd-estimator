@@ -7,6 +7,18 @@
                 <div class="breadcrumb-item">{{ $project->name }}</div>
             </div>
         </div>
+
+        <!-- Show ownership status message -->
+        @if(!$isOwner)
+        <div class="alert alert-warning">
+            <div class="alert-title">View-Only Mode</div>
+            <p>You are viewing this project in read-only mode because you are not the project owner. 
+               Only the user who created this project can make changes.</p>
+            <p><small>Your Session ID: <span id="detail-user-session-display">{{ substr($sessionId, 0, 8) }}...</span></small></p>
+            <p><small>Project Owner ID: {{ substr($project->session_id, 0, 8) }}...</small></p>
+        </div>
+        @endif
+
         <div class="section-body">
             <div class="card card-body" wire:loading.class='opacity-50'>
                 <div class="row mt-4">
@@ -1025,7 +1037,28 @@
 
 @script
 <script>
-    window.addEventListener('livewire:navigated', function() {
+    document.addEventListener('livewire:navigated', function() {
+        // Handle session ID persistence
+        let userSessionId = localStorage.getItem('gsd_user_session_id');
+        
+        // If no session ID exists in localStorage, generate one
+        if (!userSessionId) {
+            userSessionId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            localStorage.setItem('gsd_user_session_id', userSessionId);
+        }
+        
+        // Update display if element exists
+        const displayElement = document.getElementById('detail-user-session-display');
+        if (displayElement) {
+            displayElement.textContent = userSessionId.substring(0, 8) + '...';
+        }
+        
+        // Send session ID to Livewire component
+        Livewire.dispatch('setSessionId', { sessionId: userSessionId });
+
         $wire.on('story-point-added', function () {
             iziToast.success({
                 title: 'Success',
@@ -1033,19 +1066,12 @@
                 position: 'topRight'
             });
         });
-
-        $wire.on('story-point-deleted', function () {
-            iziToast.success({
-                title: 'Success',
-                message: 'Story point deleted successfully.',
-                position: 'topRight'
-            });
-        });
-
-        $wire.on('software-metrics-saved', function () {
-            iziToast.success({
-                title: 'Success',
-                message: 'Team information saved successfully.',
+        
+        // Add event handler for error alerts
+        $wire.on('showAlert', function(data) {
+            iziToast[data[0].type]({
+                title: data[0].type.charAt(0).toUpperCase() + data[0].type.slice(1),
+                message: data[0].message,
                 position: 'topRight'
             });
         });

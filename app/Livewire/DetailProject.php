@@ -6,12 +6,14 @@ use App\Models\GlobalFactor;
 use App\Models\Project;
 use App\Models\ProjectGlobalFactor;
 use App\Services\GsdEstimationService;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class DetailProject extends Component
 {
     public Project $project;
-    protected $sessionId;
+    public $sessionId = null;
+    public $isOwner = true;
 
     public $spName, $spDescription, $spValue, $customSpValue;
     public $projectClarity;
@@ -115,20 +117,35 @@ class DetailProject extends Component
     // Inject GSD Estimation Service
     protected $gsdService;
 
+    /**
+     * Receive session ID from the frontend
+     */
+    #[On('setSessionId')]
+    public function setSessionId($sessionId)
+    {
+        $this->sessionId = $sessionId;
+        // Check if the user is the project owner after receiving the session ID
+        $this->checkProjectOwnership();
+    }
+
     public function boot(GsdEstimationService $gsdService)
     {
         $this->gsdService = $gsdService;
 
-        if (!session()->has('user_session_id')) {
-            return redirect('/');
+        // Create temporary ID for initial render
+        if (!$this->sessionId) {
+            $this->sessionId = 'gsd-' . uniqid();
         }
-        $this->sessionId = session('user_session_id');
-        
     }
 
     function mount($id)
     {
         $this->project = Project::with(['storyPoints', 'globalFactors'])->find($id);
+
+        if (!$this->project) {
+            return redirect()->to('/')->with('message', 'Project not found');
+        }
+
         $this->projectClarity = $this->project->project_clarity ?? 'evolving';
         $this->projectType = $this->project->project_type ?? 'organic';  // Set default project type
 
@@ -157,6 +174,20 @@ class DetailProject extends Component
         $this->calculateCommunicationComplexity();
     }
 
+    /**
+     * Check if the current user is the project owner
+     */
+    private function checkProjectOwnership()
+    {
+        // Don't validate ownership if using temporary ID
+        if (str_starts_with($this->sessionId, 'gsd-')) {
+            $this->isOwner = false;
+            return;
+        }
+
+        $this->isOwner = ($this->project->session_id === $this->sessionId);
+    }
+
     public function render()
     {
         $this->projectGlobalFactorModels = collect($this->globalFactors)
@@ -174,8 +205,27 @@ class DetailProject extends Component
         return view('livewire.detail-project');
     }
 
+    /**
+     * Verify the current user can edit this project
+     */
+    private function verifyOwnership()
+    {
+        if (!$this->isOwner) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'You are not authorized to modify this project'
+            ]);
+            return false;
+        }
+        return true;
+    }
+
     public function saveStoryPoint()
     {
+        if (!$this->verifyOwnership()) {
+            return;
+        }
+
         $this->validate([
             'spName' => 'required',
             'spDescription' => 'nullable',
@@ -200,6 +250,10 @@ class DetailProject extends Component
 
     public function deleteStoryPoint($id)
     {
+        if (!$this->verifyOwnership()) {
+            return;
+        }
+
         $this->project->storyPoints()->find($id)->delete();
 
         $this->dispatch('story-point-deleted', $id);
@@ -207,6 +261,10 @@ class DetailProject extends Component
 
     function saveProjectClarity()
     {
+        if (!$this->verifyOwnership()) {
+            return;
+        }
+
         $this->validate([
             'projectClarity' => 'required'
         ]);
@@ -235,6 +293,10 @@ class DetailProject extends Component
 
     public function saveGsdParameters()
     {
+        if (!$this->verifyOwnership()) {
+            return;
+        }
+
         $this->validate([
             'projectGlobalFactors' => 'array',
         ]);
@@ -264,6 +326,10 @@ class DetailProject extends Component
 
     public function selectCriteria($factorId, $criteriaId)
     {
+        if (!$this->verifyOwnership()) {
+            return;
+        }
+
         ProjectGlobalFactor::updateOrCreate(
             [
                 'project_id' => $this->project->id,
@@ -279,6 +345,10 @@ class DetailProject extends Component
 
     public function saveSoftwareMetrics()
     {
+        if (!$this->verifyOwnership()) {
+            return;
+        }
+
         $this->validate([
             'smEmployee' => 'required|numeric|min:1',
             'smVelocity' => 'required|numeric|min:1',
@@ -299,6 +369,10 @@ class DetailProject extends Component
      */
     function saveProjectType()
     {
+        if (!$this->verifyOwnership()) {
+            return;
+        }
+
         $this->validate([
             'projectType' => 'required|in:organic,semi-detached,embedded'
         ]);
