@@ -847,12 +847,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                        <div class="text-right mt-3">
-                                            <button class="btn btn-primary" onclick="window.print()">
-                                                <i class="fas fa-print"></i> Print Summary
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
