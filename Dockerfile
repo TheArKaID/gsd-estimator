@@ -2,10 +2,14 @@ FROM dunglas/frankenphp
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    git zip unzip netcat-openbsd supervisor
+    git zip unzip netcat-openbsd supervisor \
+    libzip-dev
 
 RUN install-php-extensions \
-    gd pcntl opcache pdo pdo_mysql
+    gd pcntl opcache pdo pdo_mysql zip
+
+# Verify ZIP extension is installed
+RUN php -m | grep -i zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
