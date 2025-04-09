@@ -1,12 +1,17 @@
 <div class="main-content">
     <section class="section">
-        <p class="section-lead" style="margin: 0px"><small class="text-muted">Session ID: {{ substr(session('user_session_id'), 0, 8) }}...</small></p>
+        <p class="section-lead" style="margin: 0px"><small class="text-muted">Session ID: <span id="user-session-display">{{ substr($sessionId, 0, 8) }}...</span></small></p>
         <div class="section-header">
             <h1>Dashboard</h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item">Dashboard</div>
             </div>
         </div>
+        
+        <div class="section-lead mb-3">
+            <small class="text-muted">Session ID: </small>
+        </div>
+        
         <div class="section-body">
             <div class="row mb-4">
                 <div class="col-md-12 text-right">
@@ -156,6 +161,28 @@
 @script
     <script>
         document.addEventListener('livewire:navigated', function () {
+            // UUID generation function
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            // Check if user has a session ID in localStorage
+            let userSessionId = localStorage.getItem('gsd_user_session_id');
+
+            // If no session ID exists, generate one
+            if (!userSessionId) {
+                userSessionId = generateUUID();
+                localStorage.setItem('gsd_user_session_id', userSessionId);
+            }
+            
+            // Display truncated session ID
+            document.getElementById('user-session-display').textContent = userSessionId.substring(0, 8) + '...';
+            
+            // Send session ID to Livewire component
+            Livewire.dispatch('setSessionId', { sessionId: userSessionId });
+
             $wire.on('projectAdded', function () {
                 $('#addProject').modal('hide');
 

@@ -4,8 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Project;
 use App\Services\GsdEstimationService;
+use Livewire\Attributes\On;
 use Livewire\Component;
-use Illuminate\Support\Str;
 
 class Dashboard extends Component
 {
@@ -13,32 +13,44 @@ class Dashboard extends Component
     public $newProjectDescription = '';
     public $selectedProjects = [];
     public $allProjectsData = [];
+    public $sessionId = null;
     protected $gsdService;
-    protected $sessionId;
 
     public function boot(GsdEstimationService $gsdService)
     {
         $this->gsdService = $gsdService;
-        $this->ensureSessionId();
     }
 
     /**
-     * Ensure a session ID exists for the current user
+     * Receive session ID from the frontend
      */
-    protected function ensureSessionId()
+    #[On('setSessionId')]
+    public function setSessionId($sessionId)
     {
-        if (!session()->has('user_session_id')) {
-            session(['user_session_id' => Str::uuid()->toString()]);
+        $this->sessionId = $sessionId;
+    }
+
+    public function mount()
+    {
+        // Create temporary ID for initial render, will be replaced by the frontend view
+        if (!$this->sessionId) {
+            $this->sessionId = 'gsd-' . uniqid();
         }
-        $this->sessionId = session('user_session_id');
     }
 
     public function render()
     {
-        return view('livewire.dashboard', [
-            'projects' => Project::where('session_id', $this->sessionId)
+        $projects = collect(); // Empty collection as default
+        
+        // Only query projects there is a valid session ID
+        if ($this->sessionId && !str_starts_with($this->sessionId, 'gsd-')) {
+            $projects = Project::where('session_id', $this->sessionId)
                 ->orderBy('id', 'desc')
-                ->get()
+                ->get();
+        }
+
+        return view('livewire.dashboard', [
+            'projects' => $projects
         ]);
     }
 
@@ -48,6 +60,15 @@ class Dashboard extends Component
             'newProjectName' => 'required',
             'newProjectDescription' => 'required',
         ]);
+
+        // Check there is a valid session ID
+        if (!$this->sessionId || str_starts_with($this->sessionId, 'gsd-')) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Session ID not available. Please refresh the page and try again.'
+            ]);
+            return;
+        }
 
         $project = new Project();
         $project->session_id = $this->sessionId;
@@ -79,8 +100,12 @@ class Dashboard extends Component
     {
         $this->allProjectsData = [];
         
-        // Get all projects and related effort data and story points
-        // Only for the current session
+        // Only proceed if we have a valid session ID
+        if (!$this->sessionId || str_starts_with($this->sessionId, 'gsd-')) {
+            return;
+        }
+        
+        // Get all projects and related effort data and story points for this session
         $projects = Project::with(['storyPoints', 'projectGlobalFactors.globalFactorCriteria'])
             ->where('session_id', $this->sessionId)
             ->get();
@@ -146,6 +171,15 @@ class Dashboard extends Component
             return;
         }
         
+        // Check if session ID valid
+        if (!$this->sessionId || str_starts_with($this->sessionId, 'gsd-')) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Session ID not available. Please refresh the page and try again.'
+            ]);
+            return;
+        }
+        
         // First save the effort data
         $this->saveEffortData();
         
@@ -155,7 +189,7 @@ class Dashboard extends Component
         // Eager load story points
         $projects = Project::with(['storyPoints', 'projectGlobalFactors.globalFactorCriteria'])
             ->whereIn('id', $this->selectedProjects)
-            ->where('session_id', $this->sessionId) // Only export session's projects
+            ->where('session_id', $this->sessionId)
             ->get();
             
         foreach ($projects as $project) {
