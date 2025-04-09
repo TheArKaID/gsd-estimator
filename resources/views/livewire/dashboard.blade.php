@@ -1,5 +1,6 @@
 <div class="main-content">
     <section class="section">
+        <p class="section-lead" style="margin: 0px"><small class="text-muted">Session ID: {{ substr(session('user_session_id'), 0, 8) }}...</small></p>
         <div class="section-header">
             <h1>Dashboard</h1>
             <div class="section-header-breadcrumb">

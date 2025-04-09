@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Project;
 use App\Services\GsdEstimationService;
 use Livewire\Component;
+use Illuminate\Support\Str;
 
 class Dashboard extends Component
 {
@@ -13,16 +14,31 @@ class Dashboard extends Component
     public $selectedProjects = [];
     public $allProjectsData = [];
     protected $gsdService;
+    protected $sessionId;
 
     public function boot(GsdEstimationService $gsdService)
     {
         $this->gsdService = $gsdService;
+        $this->ensureSessionId();
+    }
+
+    /**
+     * Ensure a session ID exists for the current user
+     */
+    protected function ensureSessionId()
+    {
+        if (!session()->has('user_session_id')) {
+            session(['user_session_id' => Str::uuid()->toString()]);
+        }
+        $this->sessionId = session('user_session_id');
     }
 
     public function render()
     {
         return view('livewire.dashboard', [
-            'projects' => Project::orderBy('id', 'desc')->get()
+            'projects' => Project::where('session_id', $this->sessionId)
+                ->orderBy('id', 'desc')
+                ->get()
         ]);
     }
 
@@ -34,6 +50,7 @@ class Dashboard extends Component
         ]);
 
         $project = new Project();
+        $project->session_id = $this->sessionId;
         $project->name = $this->newProjectName;
         $project->description = $this->newProjectDescription;
         $project->save();
@@ -63,7 +80,10 @@ class Dashboard extends Component
         $this->allProjectsData = [];
         
         // Get all projects and related effort data and story points
-        $projects = Project::with(['storyPoints', 'projectGlobalFactors.globalFactorCriteria'])->get();
+        // Only for the current session
+        $projects = Project::with(['storyPoints', 'projectGlobalFactors.globalFactorCriteria'])
+            ->where('session_id', $this->sessionId)
+            ->get();
         
         foreach ($projects as $project) {
             // Calculate estimated work days using the service
@@ -135,6 +155,7 @@ class Dashboard extends Component
         // Eager load story points
         $projects = Project::with(['storyPoints', 'projectGlobalFactors.globalFactorCriteria'])
             ->whereIn('id', $this->selectedProjects)
+            ->where('session_id', $this->sessionId) // Only export session's projects
             ->get();
             
         foreach ($projects as $project) {

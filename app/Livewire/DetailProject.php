@@ -11,6 +11,8 @@ use Livewire\Component;
 class DetailProject extends Component
 {
     public Project $project;
+    protected $sessionId;
+
     public $spName, $spDescription, $spValue, $customSpValue;
     public $projectClarity;
     public $projectType; 
@@ -141,6 +143,11 @@ class DetailProject extends Component
 
     public function boot(GsdEstimationService $gsdService)
     {
+        if (!session()->has('user_session_id')) {
+            return redirect('/');
+        }
+        $this->sessionId = session('user_session_id');
+        
         $this->gsdService = $gsdService;
     }
 
