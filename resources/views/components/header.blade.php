@@ -72,7 +72,7 @@
                         <div class="search-icon bg-danger text-white mr-3">
                             <i class="fas fa-code"></i>
                         </div>
-                        Stisla Admin Template
+                        Create a new Project
                     </a>
                 </div>
                 <div class="search-item">

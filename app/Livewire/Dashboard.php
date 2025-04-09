@@ -149,6 +149,11 @@ class Dashboard extends Component
         
         $this->dispatch('hideExportModal');
         
+        $this->dispatch('showAlert', [
+            'type' => 'success',
+            'message' => 'Project data prepared for export successfully'
+        ]);
+
         // Redirect to export controller
         return redirect()->route('projects.export');
     }

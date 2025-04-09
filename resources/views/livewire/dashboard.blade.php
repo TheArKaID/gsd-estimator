@@ -174,9 +174,9 @@
             });
             
             $wire.on('showAlert', function(data) {
-                iziToast[data.type]({
-                    title: data.type.charAt(0).toUpperCase() + data.type.slice(1),
-                    message: data.message,
+                iziToast[data[0].type]({
+                    title: data[0].type.charAt(0).toUpperCase() + data[0].type.slice(1),
+                    message: data[0].message,
                     position: 'topRight'
                 });
             });
