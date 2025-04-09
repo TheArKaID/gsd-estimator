@@ -61,7 +61,6 @@ class DetailProject extends Component
     public $formattedBaseMostLikelyTime = '';
     public $formattedBasePessimisticTime = '';
     public $formattedBaseExpectedTime = '';
-    public $formattedGsdImpactDays = '';
     
     // Properties for sprint-based values
     public $sprintOptimisticTime = '';
@@ -96,38 +95,14 @@ class DetailProject extends Component
     public $communicationImpactPercentage = 0;
     public $formattedCommunicationImpactDays = '';
 
-    // Add properties for estimates with only GSD factors (no communication complexity)
-    public $gsdOptimisticTime = 0;
-    public $gsdMostLikelyTime = 0;
-    public $gsdPessimisticTime = 0;
-    public $gsdExpectedTime = 0;
-    
-    public $formattedGsdOptimisticTime = '';
-    public $formattedGsdMostLikelyTime = '';
-    public $formattedGsdPessimisticTime = '';
-    public $formattedGsdExpectedTime = '';
-    
-    public $sprintGsdOptimisticTime = '';
-    public $sprintGsdMostLikelyTime = '';
-    public $sprintGsdPessimisticTime = '';
-    public $sprintGsdExpectedTime = '';
-
     // Add properties for estimates with only communication factors (no GSD)
     public $commOptimisticTime = 0;
     public $commMostLikelyTime = 0;
     public $commPessimisticTime = 0;
     public $commExpectedTime = 0;
     
-    public $formattedCommOptimisticTime = '';
     public $formattedCommMostLikelyTime = '';
-    public $formattedCommPessimisticTime = '';
-    public $formattedCommExpectedTime = '';
-    
-    public $sprintCommOptimisticTime = '';
     public $sprintCommMostLikelyTime = '';
-    public $sprintCommPessimisticTime = '';
-    public $sprintCommExpectedTime = '';
-    
     // Add properties for tracking GSD impact (from comm-only to final)
     public $gsdOnlyImpactDays = 0;
     public $gsdOnlyImpactPercentage = 0;
@@ -136,19 +111,19 @@ class DetailProject extends Component
     // Add properties for tracking PERT impact
     public $pertImpactDays = 0;
     public $pertImpactPercentage = 0;
-    public $formattedPertImpactDays = '';
 
     // Inject GSD Estimation Service
     protected $gsdService;
 
     public function boot(GsdEstimationService $gsdService)
     {
+        $this->gsdService = $gsdService;
+
         if (!session()->has('user_session_id')) {
             return redirect('/');
         }
         $this->sessionId = session('user_session_id');
         
-        $this->gsdService = $gsdService;
     }
 
     function mount($id)
@@ -449,12 +424,7 @@ class DetailProject extends Component
         $this->formattedBasePessimisticTime = number_format($this->basePessimisticTime, 1);
         $this->formattedBaseExpectedTime = number_format($this->baseExpectedTime, 1);
         
-        // Format day-based values for communication-only estimates
-        $this->formattedCommOptimisticTime = number_format($this->commOptimisticTime, 1);
         $this->formattedCommMostLikelyTime = number_format($this->commMostLikelyTime, 1);
-        $this->formattedCommPessimisticTime = number_format($this->commPessimisticTime, 1);
-        $this->formattedCommExpectedTime = number_format($this->commExpectedTime, 1);
-        
         // Format day-based values for final estimates
         $this->formattedOptimisticTime = number_format($this->optimisticTime, 1);
         $this->formattedMostLikelyTime = number_format($this->mostLikelyTime, 1);
@@ -464,10 +434,6 @@ class DetailProject extends Component
         // Format impact values
         $this->formattedCommunicationImpactDays = number_format(abs($this->communicationImpactDays), 1);
         $this->formattedGsdOnlyImpactDays = number_format(abs($this->gsdOnlyImpactDays), 1);
-        $this->formattedGsdImpactDays = number_format(abs($this->gsdImpactDays), 1);
-        
-        // Format PERT impact values
-        $this->formattedPertImpactDays = number_format(abs($this->pertImpactDays), 1);
         
         // Calculate confidence intervals
         $confidenceInterval68Low = $this->expectedTime - $this->standardDeviation;
@@ -489,12 +455,7 @@ class DetailProject extends Component
         $this->sprintBasePessimisticTime = number_format($this->basePessimisticTime / $sprintLength, 1);
         $this->sprintBaseExpectedTime = number_format($this->baseExpectedTime / $sprintLength, 1);
         
-        // Sprint-based values for communication-only estimates
-        $this->sprintCommOptimisticTime = number_format($this->commOptimisticTime / $sprintLength, 1);
         $this->sprintCommMostLikelyTime = number_format($this->commMostLikelyTime / $sprintLength, 1);
-        $this->sprintCommPessimisticTime = number_format($this->commPessimisticTime / $sprintLength, 1);
-        $this->sprintCommExpectedTime = number_format($this->commExpectedTime / $sprintLength, 1);
-        
         // Sprint-based values for final estimates
         $this->sprintOptimisticTime = number_format($this->optimisticTime / $sprintLength, 1);
         $this->sprintMostLikelyTime = number_format($this->mostLikelyTime / $sprintLength, 1);
