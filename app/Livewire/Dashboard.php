@@ -62,7 +62,7 @@ class Dashboard extends Component
     {
         $this->allProjectsData = [];
         
-        // Get all projects with their effort data
+        // Get all projects and related effort data and story points
         $projects = Project::with(['storyPoints', 'projectGlobalFactors.globalFactorCriteria'])->get();
         
         foreach ($projects as $project) {
@@ -132,6 +132,7 @@ class Dashboard extends Component
         // Prepare the export data - get the complete project data with calculations
         $selectedProjectsData = [];
         
+        // Eager load story points
         $projects = Project::with(['storyPoints', 'projectGlobalFactors.globalFactorCriteria'])
             ->whereIn('id', $this->selectedProjects)
             ->get();
