@@ -272,11 +272,11 @@
                                                             <small>Formula: n(n-1)/2 where n = {{ $smEmployee }}</small>
                                                             <div class="mt-2">
                                                                 <div class="d-flex justify-content-between">
-                                                                    <span>Standard Scrum Team (7 people):</span>
-                                                                    <strong>21 channels</strong>
+                                                                    <span>Standard Scrum Team (10 people):</span>
+                                                                    <strong>45 channels</strong>
                                                                 </div>
                                                                 <div class="progress mt-1">
-                                                                    <div class="progress-bar {{ $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success' }}" role="progressbar" style="width: {{ min(100, ($communicationChannels / $baselineCommunicationChannels) * 100) }}%" aria-valuenow="{{ $communicationChannels }}" aria-valuemin="0" aria-valuemax="21"></div>
+                                                                    <div class="progress-bar {{ $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success' }}" role="progressbar" style="width: {{ min(100, ($communicationChannels / $baselineCommunicationChannels) * 100) }}%" aria-valuenow="{{ $communicationChannels }}" aria-valuemin="0" aria-valuemax=45></div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -303,12 +303,12 @@
                                                     <p><strong>About Communication Complexity:</strong></p>
                                                     <p>Communication complexity follows the formula n(n-1)/2, creating an exponential growth in communication channels as team size increases:</p>
                                                     <ul>
-                                                        <li><strong>Standard Scrum Team (≤7 people):</strong> Up to 21 communication channels - no additional complexity factor</li>
-                                                        <li><strong>8-person Team:</strong> 28 channels - 33% increase from baseline</li>
-                                                        <li><strong>9-person Team:</strong> 36 channels - 71% increase from baseline</li>
-                                                        <li><strong>10-person Team:</strong> 45 channels - 114% increase from baseline</li>
+                                                        <li><strong>Standard Scrum Team (≤10 people):</strong> Up to 45 communication channels - no additional complexity factor</li>
+                                                        <li><strong>11-person Team:</strong> 55 channels - 22% increase from baseline</li>
+                                                        <li><strong>12-person Team:</strong> 66 channels - 46% increase from baseline</li>
+                                                        <li><strong>13-person Team:</strong> 78 channels - 67% increase from baseline</li>
                                                     </ul>
-                                                    <p>When team size exceeds 7 people, the percentage increase in communication channels is applied as a separate multiplier to the estimated development time.</p>
+                                                    <p>When team size exceeds 10 people, the percentage increase in communication channels is applied as a separate multiplier to the estimated development time.</p>
                                                 </div>
                                             </div>
                                         </div>

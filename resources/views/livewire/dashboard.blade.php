@@ -1,6 +1,6 @@
 <div class="main-content">
     <section class="section">
-        <p class="section-lead" style="margin: 0px"><small class="text-muted">Session ID: <span id="user-session-display">{{ substr($sessionId, 0, 8) }}...</span></small></p>
+        <p class="section-lead" style="margin: 0px"><small class="text-muted">Session ID: <span id="user-session-display">{{ $sessionId }}...</span></small></p>
         <div class="section-header">
             <h1>Dashboard</h1>
             <div class="section-header-breadcrumb">
