@@ -152,9 +152,9 @@ class GsdEstimationService
     {
         $teamSize = max(1, $teamSize);
         $baselineTeamSize = 10;
-        $baselineChannels = 45; // 10-person team: 10(10-1)/2 = 45 communication channels
+        $baselineChannels = 45; // 10-person team: 10(10-1)/2 = 45 communication path
         
-        // Calculate communication channels using the formula: n(n-1)/2
+        // Calculate communication path using the formula: n(n-1)/2
         $channels = ($teamSize * ($teamSize - 1)) / 2;
         
         $exceedsBaseline = $teamSize > $baselineTeamSize;

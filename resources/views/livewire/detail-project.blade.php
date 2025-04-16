@@ -216,7 +216,7 @@
                                                 <div class="form-group row mb-4">
                                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Team Size</label>
                                                     <div class="col-sm-12 col-md-7">
-                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size affects communication complexity. As team size increases, communication channels increase exponentially by the formula n(n-1)/2."></i>
+                                                        <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="Team Size affects communication complexity. As team size increases, communication path increase exponentially by the formula n(n-1)/2."></i>
                                                         <input type="number" class="form-control" wire:model="smEmployee" min="1">
                                                         @error('smEmployee') <span class="text-danger">{{ $message }}</span> @enderror
                                                         <small class="form-text text-muted">
@@ -267,8 +267,8 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="text-center p-3 border rounded">
-                                                            <h5>Communication Channels</h5>
-                                                            <h2>{{ $communicationChannels }}</h2>
+                                                            <h5>Communication Path</h5>
+                                                            <h2>{{ $communicationPath }}</h2>
                                                             <small>Formula: n(n-1)/2 where n = {{ $smEmployee }}</small>
                                                             <div class="mt-2">
                                                                 <div class="d-flex justify-content-between">
@@ -276,7 +276,7 @@
                                                                     <strong>45 channels</strong>
                                                                 </div>
                                                                 <div class="progress mt-1">
-                                                                    <div class="progress-bar {{ $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success' }}" role="progressbar" style="width: {{ min(100, ($communicationChannels / $baselineCommunicationChannels) * 100) }}%" aria-valuenow="{{ $communicationChannels }}" aria-valuemin="0" aria-valuemax=45></div>
+                                                                    <div class="progress-bar {{ $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success' }}" role="progressbar" style="width: {{ min(100, ($communicationPath / $baselineCommunicationPath) * 100) }}%" aria-valuenow="{{ $communicationPath }}" aria-valuemin="0" aria-valuemax=45></div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -301,14 +301,14 @@
                                                 </div>
                                                 <div class="mt-4">
                                                     <p><strong>About Communication Complexity:</strong></p>
-                                                    <p>Communication complexity follows the formula n(n-1)/2, creating an exponential growth in communication channels as team size increases:</p>
+                                                    <p>Communication complexity follows the formula n(n-1)/2, creating an exponential growth in communication path as team size increases:</p>
                                                     <ul>
-                                                        <li><strong>Standard Scrum Team (≤10 people):</strong> Up to 45 communication channels - no additional complexity factor</li>
+                                                        <li><strong>Standard Scrum Team (≤10 people):</strong> Up to 45 communication path - no additional complexity factor</li>
                                                         <li><strong>11-person Team:</strong> 55 channels - 22% increase from baseline</li>
                                                         <li><strong>12-person Team:</strong> 66 channels - 46% increase from baseline</li>
                                                         <li><strong>13-person Team:</strong> 78 channels - 67% increase from baseline</li>
                                                     </ul>
-                                                    <p>When team size exceeds 10 people, the percentage increase in communication channels is applied as a separate multiplier to the estimated development time.</p>
+                                                    <p>When team size exceeds 10 people, the percentage increase in communication path is applied as a separate multiplier to the estimated development time.</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -436,8 +436,8 @@
                                                             <td>{{ $smEmployee }} members</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><strong>Communication Channels</strong></td>
-                                                            <td>{{ $communicationChannels }} (Complexity: {{ $communicationComplexityLevel }})</td>
+                                                            <td><strong>Communication Path</strong></td>
+                                                            <td>{{ $communicationPath }} (Complexity: {{ $communicationComplexityLevel }})</td>
                                                         </tr>
                                                         <tr>
                                                             <td><strong>Team's Velocity</strong></td>
@@ -566,7 +566,7 @@
                                                                                 </div>
                                                                                 <div>
                                                                                     <h5 class="mb-1">Communication Complexity Impact</h5>
-                                                                                    <p class="mb-0">Your team size of {{ $smEmployee }} people creates {{ $communicationChannels }} communication channels, which is {{ $communicationComplexityImpact }}% more than a standard 7-person Scrum team. This additional complexity adds {{ $formattedCommunicationImpactDays }} days to your project timeline.</p>
+                                                                                    <p class="mb-0">Your team size of {{ $smEmployee }} people creates {{ $communicationPath }} communication path, which is {{ $communicationComplexityImpact }}% more than a standard 7-person Scrum team. This additional complexity adds {{ $formattedCommunicationImpactDays }} days to your project timeline.</p>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -938,7 +938,7 @@
         @this.set('activeTab', 'story-point');
     });
 
-    // Add communication channels visualization
+    // Add communication path visualization
     document.addEventListener('livewire:load', function () {
         Livewire.on('software-metrics-saved', function () {
             renderCommunicationChart();
@@ -946,12 +946,12 @@
     });
     
     function renderCommunicationChart() {
-        const ctx = document.getElementById('communicationChannelsChart');
+        const ctx = document.getElementById('communicationPathChart');
         if (!ctx) return;
         
         const teamSize = @this.smEmployee;
-        const channels = @this.communicationChannels;
-        const baseline = @this.baselineCommunicationChannels;
+        const channels = @this.communicationPath;
+        const baseline = @this.baselineCommunicationPath;
         const exceedsScrumTeamSize = @this.exceedsScrumTeamSize;
         
         new Chart(ctx, {
@@ -959,7 +959,7 @@
             data: {
                 labels: [
                     'Team Members', 
-                    'Communication Channels',
+                    'Communication Path',
                     exceedsScrumTeamSize ? 'Extra Complexity' : 'Standard Baseline'
                 ],
                 datasets: [{

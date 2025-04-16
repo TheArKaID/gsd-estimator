@@ -85,8 +85,8 @@ class DetailProject extends Component
     public $sprintConfidenceInterval95High = '';
 
     // Communication complexity properties
-    public $communicationChannels = 0;
-    public $baselineCommunicationChannels = 45; // For a standard 10-person Scrum team
+    public $communicationPath = 0;
+    public $baselineCommunicationPath = 45; // For a standard 10-person Scrum team
     public $communicationComplexityFactor = 1.0;
     public $communicationComplexityImpact = 0;
     public $communicationComplexityLevel = '';
@@ -442,7 +442,7 @@ class DetailProject extends Component
         $this->standardDeviation = $estimationData['final']['standard_deviation'];
         
         // Update communication complexity data
-        $this->communicationChannels = $estimationData['communication']['channels'];
+        $this->communicationPath = $estimationData['communication']['channels'];
         $this->communicationComplexityFactor = $estimationData['communication']['factor'];
         $this->communicationComplexityImpact = $estimationData['communication']['impact'];
         $this->communicationComplexityLevel = $estimationData['communication']['level'];
@@ -551,7 +551,7 @@ class DetailProject extends Component
     {
         $commData = $this->gsdService->calculateCommunicationComplexity($this->smEmployee);
         
-        $this->communicationChannels = $commData['channels'];
+        $this->communicationPath = $commData['channels'];
         $this->communicationComplexityFactor = $commData['factor'];
         $this->communicationComplexityImpact = $commData['impact'];
         $this->communicationComplexityLevel = $commData['level'];
