@@ -115,7 +115,7 @@ class DetailProject extends Component
     public $pertImpactPercentage = 0;
 
     // Inject GSD Estimation Service
-    protected $gsdService;
+    protected GsdEstimationService $gsdService;
 
     /**
      * Receive session ID from the frontend

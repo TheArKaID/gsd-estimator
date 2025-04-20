@@ -14,7 +14,7 @@ class Dashboard extends Component
     public $selectedProjects = [];
     public $allProjectsData = [];
     public $sessionId = null;
-    protected $gsdService;
+    protected GsdEstimationService $gsdService;
 
     public function boot(GsdEstimationService $gsdService)
     {

@@ -33,6 +33,9 @@ class ProjectsExport implements WithMultipleSheets
         // Add the story points sheet
         $sheets[] = new StoryPointsExport($this->projectsData);
         
+        // Add the global factors sheet
+        $sheets[] = new GlobalFactorsExport($this->projectsData);
+        
         return $sheets;
     }
 }
