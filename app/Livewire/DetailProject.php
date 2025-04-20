@@ -493,21 +493,21 @@ class DetailProject extends Component
     private function formatDisplayValues()
     {
         // Format day-based values for base estimates
-        $this->formattedBaseOptimisticTime = number_format($this->baseOptimisticTime, 1);
-        $this->formattedBaseMostLikelyTime = number_format($this->baseMostLikelyTime, 1);
-        $this->formattedBasePessimisticTime = number_format($this->basePessimisticTime, 1);
-        $this->formattedBaseExpectedTime = number_format($this->baseExpectedTime, 1);
+        $this->formattedBaseOptimisticTime = number_format($this->baseOptimisticTime);
+        $this->formattedBaseMostLikelyTime = number_format($this->baseMostLikelyTime);
+        $this->formattedBasePessimisticTime = number_format($this->basePessimisticTime);
+        $this->formattedBaseExpectedTime = number_format($this->baseExpectedTime);
         
-        $this->formattedCommMostLikelyTime = number_format($this->commMostLikelyTime, 1);
+        $this->formattedCommMostLikelyTime = number_format($this->commMostLikelyTime);
         // Format day-based values for final estimates
-        $this->formattedOptimisticTime = number_format($this->optimisticTime, 1);
-        $this->formattedMostLikelyTime = number_format($this->mostLikelyTime, 1);
-        $this->formattedPessimisticTime = number_format($this->pessimisticTime, 1);
-        $this->formattedExpectedTime = number_format($this->expectedTime, 1);
+        $this->formattedOptimisticTime = number_format($this->optimisticTime);
+        $this->formattedMostLikelyTime = number_format($this->mostLikelyTime);
+        $this->formattedPessimisticTime = number_format($this->pessimisticTime);
+        $this->formattedExpectedTime = number_format($this->expectedTime);
         
         // Format impact values
-        $this->formattedCommunicationImpactDays = number_format(abs($this->communicationImpactDays), 1);
-        $this->formattedGsdOnlyImpactDays = number_format(abs($this->gsdOnlyImpactDays), 1);
+        $this->formattedCommunicationImpactDays = number_format(abs($this->communicationImpactDays));
+        $this->formattedGsdOnlyImpactDays = number_format(abs($this->gsdOnlyImpactDays));
         
         // Calculate confidence intervals
         $confidenceInterval68Low = $this->expectedTime - $this->standardDeviation;
@@ -515,32 +515,32 @@ class DetailProject extends Component
         $confidenceInterval95Low = $this->expectedTime - (2 * $this->standardDeviation);
         $confidenceInterval95High = $this->expectedTime + (2 * $this->standardDeviation);
         
-        $this->confidenceInterval68Low = number_format($confidenceInterval68Low, 1);
-        $this->confidenceInterval68High = number_format($confidenceInterval68High, 1);
-        $this->confidenceInterval95Low = number_format($confidenceInterval95Low, 1);
-        $this->confidenceInterval95High = number_format($confidenceInterval95High, 1);
+        $this->confidenceInterval68Low = number_format($confidenceInterval68Low);
+        $this->confidenceInterval68High = number_format($confidenceInterval68High);
+        $this->confidenceInterval95Low = number_format($confidenceInterval95Low);
+        $this->confidenceInterval95High = number_format($confidenceInterval95High);
 
         // Calculate sprint-based values
         $sprintLength = max(1, $this->smSprintLength);
         
         // Sprint-based values for base estimates
-        $this->sprintBaseOptimisticTime = number_format($this->baseOptimisticTime / $sprintLength, 1);
-        $this->sprintBaseMostLikelyTime = number_format($this->baseMostLikelyTime / $sprintLength, 1);
-        $this->sprintBasePessimisticTime = number_format($this->basePessimisticTime / $sprintLength, 1);
-        $this->sprintBaseExpectedTime = number_format($this->baseExpectedTime / $sprintLength, 1);
+        $this->sprintBaseOptimisticTime = number_format($this->baseOptimisticTime / $sprintLength);
+        $this->sprintBaseMostLikelyTime = number_format($this->baseMostLikelyTime / $sprintLength);
+        $this->sprintBasePessimisticTime = number_format($this->basePessimisticTime / $sprintLength);
+        $this->sprintBaseExpectedTime = number_format($this->baseExpectedTime / $sprintLength);
         
-        $this->sprintCommMostLikelyTime = number_format($this->commMostLikelyTime / $sprintLength, 1);
+        $this->sprintCommMostLikelyTime = number_format($this->commMostLikelyTime / $sprintLength);
         // Sprint-based values for final estimates
-        $this->sprintOptimisticTime = number_format($this->optimisticTime / $sprintLength, 1);
-        $this->sprintMostLikelyTime = number_format($this->mostLikelyTime / $sprintLength, 1);
-        $this->sprintPessimisticTime = number_format($this->pessimisticTime / $sprintLength, 1);
-        $this->sprintExpectedTime = number_format($this->expectedTime / $sprintLength, 1);
+        $this->sprintOptimisticTime = number_format($this->optimisticTime / $sprintLength);
+        $this->sprintMostLikelyTime = number_format($this->mostLikelyTime / $sprintLength);
+        $this->sprintPessimisticTime = number_format($this->pessimisticTime / $sprintLength);
+        $this->sprintExpectedTime = number_format($this->expectedTime / $sprintLength);
         
         // Sprint-based confidence intervals
-        $this->sprintConfidenceInterval68Low = number_format($confidenceInterval68Low / $sprintLength, 1);
-        $this->sprintConfidenceInterval68High = number_format($confidenceInterval68High / $sprintLength, 1);
-        $this->sprintConfidenceInterval95Low = number_format($confidenceInterval95Low / $sprintLength, 1);
-        $this->sprintConfidenceInterval95High = number_format($confidenceInterval95High / $sprintLength, 1);
+        $this->sprintConfidenceInterval68Low = number_format($confidenceInterval68Low / $sprintLength);
+        $this->sprintConfidenceInterval68High = number_format($confidenceInterval68High / $sprintLength);
+        $this->sprintConfidenceInterval95Low = number_format($confidenceInterval95Low / $sprintLength);
+        $this->sprintConfidenceInterval95High = number_format($confidenceInterval95High / $sprintLength);
     }
 
     /**

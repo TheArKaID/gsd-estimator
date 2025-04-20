@@ -415,6 +415,25 @@
                             <div class="wizard-pane">
                                 <div class="row justify-content-center">
                                     <div class="col-md-8">
+                                        {{-- Add Total Effort Required Card --}}
+                                        <div class="card mb-4">
+                                            <div class="card-header bg-primary">
+                                                <h4 class="mb-0 text-white">Total Effort Required</h4>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <h2 class="display-4 mb-2">{{ round($formattedExpectedTime) }} <small>man-days</small></h2>
+                                                <p class="mb-0">
+                                                    <strong>Expected total effort</strong> for this project, based on all factors and PERT analysis.<br>
+                                                </p>
+                                                <div class="d-flex justify-content-center mt-3">
+                                                    <div class="bg-light rounded p-3 text-center mx-2">
+                                                        <h5 class="mb-1">Sprints</h5>
+                                                        <h3 class="mb-0">{{ $sprintExpectedTime }}</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="card">
                                             <div class="card-header">
                                                 <h4>Project Summary</h4>
@@ -671,7 +690,7 @@
                                                                     <div class="text-center text-white p-4 {{ $communicationImpactPercentage > 0 && $exceedsScrumTeamSize ? 'bg-warning' : 'bg-success text-white' }} rounded">
                                                                         <h5>Communication Impact</h5>
                                                                         @if($exceedsScrumTeamSize)
-                                                                            <h2>+{{ number_format($communicationImpactPercentage, 1) }}%</h2>
+                                                                            <h2>+{{ number_format($communicationImpactPercentage) }}%</h2>
                                                                             <p class="mb-0">
                                                                                 {{ $formattedCommunicationImpactDays }} days increase
                                                                             </p>
@@ -715,7 +734,7 @@
                                                                     <div class="text-center text-white p-4 {{ $gsdOnlyImpactPercentage > 0 ? 'bg-warning' : 'bg-success' }} rounded">
                                                                         <h5>GSD Impact</h5>
                                                                         <h2>
-                                                                            {{ $gsdOnlyImpactPercentage > 0 ? '+' : '' }}{{ number_format($gsdOnlyImpactPercentage, 1) }}%
+                                                                            {{ $gsdOnlyImpactPercentage > 0 ? '+' : '' }}{{ number_format($gsdOnlyImpactPercentage) }}%
                                                                         </h2>
                                                                         <p class="mb-0">
                                                                             {{ $formattedGsdOnlyImpactDays }} days {{ $gsdOnlyImpactPercentage > 0 ? 'increase' : 'decrease' }}
@@ -804,25 +823,25 @@
                                                             </tr>
                                                             <tr>
                                                                 <td>Optimistic (O)</td>
-                                                                <td>{{ number_format($optimisticTime, 1) }} days</td>
+                                                                <td>{{ number_format($optimisticTime) }} days</td>
                                                                 <td>1x</td>
                                                                 <td>Best case scenario ({{ $optimisticPercentage }}% adjustment)</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Most Likely (M)</td>
-                                                                <td>{{ number_format($mostLikelyTime, 1) }} days</td>
+                                                                <td>{{ number_format($mostLikelyTime) }} days</td>
                                                                 <td>4x</td>
                                                                 <td>Most probable scenario (base estimate)</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Pessimistic (P)</td>
-                                                                <td>{{ number_format($pessimisticTime, 1) }} days</td>
+                                                                <td>{{ number_format($pessimisticTime) }} days</td>
                                                                 <td>1x</td>
                                                                 <td>Worst case scenario (+{{ $pessimisticPercentage }}% adjustment)</td>
                                                             </tr>
                                                             <tr>
                                                                 <td colspan="2"><strong>PERT Formula:</strong> (O + 4M + P) / 6</td>
-                                                                <td colspan="2"><strong>Expected Duration:</strong> {{ number_format($expectedTime, 1) }} days ({{ number_format($expectedTime / $smSprintLength, 1) }} sprints)</td>
+                                                                <td colspan="2"><strong>Expected Duration:</strong> {{ number_format($expectedTime) }} days ({{ number_format($expectedTime / $smSprintLength) }} sprints)</td>
                                                             </tr>
                                                         </table>
                                                         <small class="text-muted">Note: PERT gives more weight (4x) to the most likely estimate, resulting in an expected duration that better reflects real-world outcomes than a simple average.</small>
