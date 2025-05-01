@@ -136,14 +136,41 @@
                                     <label class="col-md-4 text-md-right text-left">Project Clarity</label>
                                     <div class="col-lg-4 col-md-6">
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectClarity' wire:change='saveProjectClarity' value="conceptual" :class="{ 'focus active': $wire.projectClarity === 'conceptual' }" autocomplete="off"> Conceptual
+                                            <label wire:ignore.self class="btn btn-outline-primary {{ $projectClarity === 'conceptual' ? 'active' : '' }}">
+                                                <input 
+                                                    type="radio"
+                                                    wire:model='projectClarity' 
+                                                    id="project_clarity_conceptual" 
+                                                    name="project_clarity_conceptual" 
+                                                    value="conceptual" 
+                                                    wire:change='saveProjectClarity'
+                                                    {{ $projectClarity === 'conceptual' ? 'checked' : '' }}
+                                                    style="position: absolute; opacity: 0;"
+                                                > Conceptual
                                             </label>
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectClarity' wire:change='saveProjectClarity' value="evolving" :class="{ 'focus active': $wire.projectClarity === 'evolving' }" autocomplete="off"> Evolving
+                                            <label wire:ignore.self class="btn btn-outline-primary {{ $projectClarity === 'evolving' ? 'active' : '' }}">
+                                                <input 
+                                                    type="radio"
+                                                    wire:model='projectClarity' 
+                                                    id="project_clarity_evolving" 
+                                                    name="project_clarity_evolving" 
+                                                    value="evolving" 
+                                                    wire:change='saveProjectClarity'
+                                                    {{ $projectClarity === 'evolving' ? 'checked' : '' }}
+                                                    style="position: absolute; opacity: 0;"
+                                                > Evolving
                                             </label>
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectClarity' wire:change='saveProjectClarity' value="established" :class="{ 'focus active': $wire.projectClarity === 'established' }" autocomplete="off"> Established
+                                            <label wire:ignore.self class="btn btn-outline-primary {{ $projectClarity === 'established' ? 'active' : '' }}">
+                                                <input 
+                                                    type="radio"
+                                                    wire:model='projectClarity'
+                                                    id="project_clarity_established" 
+                                                    name="project_clarity_established" 
+                                                    value="established" 
+                                                    wire:change='saveProjectClarity'
+                                                    {{ $projectClarity === 'established' ? 'checked' : '' }}
+                                                    style="position: absolute; opacity: 0;"
+                                                > Established
                                             </label>
                                         </div>
                                     </div>
@@ -164,14 +191,41 @@
                                     <label class="col-md-4 text-md-right text-left">Project Type</label>
                                     <div class="col-lg-4 col-md-6">
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="organic" :class="{ 'focus active': $wire.projectType === 'organic' }" autocomplete="off"> Organic
+                                            <label wire:ignore.self class="btn btn-outline-primary {{ $projectType === 'organic' ? 'active' : '' }}">
+                                                <input 
+                                                    type="radio"
+                                                    wire:model='projectType' 
+                                                    id="project_type_organic" 
+                                                    name="project_type_organic" 
+                                                    value="organic" 
+                                                    wire:change='saveProjectType'
+                                                    {{ $projectType === 'organic' ? 'checked' : '' }}
+                                                    style="position: absolute; opacity: 0;"
+                                                > Organic
                                             </label>
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="semi-detached" :class="{ 'focus active': $wire.projectType === 'semi-detached' }" autocomplete="off"> Semi-Detached
+                                            <label wire:ignore.self class="btn btn-outline-primary {{ $projectType === 'semi-detached' ? 'active' : '' }}">
+                                                <input 
+                                                    type="radio"
+                                                    wire:model='projectType' 
+                                                    id="project_type_semi" 
+                                                    name="project_type_semi" 
+                                                    value="semi-detached" 
+                                                    wire:change='saveProjectType'
+                                                    {{ $projectType === 'semi-detached' ? 'checked' : '' }}
+                                                    style="position: absolute; opacity: 0;"
+                                                > Semi-Detached
                                             </label>
-                                            <label class="btn btn-outline-primary" wire:ignore.self>
-                                                <input type="radio" wire:model='projectType' wire:change='saveProjectType' value="embedded" :class="{ 'focus active': $wire.projectType === 'embedded' }" autocomplete="off"> Embedded
+                                            <label wire:ignore.self class="btn btn-outline-primary {{ $projectType === 'embedded' ? 'active' : '' }}">
+                                                <input 
+                                                    type="radio"
+                                                    wire:model='projectType'
+                                                    id="project_type_embedded" 
+                                                    name="project_type_embedded" 
+                                                    value="embedded" 
+                                                    wire:change='saveProjectType'
+                                                    {{ $projectType === 'embedded' ? 'checked' : '' }}
+                                                    style="position: absolute; opacity: 0;"
+                                                > Embedded
                                             </label>
                                         </div>
                                     </div>
