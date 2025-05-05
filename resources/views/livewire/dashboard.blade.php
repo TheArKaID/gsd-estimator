@@ -7,11 +7,6 @@
                 <div class="breadcrumb-item">Dashboard</div>
             </div>
         </div>
-        
-        <div class="section-lead mb-3">
-            <small class="text-muted">Session ID: </small>
-        </div>
-        
         <div class="section-body">
             <div class="row mb-4">
                 <div class="col-md-12 text-right">
