@@ -475,7 +475,7 @@
                                                 <h4 class="mb-0 text-white">Total Effort Required</h4>
                                             </div>
                                             <div class="card-body text-center">
-                                                <h2 class="display-4 mb-2">{{ round($formattedExpectedTime) }} <small>man-days</small></h2>
+                                                <h2 class="display-4 mb-2">{{ $formattedExpectedTime }} <small>man-days</small></h2>
                                                 <p class="mb-0">
                                                     <strong>Expected total effort</strong> for this project, based on all factors and PERT analysis.<br>
                                                 </p>
